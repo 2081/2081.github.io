@@ -13,14 +13,15 @@ $.getJSON("events.json", function(data) {
     mainDiv.appendChild(grid);
     for( var i = 0; i < events.length; ++i)
     {
+        var modalName = "modalEvent"+i;
         var evt = events[i];
         var bloc = document.createElement("li");
         bloc.className = "text-center";
         
         var link = document.createElement("a");
         link.href = "#";
-        link.className = "th [radius]";
-        link.setAttribute("data-revealed-id","modalEvent"+i);
+        //link.className = "th [radius]";
+        link.setAttribute("data-reveal-id",modalName);
         
         var img = document.createElement("img");
         img.src = "img/default.png";
@@ -34,20 +35,15 @@ $.getJSON("events.json", function(data) {
         bloc.appendChild(title);
         
         grid.appendChild(bloc);
-        /*
-        var bloc = document.createElement("div");
-        bloc.className = "panel";
         
-        var row1 = document.createElement("div");
-        var link = document.createElement("a");
-        link.href = "#";
-        link.setAttribute("data-revealed-id","modalEvent"+i);
-        link.textContent = evt.title;
-        bloc.appendChild(link);
         
-        bloc.appendChild(document.createTextNode(evt.content));
-        
-        mainDiv.appendChild(bloc);*/
+        // Creating reveal modal
+        var modal = document.createElement("div");
+        modal.id = modalName;
+        modal.className = "reveal-modal";
+        modal.setAttribute("data-reveal","");
+        modal.innerHTML = "<a class=\"close-reveal-modal\">&#215;</a>";
+        mainDiv.appendChild(modal);
     }
     //console.log(events);
 });
