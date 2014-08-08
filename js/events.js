@@ -9,7 +9,7 @@ $.getJSON("events.json", function(data) {
     var mainDiv = document.getElementById("events");
     
     var grid = document.createElement("ul");
-    grid.className = "medium-block-grid-3";
+    grid.className = "small-block-grid-2 medium-block-grid-3 large-block-grid-4";
     mainDiv.appendChild(grid);
     for( var i = 0; i < events.length; ++i)
     {
@@ -24,7 +24,7 @@ $.getJSON("events.json", function(data) {
         link.setAttribute("data-reveal-id",modalName);
         
         var img = document.createElement("img");
-        img.src = "img/default.png";
+        img.src = "img/pirate.png";
         
         link.appendChild(img);
         bloc.appendChild(link);
