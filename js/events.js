@@ -20,7 +20,7 @@ $.getJSON("events.json", function(data) {
         
         var link = document.createElement("a");
         link.href = "#";
-        //link.className = "th [radius]";
+        link.className = "th [radius]";
         link.setAttribute("data-reveal-id",modalName);
         
         var img = document.createElement("img");
@@ -40,11 +40,12 @@ $.getJSON("events.json", function(data) {
         // Creating reveal modal
         var modal = document.createElement("div");
         modal.id = modalName;
-        modal.className = "reveal-modal";
+        modal.className = "reveal-modal tiny";
         modal.setAttribute("data-reveal","");
-        modal.innerHTML = "<a class=\"close-reveal-modal\">&#215;</a>";
+        modal.innerHTML = evt.content + "<a class=\"close-reveal-modal\">&#215;</a>";
         mainDiv.appendChild(modal);
     }
     //console.log(events);
+	$(document).foundation();
 });
 
