@@ -67,6 +67,7 @@ $.getJSON('events.json',function(data) {
         title.textContent = evt.title;
         
         var gpslink = document.createElement("a");
+        gpslink.className = "th [radius]"
         gpslink.href = "http://maps.google.com/maps?z=12&t=m&q="+evt.gps.replace(",","+");
         gpslink.target = "_blank";
         
