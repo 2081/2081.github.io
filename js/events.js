@@ -66,13 +66,18 @@ $.getJSON('events.json',function(data) {
         var title = document.createElement("h1");
         title.textContent = evt.title;
         
+        var gpslink = document.createElement("a");
+        gpslink.href = "http://maps.google.com/maps?z=12&t=m&q="+evt.gps.replace(",","+");
+        gpslink.target = "_blank";
+        
         var static_map = document.createElement("img");
         static_map.alt = "Google Map - "+evt.title;
         var url = "http://maps.googleapis.com/maps/api/staticmap?";
         url += "size="+width+"x200";
-        url += "&markers=color:green|45.781546,4.872100";
+        url += "&markers=color:green|" + evt.gps;
         static_map.src = "";
         static_map.setAttribute("temp",url);
+        gpslink.appendChild(static_map);
         
         var content = document.createElement("p");
         content.appendChild(document.createTextNode(evt.content));
@@ -85,7 +90,7 @@ $.getJSON('events.json',function(data) {
         modal.appendChild(title);
         modal.appendChild(rdv);
         
-        modal.appendChild(static_map);
+        modal.appendChild(gpslink);
         modal.appendChild(content);
         
         
@@ -98,7 +103,7 @@ $.getJSON('events.json',function(data) {
     $(document).on('open.fndtn.reveal', '[data-reveal]', function () {
         // prevent all images to be loaded before we need them
         var modal = $(this);
-        var img = modal.children("img")[0];
+        var img = modal.children("a").children("img")[0];
         img.src = img.getAttribute("temp");
     });
 });

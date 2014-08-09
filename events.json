@@ -5,78 +5,91 @@
 			"title":"Combat de moussaillons",
 			"d": "2014-09-11T14:00",
 			"rdv": "Gaston Berger (Tram)",
+			"gps": "45.781546,4.872100",
 			"content":"Viens découvrir les autres membres de l'équipage et montre leur qui tu es !",
 			"tram": 0
 		},{
 			"title":"Première cuite sur l'océan insalien",
 			"d": "2014-09-12T20:00",
 			"rdv": "K-fet",
+			"gps": "45.783967,4.874624",
 			"content":"Et \"une\" bouteille de rhum !",
 			"tram": 0
 		},{
 			"title":"Visite du navire",
 			"d": "2014-09-13T10:00",
 			"rdv": "Gaston Berger (Tram)",
+			"gps": "45.781546,4.872100",
 			"content":"Pour te remettre de la veille, rien de mieux qu'une visite exclusive du navire!",
 			"tram": 0
 		},{
 			"title":"Taverne du matelot tranquille",
 			"d": "2014-09-13T19:00",
 			"rdv": "Gaston Berger (Tram)",
+			"gps": "45.781546,4.872100",
 			"content":"Description de l'événement...",
 			"tram": 2
 		},{
 			"title":"Avant les forts, le réconfort",
 			"d": "2014-09-14T10:00",
 			"rdv": "Salle détente (Bat. Blaise Pascal)",
+			"gps": "45.782310,4.872749",
 			"content":"Description de l'événement...",
 			"tram": 0
 		},{
 			"title":"Amarrage, Pointage, Lançage !!",
 			"d": "2014-09-14T14:00",
 			"rdv": "Entrée principale de la Feyssine",
+			"gps": "45.787263,4.878816",
 			"content":"Description de l'événement...",
 			"tram": 0
 		},{
 			"title":"La bar à thon",
 			"d": "2014-09-15T20:00",
 			"rdv": "Gaston Berger (Tram)",
+			"gps": "45.781546,4.872100",
 			"content":"Description de l'événement... Mangez avant !",
 			"tram": 2
 		},{
 			"title":"Perudo & Jamaïca",
 			"d": "2014-09-16T19:30",
 			"rdv": "Amphitéâtre Gaston Berger",
+			"gps": "45.782497,4.872176",
 			"content":"Description de l'événement...",
 			"tram": 0
 		},{
 			"title":"L'orgie du Roi des Océans",
 			"d": "2014-09-17T19:30",
 			"rdv": "Amphitéâtre Gaston Berger",
+			"gps": "45.782497,4.872176",
 			"content":"Description de l'événement...",
 			"tram": 0
 		},{
 			"title":"La Rallye dans Lyon (chasse au Trésor)",
 			"d": "2014-09-18T14:00",
 			"rdv": "Amphitéâtre Gaston Berger",
+			"gps": "45.782497,4.872176",
 			"content":"Description de l'événement...",
 			"tram": 0
 		},{
 			"title":"La conférence du parrain",
 			"d": "2014-09-19T14:00",
 			"rdv": "Amphitéâtre Gaston Berger",
+			"gps": "45.782497,4.872176",
 			"content":"Description de l'événement... Viens avec ton sac du WEI",
 			"tram": 0
 		},{
 			"title":"WEI !!",
 			"d": "2014-09-19T17:00",
 			"rdv": "Amphitéâtre Gaston Berger",
+			"gps": "45.782497,4.872176",
 			"content":"Description de l'événement... WEEEEEEEEEIIIIIIIII",
 			"tram": 0
 		},{
 			"title":"Soirée de parrainage",
 			"d": "2014-09-23T19:00",
 			"rdv": "Amphitéâtre Gaston Berger",
+			"gps": "45.782497,4.872176",
 			"content":"Description de l'événement...",
 			"tram": 0
 		}
