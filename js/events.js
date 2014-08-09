@@ -3,8 +3,26 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-$.getJSON("events.json", function(data) {
-    //console.log(data); // this will show the info it in firebug console 
+
+/*$.ajax({
+    url: 'events.json',
+    dataType: 'json',
+    error: function(xhr, status, error) {
+        var err = eval("(" + xhr.responseText + ")");
+        alert(err.Message);
+    },
+    success: function( data ) {
+      alert( "SUCCESS:  " + data );
+    }
+  });
+  */
+ 
+ var width = Math.min($(window).width(),1024);
+
+
+
+$.getJSON('events.json',function(data) {
+    console.log(data); // this will show the info it in firebug console 
     var events = data.events;
     var mainDiv = document.getElementById("events");
     
@@ -25,6 +43,7 @@ $.getJSON("events.json", function(data) {
         
         var img = document.createElement("img");
         img.src = "img/pirate.png";
+        img.alt = "image - "+evt.title;
         
         link.appendChild(img);
         bloc.appendChild(link);
@@ -42,10 +61,45 @@ $.getJSON("events.json", function(data) {
         modal.id = modalName;
         modal.className = "reveal-modal tiny";
         modal.setAttribute("data-reveal","");
-        modal.innerHTML = evt.content + "<a class=\"close-reveal-modal\">&#215;</a>";
+        modal.innerHTML = "<a class=\"close-reveal-modal\">&#215;</a>";
+        
+        var title = document.createElement("h1");
+        title.textContent = evt.title;
+        
+        var static_map = document.createElement("img");
+        static_map.alt = "Google Map - "+evt.title;
+        var url = "http://maps.googleapis.com/maps/api/staticmap?";
+        url += "size="+width+"x200";
+        url += "&markers=color:green|45.781546,4.872100";
+        static_map.src = "";
+        static_map.setAttribute("temp",url);
+        
+        var content = document.createElement("p");
+        content.appendChild(document.createTextNode(evt.content));
+        var rdv = document.createElement("p");
+        rdv.textContent = "Lieu de rendez-vous : "+ evt.rdv;
+        if( evt.tram > 0 ){
+            rdv.appendChild(document.createElement("br"));
+            rdv.appendChild(document.createTextNode("Tu auras besoin de "+evt.tram+" ticket"+(evt.tram > 1 ? "s":"")+" de tram.")) ;
+        }
+        modal.appendChild(title);
+        modal.appendChild(rdv);
+        
+        modal.appendChild(static_map);
+        modal.appendChild(content);
+        
+        
         mainDiv.appendChild(modal);
     }
     //console.log(events);
-	$(document).foundation();
+    
+    $(document).foundation();
+    
+    $(document).on('open.fndtn.reveal', '[data-reveal]', function () {
+        // prevent all images to be loaded before we need them
+        var modal = $(this);
+        var img = modal.children("img")[0];
+        img.src = img.getAttribute("temp");
+    });
 });
 

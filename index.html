@@ -2,19 +2,27 @@
 <html class="no-js" lang="en">
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
     <title>Planning de l'inté IF 2014-2015</title>
     <link rel="stylesheet" href="css/foundation.css" />
     <script src="js/vendor/modernizr.js"></script>
+    <style>
+      #map-canvas {
+        min-height: 200px;
+        margin: 0px;
+        padding: 0px
+      }
+    </style>
+     <script src="https://maps.googleapis.com/maps/api/js?v=3.exp"></script>
   </head>
   <body>
     
-    <div class="row">
+    <!--<div class="row">
       <div class="large-12 columns">
         <h1>Planning de l'inté 2014 !</h1>
       </div>
-    </div>
-    
+    </div>-->
+    <br/>
     <div class="row">
       <div class="large-12 columns">
       	<div class="panel">
@@ -23,7 +31,7 @@
       	</div>
       </div>
     </div>
-
+    
     <div class="row">
       <div class="large-12 columns">
           <div id="events"></div>

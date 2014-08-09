@@ -39,7 +39,9 @@ body {
   font-size: 100%; }
 
 body {
-  background: white;
+  /*background: white;*/
+  background: #138C83 url("../img/bg.jpg") no-repeat center top;
+  background-attachment: fixed;
   color: #222222;
   padding: 0;
   margin: 0;
