@@ -6,35 +6,35 @@
 			"d": "2014-09-11T14:00",
 			"rdv": "Gaston Berger (Tram)",
 			"gps": "45.781546,4.872100",
-			"content":"Viens découvrir les autres membres de l'équipage et montre leur qui tu es !",
+			"content":"Viens découvrir les autres membres de l'équipage et montre leur qui tu es ! \n Si tu es un vrai pirate, que tu n'as peur de rien et que la nourriture et la boisson sont tes amies, rejoins-nous pour une après-midi au très célèbre Parc de la Tête D'or",
 			"tram": 0
 		},{
 			"title":"Première cuite sur l'océan insalien",
 			"d": "2014-09-12T20:00",
 			"rdv": "K-fet",
 			"gps": "45.783967,4.874624",
-			"content":"Et \"une\" bouteille de rhum !",
+			"content":"Viens t'abreuver aux frais de l'A.E.D.I. et (re)découvrir la merveilleuse bière de la K-Fet ! Et \"une\" bouteille de rhum !",
 			"tram": 0
 		},{
 			"title":"Visite du navire",
 			"d": "2014-09-13T10:00",
 			"rdv": "Gaston Berger (Tram)",
 			"gps": "45.781546,4.872100",
-			"content":"Pour te remettre de la veille, rien de mieux qu'une visite exclusive du navire!",
+			"content":"Pour te remettre de la veille, rien de mieux qu'une visite exclusive du navire et ses environs ! \n Profites en pour découvrir les coins du campus que tu ne connais pas encore, et finis cette activité par un traditionnel, mais non moins apprécié, goûter de bienvenue !",
 			"tram": 0
 		},{
 			"title":"Taverne du matelot tranquille",
 			"d": "2014-09-13T19:00",
 			"rdv": "Gaston Berger (Tram)",
 			"gps": "45.781546,4.872100",
-			"content":"Description de l'événement...",
+			"content":"Le port de Lyon te cache quelques petites tavernes et autres auberges qui ne te décevront pas. \n Si tu as toujours rêvé de déguster une bière tout en parlant de tes aventures passées avec des marins aguérris, rejoins nous à la Taverne du matelot tranquille !",
 			"tram": 2
 		},{
 			"title":"Avant les forts, le réconfort",
 			"d": "2014-09-14T10:00",
 			"rdv": "Salle détente (Bat. Blaise Pascal)",
 			"gps": "45.782310,4.872749",
-			"content":"Description de l'événement...",
+			"content":"Pourquoi compliquer les choses. Tu as un estomac ? Viens. \n De plus, si tu viens, tu pourras manger. \nDes bons trucs.\n Comme des crêpes...\n... Et des croissants... \n ... Avec du nutella !",
 			"tram": 0
 		},{
 			"title":"Amarrage, Pointage, Lançage !!",
@@ -70,7 +70,7 @@
 			"rdv": "Amphitéâtre Gaston Berger",
 			"gps": "45.782497,4.872176",
 			"content":"Description de l'événement...",
-			"tram": 0
+			"tram": 10
 		},{
 			"title":"La conférence du parrain",
 			"d": "2014-09-19T14:00",
