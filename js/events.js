@@ -38,11 +38,16 @@ $.getJSON('events.json',function(data) {
         
         var link = document.createElement("a");
         link.href = "#";
-        link.className = "th [radius]";
+        //link.className = "th [radius]";
         link.setAttribute("data-reveal-id",modalName);
         
         var img = document.createElement("img");
-        img.src = "img/eye.png";
+		// TEMPORARY
+		if( i == 0 ) {
+			img.src = "img/combat_moussaillon.png";
+		} else {
+			img.src = "img/eye.png";
+		}
         img.alt = "image - "+evt.title;
         
         link.appendChild(img);
