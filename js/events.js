@@ -42,12 +42,22 @@ $.getJSON('events.json',function(data) {
         link.setAttribute("data-reveal-id",modalName);
         
         var img = document.createElement("img");
+		
 		// TEMPORARY
-		if( i == 0 ) {
+		switch( i ) {
+		case 0:
 			img.src = "img/combat_moussaillon.png";
-		} else {
+			break;
+		case 1:
+			img.src = "img/cuite.png";
+			break;
+		default:
 			img.src = "img/eye.png";
+			break;
 		}
+		// TEMPORARY
+		
+		
         img.alt = "image - "+evt.title;
         
         link.appendChild(img);
