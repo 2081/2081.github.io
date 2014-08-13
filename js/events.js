@@ -19,6 +19,18 @@
  
  var width = Math.min($(window).width(),1024);
 
+// creates multi-line text
+function _createText(text) {
+    var lines = text.split('\n');
+    var parag = document.createElement('p');
+    for(var i=0, line; line = lines[i]; i++) {
+      if(i>0) {
+        parag.appendChild(document.createElement('br'));
+      }
+      parag.appendChild(document.createTextNode(line));
+    }
+    return parag;
+}
 
 
 $.getJSON('events.json',function(data) {
@@ -95,8 +107,7 @@ $.getJSON('events.json',function(data) {
         static_map.setAttribute("temp",url);
         gpslink.appendChild(static_map);
         
-        var content = document.createElement("p");
-        content.appendChild(document.createTextNode(evt.content));
+        var content = _createText(evt.content);
         var rdv = document.createElement("p");
         rdv.textContent = "Lieu de rendez-vous : "+ evt.rdv;
         if( evt.tram > 0 ){
