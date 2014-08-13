@@ -38,13 +38,13 @@ $.getJSON('events.json',function(data) {
         
         var link = document.createElement("a");
         link.href = "#";
-        //link.className = "th [radius]";
+        link.className = "th [radius]";
         link.setAttribute("data-reveal-id",modalName);
         
         var img = document.createElement("img");
 		
 		// TEMPORARY
-		switch( i ) {
+		/*switch( i ) {
 		case 0:
 			img.src = "img/combat_moussaillon.png";
 			break;
@@ -52,11 +52,11 @@ $.getJSON('events.json',function(data) {
 			img.src = "img/cuite.png";
 			break;
 		default:
-			img.src = "img/eye.png";
+			img.src = "img/pirate_fille.png";
 			break;
-		}
+		}*/
 		// TEMPORARY
-		
+		img.src = "img/pirate_fille.png";
 		
         img.alt = "image - "+evt.title;
         
