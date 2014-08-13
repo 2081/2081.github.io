@@ -42,7 +42,7 @@ $.getJSON('events.json',function(data) {
         link.setAttribute("data-reveal-id",modalName);
         
         var img = document.createElement("img");
-        img.src = "img/pirate.png";
+        img.src = "img/eye.png";
         img.alt = "image - "+evt.title;
         
         link.appendChild(img);
