@@ -40,7 +40,7 @@ body {
 
 body {
   /*background: white;*/
-  background: #138C83 url("../img/bg.jpg") no-repeat center top;
+  background: #121212 url("../img/background_tile.png") center top;
   background-attachment: fixed;
   color: #222222;
   padding: 0;

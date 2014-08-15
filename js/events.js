@@ -1,23 +1,5 @@
-/* 
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 
-/*$.ajax({
-    url: 'events.json',
-    dataType: 'json',
-    error: function(xhr, status, error) {
-        var err = eval("(" + xhr.responseText + ")");
-        alert(err.Message);
-    },
-    success: function( data ) {
-      alert( "SUCCESS:  " + data );
-    }
-  });
-  */
- 
- var width = Math.min($(window).width(),1024);
+var width = Math.min($(window).width(),1024);
 
 // creates multi-line text
 function _createText(text) {
@@ -32,6 +14,14 @@ function _createText(text) {
     return parag;
 }
 
+function getStringDate(date)
+{
+    var options = {weekday: "long", day: "2-digit", month: "long", hour: "2-digit", minute:"2-digit"};
+    var str = date.toLocaleString("fr-FR",options);
+    //First letter of the words to upper case
+    str = str.replace(/([a-z])([a-z]*)/g, function(match,p1,p2){return p1.toUpperCase() + p2;}); 
+    return str;
+}
 
 $.getJSON('events.json',function(data) {
     console.log(data); // this will show the info it in firebug console 
@@ -46,38 +36,43 @@ $.getJSON('events.json',function(data) {
         var modalName = "modalEvent"+i;
         var evt = events[i];
         var bloc = document.createElement("li");
-        bloc.className = "text-center";
+        bloc.className = "text-center event-thumbnail";
         
         var link = document.createElement("a");
         link.href = "#";
-        link.className = "th [radius]";
+        //link.className = "th [radius]";
         link.setAttribute("data-reveal-id",modalName);
         
         var img = document.createElement("img");
-		
-		// TEMPORARY
-		/*switch( i ) {
-		case 0:
-			img.src = "img/combat_moussaillon.png";
-			break;
-		case 1:
-			img.src = "img/cuite.png";
-			break;
-		default:
-			img.src = "img/pirate_fille.png";
-			break;
-		}*/
-		// TEMPORARY
-		img.src = "img/pirate_fille.png";
+	img.src = "img/pirate_fille.png";
 		
         img.alt = "image - "+evt.title;
         
-        link.appendChild(img);
-        bloc.appendChild(link);
-        
-        var title = document.createElement("h4");
+        var title = document.createElement("h5");
         title.className = "subheader";
         title.textContent = evt.title;
+        
+        var date = document.createElement("h6");
+        
+        var now = new Date(2014,8,15);
+        var d = new Date(evt.d);
+        
+        var dateClass = "";
+        if( now.getDate() === d.getDate() ) // day from 1 to 31
+        {
+            dateClass = "soon";
+        } else if( now > d ) {
+            dateClass = "past";
+        } else {
+            dateClass = "future";
+        }
+        date.className = dateClass;
+        date.textContent = getStringDate(d);
+        
+        link.appendChild(img);
+        
+        bloc.appendChild(link);
+        bloc.appendChild(date);
         bloc.appendChild(title);
         
         grid.appendChild(bloc);
@@ -94,7 +89,7 @@ $.getJSON('events.json',function(data) {
         title.textContent = evt.title;
         
         var gpslink = document.createElement("a");
-        gpslink.className = "th [radius]"
+        gpslink.className = "th [radius]";
         gpslink.href = "http://maps.google.com/maps?z=12&t=m&q="+evt.gps.replace(",","+");
         gpslink.target = "_blank";
         
@@ -109,7 +104,9 @@ $.getJSON('events.json',function(data) {
         
         var content = _createText(evt.content);
         var rdv = document.createElement("p");
-        rdv.textContent = "Lieu de rendez-vous : "+ evt.rdv;
+        rdv.appendChild(document.createTextNode(getStringDate(new Date(evt.d))));
+        rdv.appendChild(document.createElement("br"));
+        rdv.appendChild(document.createTextNode( "Lieu de rendez-vous : "+ evt.rdv ));
         if( evt.tram > 0 ){
             rdv.appendChild(document.createElement("br"));
             rdv.appendChild(document.createTextNode("Tu auras besoin de "+evt.tram+" ticket"+(evt.tram > 1 ? "s":"")+" de tram.")) ;
@@ -128,7 +125,7 @@ $.getJSON('events.json',function(data) {
     $(document).foundation();
     
     $(document).on('open.fndtn.reveal', '[data-reveal]', function () {
-        // prevent all images to be loaded before we need them
+        // prevent all the Maps images to be loaded before we need them
         var modal = $(this);
         var img = modal.children("a").children("img")[0];
         img.src = img.getAttribute("temp");
