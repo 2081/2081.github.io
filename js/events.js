@@ -9,22 +9,22 @@ function _parseText(text) {
 	{
 		continuer = true;
 		var j;
+		//If we find a "[" we continue running through text until we find a "]"
 		if (text.charAt(i)=="[")
 		{
-			console.log(text.substring(0,5) + i+1 + continuer);
-			//console.log("This is i:"+text.charAt(i));
 			for (j=i+1; (j<(text.length)) && (continuer == true); j++)
-			{
-				console.log("This is j:" + text.charAt(j))
+			{	
+				//If we find the "]" we just check if it was an oppening or a closing tag.
 				if (text.charAt(j)=="]")
 				{
 					if (text.charAt(i+1)!="/")
 					{
+						//Adding the oppening tag as an html tag
 						parag+="<"+text.substring((i+1),j)+">";
 					}
 					else
 					{
-						console.log("I'm even HERE !!" + text.substring((i+1),j));
+						//Adding the closing tag as an html tag
 						parag+="<"+text.substring((i+1),j)+">";		
 					}
 					continuer = false
@@ -128,7 +128,9 @@ $.getJSON('events.json',function(data) {
 		static_map.setAttribute("temp",url);
 		gpslink.appendChild(static_map);
 		
+		//Adding a content element p that will contain the description
 		var content = document.createElement('p');
+		//As we already know what the html code for the content element is, we can set it without element functions
 		content.innerHTML = _parseText(evt.content);
 		var rdv = document.createElement("p");
 		rdv.appendChild(document.createTextNode(getStringDate(new Date(evt.d))));
