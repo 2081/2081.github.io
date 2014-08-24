@@ -52,6 +52,7 @@ function getStringDate(date)
 $.getJSON('events.json',function(data) {
 	console.log(data); // this will show the info it in firebug console 
 	var events = data.events;
+        var places = data.places;
 	var mainDiv = document.getElementById("events");
 	
 	var grid = document.createElement("ul");
@@ -61,6 +62,8 @@ $.getJSON('events.json',function(data) {
 	{
 		var modalName = "modalEvent"+i;
 		var evt = events[i];
+                var place = places[evt.place]; // id is useless in the json
+                
 		var bloc = document.createElement("li");
 		bloc.className = "text-center event-thumbnail";
 		
@@ -70,7 +73,12 @@ $.getJSON('events.json',function(data) {
 		link.setAttribute("data-reveal-id",modalName);
 		
 		var img = document.createElement("img");
-	img.src = "img/pirate_fille.png";
+                img.src = "img/";
+                if( "img" in evt ) {
+                    img.src += evt.img;
+                } else {
+                    img.src += "pirate_fille.png";
+                }
 		
 		img.alt = "image - "+evt.title;
 		
@@ -116,14 +124,14 @@ $.getJSON('events.json',function(data) {
 		
 		var gpslink = document.createElement("a");
 		gpslink.className = "th [radius]";
-		gpslink.href = "http://maps.google.com/maps?z=12&t=m&q="+evt.gps.replace(",","+");
+		gpslink.href = "http://maps.google.com/maps?z=12&t=m&q="+place.gps.replace(",","+");
 		gpslink.target = "_blank";
 		
 		var static_map = document.createElement("img");
 		static_map.alt = "Google Map - "+evt.title;
 		var url = "http://maps.googleapis.com/maps/api/staticmap?";
 		url += "size="+width+"x200";
-		url += "&markers=color:green|" + evt.gps;
+		url += "&markers=color:green|" + place.gps;
 		static_map.src = "";
 		static_map.setAttribute("temp",url);
 		gpslink.appendChild(static_map);
@@ -135,7 +143,7 @@ $.getJSON('events.json',function(data) {
 		var rdv = document.createElement("p");
 		rdv.appendChild(document.createTextNode(getStringDate(new Date(evt.d))));
 		rdv.appendChild(document.createElement("br"));
-		rdv.appendChild(document.createTextNode( "Lieu de rendez-vous : "+ evt.rdv ));
+		rdv.appendChild(document.createTextNode( "Lieu de rendez-vous : "+ place.name ));
 		if( evt.tram > 0 ){
 			rdv.appendChild(document.createElement("br"));
 			rdv.appendChild(document.createTextNode("Tu auras besoin de "+evt.tram+" ticket"+(evt.tram > 1 ? "s":"")+" de tram.")) ;
