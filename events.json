@@ -47,7 +47,8 @@
 			"d": "2014-09-13T10:00",
 			"place": 0,
 			"content":"Pour te remettre de la veille, rien de mieux qu'une visite [i]exclusive[/i] du navire et ses environs ! [br] Profites en pour découvrir les coins du campus que tu ne connais pas encore, et finis cette activité par un traditionnel, mais non moins apprécié, [b][font color=\"#328FDB\"]goûter de bienvenue ![/font][/b]",
-			"tram": 0
+			"tram": 0,
+			"img": "visite.png"
 		},{
 			"title":"Taverne du matelot tranquille",
 			"d": "2014-09-13T19:00",
