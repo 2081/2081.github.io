@@ -33,7 +33,8 @@
 			"d": "2014-09-11T14:00",
 			"place": 0,
 			"content":"Viens découvrir les [b]autres membres de l'équipage [/b]et montre leur qui tu es ! [br] Si tu es un vrai pirate, que tu n'as peur de rien et que la nourriture et la boisson sont tes amies, rejoins-nous pour une après-midi au très célèbre Parc de la Tête D'or !!",
-			"tram": 0
+			"tram": 0,
+			"img": "combat.png"
 		},{
 			"title":"Première cuite sur l'océan insalien",
 			"d": "2014-09-12T20:00",
@@ -46,13 +47,15 @@
 			"d": "2014-09-13T10:00",
 			"place": 0,
 			"content":"Pour te remettre de la veille, rien de mieux qu'une visite [i]exclusive[/i] du navire et ses environs ! [br] Profites en pour découvrir les coins du campus que tu ne connais pas encore, et finis cette activité par un traditionnel, mais non moins apprécié, [b][font color=\"#328FDB\"]goûter de bienvenue ![/font][/b]",
-			"tram": 0
+			"tram": 0,
+			"img": "visite.png"
 		},{
 			"title":"Taverne du matelot tranquille",
 			"d": "2014-09-13T19:00",
 			"place": 0,
-			"content":"Le port de Lyon te cache quelques petites tavernes et autres auberges qui ne te décevront pas. [br] Si tu as toujours rêvé de déguster une bière tout en parlant de tes aventures passées avec des marins aguérris, rejoins nous à la [b]Taverne du matelot tranquille ![/b] [br] [i]P.S. : La première bière est offerte ![/i]",
-			"tram": 2
+			"content":"Le port de Lyon te cache quelques petites tavernes et autres auberges qui ne te décevront pas. [br] Si tu as toujours rêvé de déguster une bière tout en parlant de tes aventures passées avec des marins aguérris, rejoins nous à la [i]Taverne du matelot tranquille ![/i]",
+			"tram": 2,
+			"img": "vin.png"
 		},{
 			"title":"Avant les forts, le réconfort",
 			"d": "2014-09-14T10:00",
@@ -70,7 +73,8 @@
 			"d": "2014-09-15T20:00",
 			"place": 0,
 			"content":"Tout bon moussaillon qui se respecte peut jouer au jeu du [b]plus saoul[/b] avec ses petits camarades. [br] Ce soir là, il faudra aussi que tu donnes de la voix pour être en harmonie avec tout l'équipage. [i]♫ A chaque canon, faut y mettre son canon ! ♫[/i] [br][br] [font color=\"red\"][i][b]N'oubliez pas de manger, on ne boit pas le ventre vide ! [br] Et ramenez un billet de 10€ qui vous ouvrira les portes de ce barathon ! [/i][/b][/font]",
-			"tram": 2
+			"tram": 2,
+			"img": "barathon.png"
 		},{
 			"title":"Perudo & Jamaïca",
 			"d": "2014-09-16T19:30",
