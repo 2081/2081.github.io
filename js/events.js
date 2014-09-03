@@ -89,19 +89,22 @@ $.getJSON('events.json',function(data) {
 		var date = document.createElement("h6");
 		
 		var now = new Date(2014,8,15);
+		//var now = new Date();
 		var d = new Date(evt.d);
 		
 		var dateClass = "";
 		if( now.getDate() === d.getDate() ) // day from 1 to 31
 		{
 			dateClass = "soon";
+			date.textContent = "Aujourd'hui à " + d.getHours() + ":" + d.getMinutes();
 		} else if( now > d ) {
 			dateClass = "past";
+			date.textContent = "Dépassé";
 		} else {
 			dateClass = "future";
+			date.textContent = getStringDate(d);
 		}
 		date.className = dateClass;
-		date.textContent = getStringDate(d);
 		
 		link.appendChild(img);
 		

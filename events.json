@@ -51,7 +51,7 @@
 			"title":"Taverne du matelot tranquille",
 			"d": "2014-09-13T19:00",
 			"place": 0,
-			"content":"Le port de Lyon te cache quelques petites tavernes et autres auberges qui ne te décevront pas. [br] Si tu as toujours rêvé de déguster une bière tout en parlant de tes aventures passées avec des marins aguérris, rejoins nous à la [i]Taverne du matelot tranquille ![/i]",
+			"content":"Le port de Lyon te cache quelques petites tavernes et autres auberges qui ne te décevront pas. [br] Si tu as toujours rêvé de déguster une bière tout en parlant de tes aventures passées avec des marins aguérris, rejoins nous à la [b]Taverne du matelot tranquille ![/b] [br] [i]P.S. : La première bière est offerte ![/i]",
 			"tram": 2
 		},{
 			"title":"Avant les forts, le réconfort",
@@ -62,14 +62,14 @@
 		},{
 			"title":"Amarrage, Pointage, Lançage !!",
 			"d": "2014-09-14T14:00",
-			"place": 4,
+			"place": 0,
 			"content":"C'est l'occasion de montrer que tu n'es pas seulement un gros bourrin. [br] Tu peux aussi être extrêmement fin et tu as d'ailleurs un compas dans l'oeil. [br] Tu n'as pas réussi à l'enlever depuis que Clément l'y a mis en CM1.",
 			"tram": 0
 		},{
-			"title":"La bar à thon",
+			"title":"Le bar à thon",
 			"d": "2014-09-15T20:00",
 			"place": 0,
-			"content":"Tout bon moussaillon qui se respecte peut jouer au jeu du [b]plus saoul[/b] avec ses petits camarades. [br] Ce soir là, il faudra aussi que tu donnes de la voix pour être en harmonie avec tout l'équipage. [i]♫ A chaque canon, faut y mettre son canon ! ♫[/i] [br][br] [font color=\"red\"][i][b]N'oubliez pas de manger, on ne boit pas le ventre vide ![/i][/b][/font]",
+			"content":"Tout bon moussaillon qui se respecte peut jouer au jeu du [b]plus saoul[/b] avec ses petits camarades. [br] Ce soir là, il faudra aussi que tu donnes de la voix pour être en harmonie avec tout l'équipage. [i]♫ A chaque canon, faut y mettre son canon ! ♫[/i] [br][br] [font color=\"red\"][i][b]N'oubliez pas de manger, on ne boit pas le ventre vide ! [br] Et ramenez un billet de 10€ qui vous ouvrira les portes de ce barathon ! [/i][/b][/font]",
 			"tram": 2
 		},{
 			"title":"Perudo & Jamaïca",
@@ -81,13 +81,13 @@
 			"title":"L'orgie du Roi des Océans",
 			"d": "2014-09-17T19:30",
 			"place": 1,
-			"content":"Tout est dans le titre ! [b]Orgie. [/b] [br] Viens manger autant que le peux, chanter des chansons paillardes et boire tout ton saoul avec les plus affamés des membres de l'équipage !",
+			"content":"Tout est dans le titre ! [b]Orgie. [/b] [br] Viens manger autant que le peux, chanter des chansons paillardes et boire tout ton saoul avec les plus affamés des membres de l'équipage ! [i]N'oublie pas de t'inscrire à l'évènement en contactant Bastien ou Alicia et de payer ton du ! [/i]",
 			"tram": 0
 		},{
 			"title":"La Rallye dans Lyon (chasse au Trésor)",
 			"d": "2014-09-18T14:00",
 			"place": 1,
-			"content":"Notre maître cannonier a caché des indices partout dans Lyon. Mais est-ce que toi et ton équipe de moussaillons serez capables de trouver le trésor...?",
+			"content":"Notre maître cannonier a caché des indices partout dans Lyon. Mais est-ce que toi et ton équipe de moussaillons serez capables de trouver le trésor...? [i]P.S.: Si tu ne veux pas avoir à payer 10 tickets de tram, prends un ticket journée ;)[/i]",
 			"tram": 10,
 			"img": "tresor.png"
 		},{
