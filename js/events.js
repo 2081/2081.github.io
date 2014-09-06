@@ -56,7 +56,7 @@ $.getJSON('events.json',function(data) {
 	var mainDiv = document.getElementById("events");
 	
 	var grid = document.createElement("ul");
-	grid.className = "small-block-grid-2 medium-block-grid-3 large-block-grid-4";
+	grid.className = "small-block-grid-2 medium-block-grid-4 large-block-grid-5";
 	mainDiv.appendChild(grid);
 	for( var i = 0; i < events.length; ++i)
 	{
@@ -82,21 +82,22 @@ $.getJSON('events.json',function(data) {
 		
 		img.alt = "image - "+evt.title;
 		
-		var title = document.createElement("h5");
-		title.className = "subheader";
+		var title = document.createElement("p");
+		title.className = "subheader eventTitle";
 		title.textContent = evt.title;
 		
 		var date = document.createElement("h6");
 		
-		var now = new Date(2014,8,15);
-		//var now = new Date();
+		//var now = new Date(2014,8,14);
+		var now = new Date();
 		var d = new Date(evt.d);
 		
 		var dateClass = "";
 		if( now.getDate() === d.getDate() ) // day from 1 to 31
 		{
 			dateClass = "soon";
-			date.textContent = "Aujourd'hui à " + d.getHours() + ":" + d.getMinutes();
+                        var strDate = getStringDate(d);
+			date.textContent = "Aujourd'hui à " + strDate.substring(strDate.length-5);
 		} else if( now > d ) {
 			dateClass = "past";
 			date.textContent = "Dépassé";
@@ -118,10 +119,10 @@ $.getJSON('events.json',function(data) {
 		// Creating reveal modal
 		var modal = document.createElement("div");
 		modal.id = modalName;
-		modal.className = "reveal-modal tiny";
+		modal.className = "reveal-modal medium text-center";
 		modal.setAttribute("data-reveal","");
 		modal.innerHTML = "<a class=\"close-reveal-modal\">&#215;</a>";
-		
+                
 		var title = document.createElement("h1");
 		title.textContent = evt.title;
 		
@@ -151,10 +152,17 @@ $.getJSON('events.json',function(data) {
 			rdv.appendChild(document.createElement("br"));
 			rdv.appendChild(document.createTextNode("Tu auras besoin de "+evt.tram+" ticket"+(evt.tram > 1 ? "s":"")+" de tram.")) ;
 		}
+                
+                var banner = img.cloneNode();
+                banner.className += "banner";
+                
+                modal.appendChild(banner);
 		modal.appendChild(title);
 		modal.appendChild(rdv);
 		
 		modal.appendChild(gpslink);
+                modal.appendChild(document.createElement("br"));
+                modal.appendChild(document.createElement("br"));
 		modal.appendChild(content);
 		
 		

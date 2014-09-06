@@ -7,32 +7,67 @@
     <link rel="stylesheet" href="css/foundation.css" />
     <script src="js/vendor/modernizr.js"></script>
     <style>
-      #map-canvas {
+    #map-canvas {
         min-height: 200px;
         margin: 0px;
         padding: 0px
-      }
-      
-      .event-thumbnail h6 {
-          color: #999999;
-      }
-      .event-thumbnail h5 {
-          color: #ffffff;
-      }
-      
-      .event-thumbnail .past {
-          color: #ff0000;
-      }
-      .event-thumbnail .soon {
-          color: #ffff00;
-      }
-      .event-thumbnail .future {
-          color: #00ff00;
-      }
-      .bottom-bar{
+    }
+
+    .panel, .panel p, .reveal-modal {
+        background: #151F28;
+        color: white;
+        border-color: #FFFF00;
+    }
+    .panel .tip {
+        color: #999999;
+        font-style: italic;
+    }
+    
+    
+    .reveal-modal .banner {
+        max-width: 150px;
+    }
+    .reveal-modal h1 {
+        color: #FFF000;
+    }
+    .reveal-modal p{
+        text-align: left;
+    }
+    
+    .eventTitle {
+        //background: rgba(0,0,0,0.3);
+        color: #ffffff;
+        text-shadow: 0 0 15px #000000;
+    }
+    
+    .panel strong {
+        color: #fff000;
+    }
+    .panel h3 {
+        color: #FFFF00;
+    }
+
+    .event-thumbnail h6 {
+        background: rgba(0,0,0,0.2);
+    }
+    
+    .event-thumbnail h6 {
+        color: #999999;
+    }
+
+    .event-thumbnail .past {
+        color: #ff0000;
+    }
+    .event-thumbnail .soon {
+        color: #ffff00;
+    }
+    .event-thumbnail .future {
+        color: #00ff00;
+    }
+    .bottom-bar{
         padding-top: 1%;
         padding-bottom: 1%;
-      }
+    }
     </style>
      <script src="https://maps.googleapis.com/maps/api/js?v=3.exp"></script>
   </head>
@@ -48,8 +83,9 @@
       <div class="large-12 columns">
       	<div class="panel">
 	        <h3>Bienvenue en IF jeune moussaillon ! </h3>
-	        <p>Sur cette page, tu trouveras un récap' de toutes les missions pour les jours à venir. Le capitaine et tout l'équipage comptent sur toi alors n'en loupe aucune !</p>
-      	</div>
+                <p>Sur cette page, tu trouveras un récap' de toutes les missions pour les jours à venir. Le capitaine et tout l'équipage comptent sur toi alors <strong> n'en loupe aucune </strong> !</p>
+                <p class="tip">Clique sur une miniature pour accéder à la fiche de l'évènement.</p>
+        </div>
       </div>
     </div>
     
