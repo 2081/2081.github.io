@@ -153,6 +153,11 @@ $.getJSON('events.json',function(data) {
 			rdv.appendChild(document.createTextNode("Tu auras besoin de "+evt.tram+" ticket"+(evt.tram > 1 ? "s":"")+" de tram.")) ;
 		}
                 
+                if( "prix" in evt){
+                    rdv.appendChild(document.createElement("br"));
+                    rdv.appendChild(document.createTextNode("Coût de la sortie : "+ evt.prix));
+                }
+                
                 var banner = img.cloneNode();
                 banner.className += "banner";
                 
