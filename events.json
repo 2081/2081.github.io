@@ -61,7 +61,8 @@
 			"d": "2014-09-14T10:00",
 			"place": 3,
 			"content":"Pourquoi compliquer les choses. Tu as un estomac ? Viens. [br] De plus, si tu viens, tu pourras manger. [br] Des bons trucs. [br] Comme des crêpes... [br] Et des croissants... [br] Avec du [b]nutella [/b] !",
-			"tram": 0
+			"tram": 0,
+			"img": "croissant.png"
 		},{
 			"title":"Amarrage, Pointage, Lançage !!",
 			"d": "2014-09-14T14:00",
