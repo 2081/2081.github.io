@@ -80,7 +80,8 @@
 			"d": "2014-09-16T19:30",
 			"place": 1,
 			"content":"Si tu aimes les dés de toutes les couleurs et de toutes les formes, les loups-garous et les cartes, vient nous montrer tes \"talents intellectuels\". Il y aurait donc un cerveau derrière ces épais sourcils ?",
-			"tram": 0
+			"tram": 0,
+			"img": "cartes.png"
 		},{
 			"title":"L'orgie du Roi des Océans",
 			"d": "2014-09-17T19:30",
@@ -106,7 +107,8 @@
 			"d": "2014-09-19T17:00",
 			"place": 1,
 			"content":"48h de musique, d'activités, d'amitié et d'ambiance à te couper le souffle ! J'espère que tu n'as pas le mal de mer, moussaillon ;)",
-			"tram": 0
+			"tram": 0,
+			"img": "wei.png"
 		},{
 			"title":"Soirée de parrainage",
 			"d": "2014-09-23T19:00",
