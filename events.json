@@ -99,7 +99,8 @@
 			"d": "2014-09-19T14:00",
 			"place": 1,
 			"content":"Mais d'où vient ce bâteau qui porte l'inscription [b][i]Bull[/i][/b] sur sa coque...? Viens tout découvrir à son propos et profiter du buffet donné en son honneur ! [br] [font color=\"red\"][i][b] Et n'oublie pas ton bagage pour le WEI ! [/b][/i][/font] ",
-			"tram": 0
+			"tram": 0,
+			"img": "bull.png"
 		},{
 			"title":"WEI !!",
 			"d": "2014-09-19T17:00",
