@@ -30,14 +30,14 @@
 	
 		{
 			"title":"Combat de moussaillons",
-			"d": "2014-09-11T14:00",
+			"d": "2014-09-11T14:00+02:00",
 			"place": 0,
 			"content":"Viens découvrir les [b]autres membres de l'équipage [/b]et montre-leur qui tu es ! [br] Si tu es un vrai pirate, que tu n'as peur de rien et que la nourriture et la boisson sont tes amies, rejoins-nous pour une après-midi au très célèbre Parc de la Tête D'or !!",
 			"tram": 0,
 			"img": "combat.png"
 		},{
 			"title":"Première cuite sur l'océan insalien",
-			"d": "2014-09-12T20:00",
+			"d": "2014-09-12T20:00+02:00",
 			"place": 2,
 			"content":"Viens t'abreuver aux frais de l'A.E.D.I. et (re)découvrir la [font color=\"#328FDB\"]merveilleuse[/font] bière de la K-Fet ! Et [b]\"une\"[/b] bouteille de rhum !",
 			"tram": 0,
@@ -45,14 +45,14 @@
 			"prix": "Dépend de la cuite... ;)"
 		},{
 			"title":"Visite du navire",
-			"d": "2014-09-13T10:00",
+			"d": "2014-09-13T10:00+02:00",
 			"place": 0,
 			"content":"Pour te remettre de la veille, rien de mieux qu'une visite [i]exclusive[/i] du navire et de ses environs ! [br] Profites-en pour découvrir les coins du campus que tu ne connais pas encore, et finis cette activité par un traditionnel, mais non moins apprécié, [b][font color=\"#328FDB\"]goûter de bienvenue ![/font][/b]",
 			"tram": 0,
 			"img": "visite.png"
 		},{
 			"title":"Taverne du matelot tranquille",
-			"d": "2014-09-13T19:00",
+			"d": "2014-09-13T19:00+02:00",
 			"place": 0,
 			"content":"Le port de Lyon te cache quelques petites tavernes et autres auberges qui ne te décevront pas. [br] Si tu as toujours rêvé de déguster une bière tout en parlant de tes aventures passées avec des marins aguerris, rejoins-nous à la [i]Taverne du matelot tranquille ![/i]",
 			"tram": 2,
@@ -60,21 +60,21 @@
 			"prix": "1, 2, 7 bières ? Mieux vaut ne pas compter !"
 		},{
 			"title":"Avant les forts, le réconfort",
-			"d": "2014-09-14T10:00",
+			"d": "2014-09-14T10:00+02:00",
 			"place": 3,
 			"content":"Pourquoi compliquer les choses ? Tu as un estomac ? Viens. [br] De plus, si tu viens, tu pourras manger. [br] Des bons trucs. [br] Comme des crêpes... [br] Et des croissants... [br] Avec du [b]nutella [/b] !",
 			"tram": 0,
 			"img": "croissant.png"
 		},{
 			"title":"Amarrage, Pointage, Lançage !!",
-			"d": "2014-09-14T14:00",
+			"d": "2014-09-14T14:00+02:00",
 			"place": 0,
 			"content":"C'est l'occasion de montrer que tu n'es pas seulement un gros bourrin. [br] Tu peux aussi être extrêmement fin et tu as d'ailleurs un compas dans l'oeil. [br] Tu n'as pas réussi à l'enlever depuis que Clément l'y a mis en CM1.",
 			"tram": 0,
 			"img": "pigglet.png"
 		},{
 			"title":"Le bar à thon",
-			"d": "2014-09-15T20:00",
+			"d": "2014-09-15T20:00+02:00",
 			"place": 0,
 			"content":"Tout bon moussaillon qui se respecte peut jouer au jeu du [b]plus soul[/b] avec ses petits camarades. [br] Ce soir là, il faudra aussi que tu donnes de la voix pour être en harmonie avec tout l'équipage. [i]♫ A chaque canon, faut y mettre son canon ! ♫[/i] [br][br] [font color=\"red\"][i][b]N'oubliez pas de manger, on ne boit pas le ventre vide ! [br] Et ramenez un billet de 10€ qui vous ouvrira les portes de ce barathon ! [/i][/b][/font]",
 			"tram": 2,
@@ -82,14 +82,14 @@
 			"prix": "10€"
 		},{
 			"title":"Perudo & Jamaïca",
-			"d": "2014-09-16T19:30",
+			"d": "2014-09-16T19:30+02:00",
 			"place": 1,
 			"content":"Si tu aimes les dés de toutes les couleurs et de toutes les formes, les loups-garous et les cartes, vient nous montrer tes \"talents intellectuels\". Il y aurait donc un cerveau derrière ces épais sourcils ?",
 			"tram": 0,
 			"img": "cartes.png"
 		},{
 			"title":"L'orgie du Roi des Océans",
-			"d": "2014-09-17T19:30",
+			"d": "2014-09-17T19:30+02:00",
 			"place": 1,
 			"content":"Tout est dans le titre ! [b]Orgie. [/b] [br] Viens manger autant que tu le peux, chanter des chansons paillardes et boire tout ton soul avec les plus affamés des membres de l'équipage ! [i]N'oublie pas de t'inscrire à l'évènement en contactant Bastien ou Alicia et de payer ton du ! [/i]",
 			"tram": 0,
@@ -97,28 +97,28 @@
 			"prix": "entre 10 et 15€"
 		},{
 			"title":"La Rallye dans Lyon (chasse au Trésor)",
-			"d": "2014-09-18T14:00",
+			"d": "2014-09-18T14:00+02:00",
 			"place": 1,
 			"content":"Notre maître cannonier a caché des indices partout dans Lyon. Mais est-ce que toi et ton équipe de moussaillons serez capables de trouver le trésor...? [i]P.S.: Si tu ne veux pas avoir à payer 10 tickets de tram, prends un ticket journée ;)[/i]",
 			"tram": 10,
 			"img": "tresor.png"
 		},{
 			"title":"La conférence du parrain",
-			"d": "2014-09-19T14:00",
+			"d": "2014-09-19T14:00+02:00",
 			"place": 1,
 			"content":"Mais d'où vient ce bateau qui porte l'inscription [b][i]Bull[/i][/b] sur sa coque...? Viens tout découvrir à son propos et profiter du buffet donné en son honneur ! [br] [font color=\"red\"][i][b] Et n'oublie pas ton bagage pour le WEI ! [/b][/i][/font] ",
 			"tram": 0,
 			"img": "bull.png"
 		},{
 			"title":"WEI !!",
-			"d": "2014-09-19T17:00",
+			"d": "2014-09-19T17:00+02:00",
 			"place": 1,
 			"content":"48h de musique, d'activités, d'amitié et d'ambiance à te couper le souffle ! J'espère que tu n'as pas le mal de mer, moussaillon ;)",
 			"tram": 0,
 			"img": "wei.png"
 		},{
 			"title":"Soirée de parrainage",
-			"d": "2014-09-23T19:00",
+			"d": "2014-09-23T19:00+02:00",
 			"place": 1,
 			"content":"Tu as toujours rêvé d'être chapeauté par un grand, beau et fort pirate qui ait ce qu'on appelle la classe ? [br]Je peux rien te promettre, mais au moins tu auras un parrain. Ou une marraine. Ou un chevreuil.",
 			"tram": 0
