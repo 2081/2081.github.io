@@ -40,14 +40,14 @@ for( var i = 0; i < nodes.length; ++i){
 }
 
 function addLine( A, B, label){
-    L.polyline([A,B],{weight:5})
+    L.polyline([A,B],{weight:5,color:'#fff',opacity:0.8})
         .addTo(map)
         .bindLabel(label)
         .on("mouseover", function (){
             this.setStyle({color:"#0f0"});
         })
         .on("mouseout", function (){
-            this.setStyle({color:'#03f'});
+            this.setStyle({color:'#fff'});
         });
 }
 
@@ -77,6 +77,8 @@ if (window.File && window.FileReader && window.FileList && window.Blob) {
 function Controleur(){
 
     // attributes
+    var com = new Com();
+    var vue;
 
     // functions
     this.annuler = function() {
@@ -85,11 +87,23 @@ function Controleur(){
     this.retablir = function(){
         console.log("redo");
     };
-    this.chargerPlan = function(){
+    this.clicChargerPlan = function(){
         document.getElementById('charger-plan').click();
         //... récupérer fichier
+        //c.appelService("test", [50,20], function(reponse){alert(reponse);});
     };
-    this.chargerLivraisons = function(){
+    this.chargerPlan = function(evt){
+        var f = evt.target.files[0];
+        if(f){
+            var reader = new FileReader();
+            reader.onload = function(e){
+                com.appelService('ChargerPlan',[e.target.result],vue.info);
+            };
+            reader.readAsText(f);
+        }
+    };
+
+    this.clicChargerLivraisons = function(){
         document.getElementById('charger-livraisons').click();
         //... récupérer fichier
     };
@@ -114,7 +128,7 @@ function Controleur(){
     };
 
     // init
-    this.vue = new Vue(this);
+    this.vue = vue = new Vue(this);
 
 }
 
@@ -129,6 +143,16 @@ function Vue(controleur){
     this.disableRedo = function(){
         console.log("Vue.disableRedo");
     };
+    this.erreur = function(msg){
+        alert(msg);
+    };
+    this.info = function(msg){
+        alert(msg);
+        /*var popup = L.popup()
+        .setLatLng([0.4, 0.4])
+        .setContent(msg)
+        .openOn(map);*/
+    };
 
     //Constructeur
     // initialisation de la map
@@ -139,12 +163,38 @@ function Vue(controleur){
     L.control.zoom({position:'topright'}).addTo(this.map);
     L.easyButton('fa-arrow-circle-left', controleur.annuler, 'Undo', this.map);
     L.easyButton('fa-arrow-circle-right', controleur.retablir, 'Redo', this.map);
-    L.easyButton('fa-road', controleur.chargerPlan, 'Charger un plan', this.map).setPosition('bottomleft');
-    L.easyButton('fa-cubes', controleur.chargerLivraisons, 'Charger les livraison', this.map).setPosition('bottomleft');
+    L.easyButton('fa-road', controleur.clicChargerPlan, 'Charger un plan', this.map).setPosition('bottomleft');
+    document.getElementById('charger-plan').addEventListener('change', controleur.chargerPlan, false);
+    L.easyButton('fa-cubes', controleur.clicChargerLivraisons, 'Charger les livraison', this.map).setPosition('bottomleft');
     L.easyButton('fa-plus', null, 'Ajouter une livraison', this.map).setPosition('bottomleft');
     this.controlCalcul = L.easyButton('fa-refresh', null, "Calculer l'itinéraire", this.map).setPosition('bottomleft');
     this.controlCalcul.getContainer().getElementsByTagName('i')[0].className += " fa-spin";
     console.log(this.controlCalcul.getContainer().className);
     var controlFDR = L.easyButton('fa-file-text', controleur.clicTelechargerInitineraire, "Télécharger la feuille de route", this.map).setPosition('bottomright');
 
+}
+
+
+///////////////////////////////////////////////////
+// Class Vue
+
+function Com(){
+
+    this.appelService = function(nomService, params, fonctionRetour){
+        var xmlhttp=new XMLHttpRequest();
+        xmlhttp.open("POST","http://localhost:4500/"+nomService,true);
+        xmlhttp.setRequestHeader('Content-Type','application/x-www-form-urlencoded');
+        if(fonctionRetour != null){
+            xmlhttp.onreadystatechange = function() {
+                if (xmlhttp.readyState == 4) {
+                    fonctionRetour(xmlhttp.responseText);
+                }
+            }
+        }
+        var msg = "";
+        for( var i = 0; i < params.length; ++i){
+            msg += params[i];
+        }
+        xmlhttp.send(msg);
+    }
 }
