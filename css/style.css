@@ -1,0 +1,69 @@
+body {
+	background: #a2cdff url("../images/background.jpg");
+	font-family: "Source Sans Pro";
+	overflow-y:hidden;
+}
+
+#wrapper {
+	-webkit-overflow-scrolling: touch;
+    overflow:auto;
+    height:2000px;
+}
+
+#tmp {
+	height: 1000px;
+	/*width: 1280px;*/
+	position: relative;
+	background: #222222;
+}
+
+#floor {
+	height: 2000px;
+}
+
+#offset {
+	height: 500px;
+}
+
+#map {
+	height: 750px;
+	width: 1280px;
+}
+
+#map .float {
+	position: absolute;
+	width: 100%;
+	pointer-events: none;
+}
+
+.alc {
+	text-align: center;
+}
+
+#robin :link {
+	pointer-events: auto;
+	text-decoration: none;
+}
+#robin strong{
+	font-size: 2em;
+	color: white;
+}
+
+#age {
+	font-size: 2em;
+	color: #111;
+}
+
+#age strong {
+	font
+	color: #EEE;
+}
+
+#robin small {
+	font-size: 1.5em;
+	color: #a0a0a0;
+}
+
+@media only screen and (min-width: 960px) and (max-width: 1160px) {
+	
+}
