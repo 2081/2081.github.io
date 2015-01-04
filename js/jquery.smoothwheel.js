@@ -9,8 +9,8 @@
 (function ($) {
 
     var self = this, container, running=false, currentY = 0, targetY = 0, oldY = 0, maxScrollTop= 0, minScrollTop, direction, onRenderCallback=null,
-            fricton = 0.5, // higher value for slower deceleration
-            vy = 1,
+            fricton = 0.7, // higher value for slower deceleration
+            vy = 0.8,
             stepAmt = 5,
             minMovement = 0.1,
             ts = 0.1;
