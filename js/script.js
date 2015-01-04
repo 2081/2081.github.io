@@ -8,7 +8,6 @@ $(document).ready(function(){
 
 	if(CHROME && !ANDROID) {
 		$("#wrapper").smoothWheel()
-		$("#robin strong").text("CHROME");
 	}
 	$("#wrapper").focus();
 
