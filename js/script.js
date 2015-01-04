@@ -2,10 +2,13 @@
 
 $(document).ready(function(){
 
-	var CHROME = (navigator.userAgent.toString().toLowerCase().indexOf("chrome") != -1);
+	var ua = navigator.userAgent.toString().toLowerCase();
+	var CHROME = (ua.indexOf("chrome") != -1);
+	var ANDROID = (ua.indexOf("android") > -1);
 
-	if(CHROME) {
+	if(CHROME && !ANDROID) {
 		$("#wrapper").smoothWheel()
+		$("#robin strong").text("CHROME");
 	}
 	$("#wrapper").focus();
 
@@ -73,6 +76,13 @@ $(document).ready(function(){
 	$( window ).resize( function(){
 		var width = $( ".container12" ).css("width");
 		$('#map').css("width",width);
+
+		width = width.match("\\d*")[0];
+		$(".float").each(function(){
+			var w = $(this).attr('w')*1;
+			$(this).find("img").width(w*width);
+		});
+
 		$( "#wrapper" ).scroll();
 	});
 
@@ -84,7 +94,9 @@ $(document).ready(function(){
 	  if(this.complete) $(this).load();
 	});
 
-	$( "#wrapper" ).resize();
+	$(window).load(function(){
+		$( "#wrapper" ).resize();	
+	});
 
 });
 

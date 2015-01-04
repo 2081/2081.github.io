@@ -10,7 +10,7 @@ body {
     height:2000px;
 }
 
-#tmp {
+#cv-body {
 	height: 1000px;
 	/*width: 1280px;*/
 	position: relative;
@@ -48,22 +48,60 @@ body {
 	font-size: 2em;
 	color: white;
 }
-
-#age {
-	font-size: 2em;
-	color: #111;
-}
-
-#age strong {
-	font
-	color: #EEE;
-}
-
 #robin small {
 	font-size: 1.5em;
 	color: #a0a0a0;
 }
 
+#age {
+	font-size: 2em;
+	color: #111;
+}
+#age strong {
+	color: #EEE;
+}
+
 @media only screen and (min-width: 960px) and (max-width: 1160px) {
-	
+	#robin strong{
+		font-size: 1.6em;
+	}
+	#robin small {
+		font-size: 1.2em;
+	}
+	#age {
+		font-size: 1.6em;
+	}
+}
+@media only screen and (min-width: 768px) and (max-width: 959px) {
+	#robin strong{
+		font-size: 1.25em;
+	}
+	#robin small {
+		font-size: 0.8em;
+	}
+	#age {
+		font-size: 1.25em;
+	}
+}
+@media only screen and (min-width: 480px) and (max-width: 767px) {
+	#robin strong{
+		font-size: 0.9em;
+	}
+	#robin small {
+		font-size: 0.65em;
+	}
+	#age {
+		font-size: 0.9em;
+	}
+}
+@media only screen and (max-width: 480px) {
+	#robin strong{
+		font-size: 0.6em;
+	}
+	#robin small {
+		font-size: 0.5em;
+	}
+	#age {
+		font-size: 0.6em;
+	}
 }
