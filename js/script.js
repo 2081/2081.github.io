@@ -15,14 +15,14 @@ $(document).ready(function(){
 
 	$( window ).scroll( function(){
 		var scroll = $( window ).scrollTop();
-		console.log("main scroll", scroll);
+		//console.log("main scroll", scroll);
 		$( window ).scrollTop(0);
 		$( "#wrapper" ).scrollTop($("#wrapper").scrollTop() + scroll );
 	});
 
 	$( "#wrapper" ).scroll( function() {
 		var scroll = $( "#wrapper" ).scrollTop();
-		console.log("scroll",lastScroll,scroll);
+		//console.log("scroll",lastScroll,scroll);
 		
 		/*if( Math.abs(scroll - lastScroll) > step ){
 			scrollTarget = scroll;
@@ -39,7 +39,7 @@ $(document).ready(function(){
 		//console.log("FLOAT",$("#map.float"));
 
 		var width = $( "#map" ).css("width").match("\\d*")[0];
-		console.log("width",width);
+		//console.log("width",width);
 
 		$(".float").each(function( index ){
 			//console.log("this",this);
