@@ -3,3 +3,13 @@
 	height: 595px;
 	background: #ddd;
 }
+#playground > svg {
+	display: block;
+	width: 100%;
+	height: 100%;
+	-webkit-transform-origin: 50% 50% 0px;
+}
+
+#playground > svg > * {
+}
+
