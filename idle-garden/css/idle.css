@@ -1,6 +1,20 @@
+html,body {
+	margin: 0;
+	padding: 0;
+	height: 100%;
+}
+
+#game-container {
+	display: block;
+	min-height: 100%;
+}
+
 #playground {
-	width: 595px;
-	height: 595px;
+	position: absolute;
+	width: 70%;
+	height: 100%;
+	padding: 0 20px;
+	z-index: 50;
 	background: #ddd;
 }
 #playground > svg {
@@ -10,6 +24,14 @@
 	-webkit-transform-origin: 50% 50% 0px;
 }
 
-#playground > svg > * {
+#control-panel {
+	background: #ccc;
+	position: absolute;
+	height: 100%;
+	width: 30%;
+	right: 0;
 }
 
+#shop {
+	min-height: 200px;
+}

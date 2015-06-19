@@ -1,12 +1,19 @@
 ////
-var Config = {};
-{
-	Config.playground = {
+var Config = {
+	playground : {
 		layout : {
 			radius: 4
 		}
+	},
+
+	colors : {
+		tiles : {
+			blank: "#917663",
+			blank_over: "#A18572",
+			blank_border : "#574030"
+		}
 	}
-}
+};
 ////
 var Utils = {};
 {
@@ -122,11 +129,11 @@ var View = new Class({
 			this.svg.append("polygon")
 					.attr("points",this.xySum().join(" "))
 					.attr({
-						fill: "#ddd",
-						stroke: "#bbb"
+						fill: Config.colors.tiles.blank,
+						stroke: Config.colors.tiles.blank_border
 					}).on({
-						mouseover: function(){d3.select(this).attr("fill","#eee");},
-						mouseout : function(){d3.select(this).attr("fill","#ddd");}
+						mouseover: function(){d3.select(this).attr("fill",Config.colors.tiles.blank_over);},
+						mouseout : function(){d3.select(this).attr("fill",Config.colors.tiles.blank);}
 					});
 		},
 
@@ -135,7 +142,8 @@ var View = new Class({
 		},
 
 		setRadius: function(){
-			this.interRadius = parseInt(this.container.style("width"))/((Config.playground.layout.radius*2-1)*2);
+			var side = Math.min(parseInt(this.container.style("width")),parseInt(this.container.style("height")));
+			this.interRadius = side/((Config.playground.layout.radius*2-1)*2);
 			this.radius = (this.interRadius)/Math.cos(Math.PI/6);
 		},
 
