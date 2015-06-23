@@ -32,6 +32,30 @@ var Lang = {
 					}
 	}
 };
+////
+/*
+|--item
+	|-- price {Number} - formula ? wtf dude what price formula ? 
+	|-- experience - formula ? (gain selon clics, ressources produites depuis création/début, production d'autres items)
+	|-- VIEW sprite {Sprite}
+	|-- behaviours []
+	|-- resourcesGenerated
+	|-- tempResources
+	|-- perSecondBase
+	|-- flatBonus
+	|-- scaleBonus
+		
+|-- Behaviour
+	|-- buff
+		|-- effect
+		|-- buffMap
+	|-- clickable {boolean}
+		|-- delay {Number}
+	|-- periodic
+		|-- timer
+	|-- instant
+
+*/
 
 var Data = {
 	items: [
@@ -75,6 +99,7 @@ Config.geom.hexaGrid.coordinates = (function(){
 	//var res = [Geom.Vector3(0,0,0)];
 
 })();
+
 
 ////
 var Utils = {};
@@ -272,7 +297,7 @@ var Geom = {};
 			var v2d = this.center2D();
 			for( var i = 0; i < Geom.H_ANGLES.length; ++i){
 				sums[i] = [ v2d.x+this.radius*Math.cos(Geom.H_ANGLES[i]),
-								 v2d.y+this.radius*Math.sin(Geom.H_ANGLES[i]) ];
+							v2d.y+this.radius*Math.sin(Geom.H_ANGLES[i]) ];
 			}
 			return sums;
 		},
