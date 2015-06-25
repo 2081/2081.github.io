@@ -37,13 +37,18 @@ var Lang = {
 |--item
 	|-- price {Number} - formula ? wtf dude what price formula ? 
 	|-- experience - formula ? (gain selon clics, ressources produites depuis création/début, production d'autres items)
-	|-- VIEW sprite {Sprite}
+	|-- expPattern {ExpPattern}
+	|-- level
+	|-- sprite {Sprite}
 	|-- behaviours []
 	|-- resourcesGenerated
+	|-- timesClicked
 	|-- tempResources
 	|-- perSecondBase
 	|-- flatBonus
 	|-- scaleBonus
+
+|-- ExpPattern
 		
 |-- Behaviour
 	|-- buff
@@ -83,7 +88,9 @@ var Config = {
 
 	items: [
 		{
-			name: Lang.get("item-0")
+			id: 0,
+			name: Lang.get("item-0"),
+			//leveling: new Model.Leveling().at(3,{} 
 		}
 	],
 
@@ -485,6 +492,72 @@ var Model = new Class({
 	}
 });
 {
+	Model.Math = {};
+	Model.Math.neutrals = {
+		'+': 0,
+		'*': 1
+	};
+	Model.Math.operations = {
+		'+': function(a,b){return a+b},
+		'*': function(a,b){return a*b}
+	};
+
+
+	Model.ItemEffectPattern = {
+		flatPerSecondBonus: 	'+',
+		scalePerSecondBonus: 	'*',
+		flatPerClickBonus: 		'+',
+		scalePerClickBonus: 	'*'
+	};
+	Model.ItemEffectLexicon = {
+		fpcb: "flatPerClickBonus",
+		spcb: "scalePerClickBonus",
+		fpsb: "flatPerSecondBonus",
+		spsb: "scalePerSecondBonus"
+	};
+	Model.ItemEffect = new Class(Model).extend({
+		initialize: function(){
+			this.parent();
+			this.id = 0;
+			for( params in Model.ItemEffectPattern ){
+				this[params] = Model.Math.neutrals[Model.ItemEffectPattern[params]];
+			}
+		},
+
+		add: function(itemEffect) {
+			for( params in Model.ItemEffectPattern ){
+				this[params] = Model.Math.operations[Model.ItemEffectPattern[params]](this[params],itemEffect[params]);
+			}
+			return this;
+		},
+
+		set: function(param, value){
+			assert( Utils.defined(this[param]), "Model.ItemEffect.set: trying to set a unexistant parameter" );
+			this[param] = value;
+			return this;
+		}
+
+	});
+
+	Model.Leveling = new Class(Model).extend({
+		initialize: function(){
+			this.parent();
+			this.levels = [];
+		},
+
+		at: function( a, b ){
+			switch(arguments.length){
+				case 1:
+					return this.levels[a];
+				case 2:
+					if( ! this.levels[a] ) this.levels[a] = [];
+					this.levels[a].push(b);
+					break;
+			}
+			return this;
+		}
+	});
+
 	Model.Slot = new Class(Model).extend({
 		/*{
 		x: 0,
