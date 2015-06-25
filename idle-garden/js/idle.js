@@ -90,7 +90,8 @@ var Config = {
 		{
 			id: 0,
 			name: Lang.get("item-0"),
-			//leveling: new Model.Leveling().at(3,{} 
+			expFirstLevel: 10,
+			leveling: null//new Model.Leveling()//.at(3,{} 
 		}
 	],
 
@@ -111,6 +112,18 @@ Config.geom.hexaGrid.coordinates = (function(){
 ////
 var Utils = {};
 {
+
+	Utils.getSet = function( obj, args ){
+		switch(args.length){
+			case 2:
+				return obj[args[0]];
+			case 3:
+				obj[args[0]] = args[1];
+				break;
+		}
+		return obj;
+	},
+
 	Utils.assumeConfig = function(obj, config){
 		for( var item in config ){
 			obj[item] = config[item];
@@ -353,10 +366,10 @@ var ViewManager = new function(){
 		views.push(view);
 	};
 
-	this.refresh = function(){
+	this.refresh = function(date){
 		for (var i = views.length - 1; i >= 0; i--) {
 			if( views[i].refresh ) {
-				views[i].refresh();
+				views[i].refresh(date);
 			} else {
 				views.slice(i,1);
 			}
@@ -375,7 +388,7 @@ var View = new Class({
 	notify: function(){
 		this.update();
 	},
-	update: function(){},
+	update: function(date){},
 	refresh: function(){},
 	die: function(){
 		this.refresh = null;
@@ -472,15 +485,25 @@ var View = new Class({
 	});
 
 	View.Game = new Class(View).extend({
-		initialize: function(){}
+		initialize: function(model){
+			this.parent();
+			this.model = model;
+			this.playground = new View.Desktop.Playground({model:this.model.playground, dom: d3.select("#playground")});
+		},
+		refresh: function(){
+			d3.select("#bank").text(this.model.production().toString());
+		}
 	});
 }
+
+
 
 ////
 var Model = new Class({
 	initialize: function(config){
 		//Utils.assumeConfig(this, config);
 		this.observers = [];
+		this.topics = {};
 	},
 	notify: function(){
 		for( var i in this.observers){
@@ -489,6 +512,19 @@ var Model = new Class({
 	},
 	addObserver: function( obs ){
 		this.observers.push(obs);
+	},
+
+	addListener: function( obj , topic){
+		if( ! Utils.defined(this.topics[topic]) ) this.topics[topic] = [];
+		this.topics[topic].push(obj);
+		return this;
+	},
+	dispatch: function( topic,  e ){
+		for( i in this.topics[topic]){
+			var listener = this.topics[topic][i];
+			if( typeof listener['on'+topic] === 'function') listener['on'+topic](e);
+		}
+		return this;
 	}
 });
 {
@@ -535,8 +571,53 @@ var Model = new Class({
 			assert( Utils.defined(this[param]), "Model.ItemEffect.set: trying to set a unexistant parameter" );
 			this[param] = value;
 			return this;
+		},
+
+		copy: function(){
+			return new Model.ItemEffect().add(this);
 		}
 
+	});
+
+	Model.EfxHolder = new Class(Model).extend({
+		initialize: function(){
+			this.parent();
+			this.efx = [];
+			this.sum = this.neutralEfx();
+		},
+
+		neutralEfx: function(){return null;},
+
+		add: function( efx ){
+			if( typeof efx[0] === 'undefined'){
+				this.efx.push(efx);
+			} else {
+				this.efx.push.apply(this.efx,efx);
+			}
+			update();
+			return this;
+		},
+
+		update: function(){
+			this.sum = this.neutralEfx();
+			this.sum.add.apply(this.efx);
+			return this;
+		},
+
+		sum: function(){
+			return this.sum.copy();
+		}
+
+	});
+
+	Model.IEfxHolder = new Class(Model.EfxHolder).extend({
+		initialize: function(){
+			this.parent();
+			this.sum = new Model.ItemEffect();
+		},
+		neutralEfx: function(){
+			return new Model.ItemEffect();
+		}
 	});
 
 	Model.Leveling = new Class(Model).extend({
@@ -558,6 +639,54 @@ var Model = new Class({
 		}
 	});
 
+	Model.ILevelHandler = new Class(Model).extend({
+		initialize: function( item ){
+			this.leveling = Data.items[id].leveling | new Model.Leveling();
+			this.item = item;
+			this.level = 0;
+			this.experience = 0;
+		},
+		addEfx: function( level ){
+			if(this.leveling.at(level)) this.item.efxHolder.push.apply(this.leveling.at(level));
+			return this;
+		},
+		addExp: function( exp ){
+			this.experience += exp;
+			var newLevel = levelFromExp(this.experience);
+			for(var i = this.level+1; i <= newLevel; ++i){
+				addEfx(i);
+				//this.dispatch('levelup');
+			}
+			this.level = newLevel;
+			return this;
+
+		},
+		levelFromExp: function( exp ){
+			return Math.log(exp/10)/Math.log(1.15);
+		}
+	});
+
+	Model.Item = new Class(Model).extend({
+		initialize: function( id, date ){
+			this.parent();
+			this.type = id;
+			this.typeData = Data.items[id];
+
+			this.harvestTime = date;
+
+			this.efxHolder = new Model.IEfxHolder();
+			this.levelHandler = new Model.ILevelHandler();
+		},
+		attr: function( a, b ){
+			if( Utils.defined(b) ){
+				this.data[a] = b;
+				return this;
+			} else {
+				return this.data[a];
+			}
+		}
+	});
+
 	Model.Slot = new Class(Model).extend({
 		/*{
 		x: 0,
@@ -570,6 +699,10 @@ var Model = new Class({
 			this.parent();
 			this.v3 = vector3;
 			this.playground = playground;
+		},
+
+		production: function(date){
+			return 3;
 		}
 	});
 
@@ -579,6 +712,7 @@ var Model = new Class({
 			Utils.assumeConfig(this,config);
 			//console.log("playground",this);
 			this.slots = [];
+			this.shuffledSlots = [];
 			for( var i = 0; i < this.layout.radius*2-1; ++i) {
 				this.slots[i] = [];
 				for( var j = 0; j < this.layout.radius*2-1; ++j) {
@@ -589,6 +723,7 @@ var Model = new Class({
 								new Geom.Vector3(i-this.layout.radius+1,j-this.layout.radius+1,k-this.layout.radius+1),
 								this
 							);
+							this.shuffledSlots.push(this.slots[i][j][k]);
 						}
 					}
 				}
@@ -598,11 +733,31 @@ var Model = new Class({
 			var r = this.layout.radius;
 			return this.slots[x+r-1][y+r-1][z+r-1];
 		},
-		getSlots: function(){return this.slots}
+		getSlots: function(){return this.slots},
+		getAllSlots: function(){return this.shuffledSlots}
 	});
 
 	Model.Game = new Class(Model).extend({
+		initialize: function(){
+			this.parent();
+			this.playground = new Model.Playground(Config.playground);
+			this.prod = new Big(0);
+			this.last = new Date();
+		},
 
+		updateProd: function(date){
+			var prod = new Big(0);
+			var prods = this.playground.getAllSlots().map(function(slot){return slot.production(date);});
+			for( i in prods ){
+				prod = prod.plus(prods[i]);
+			}
+			this.prod = this.prod.plus(prod); 
+		},
+
+		production: function(date){
+			this.updateProd(date);
+			return this.prod;
+		}
 	});
 }
 
@@ -610,22 +765,28 @@ Control = new Class({
 	initialize: function(){
 		this.game = new Model.Game();
 		this.game_view = new View.Game(this.game);
+		this.timer = null;
 	},
 
-	startTime: function(){
-
+	startTimer: function(){
+		var c = this;
+		this.timer = setTimeout(function(){
+			ViewManager.refresh(new Date());
+			c.startTimer();
+		}, 100);
 	}
 });
 
 var C = new Control();
+C.startTimer();
 
-var mpg = new Model.Playground(Config.playground);
-var vpg = new View.Desktop.Playground({model:mpg, dom: d3.select("#playground")});
+//var mpg = new Model.Playground(Config.playground);
+//var vpg = new View.Desktop.Playground({model:mpg, dom: d3.select("#playground")});
 
-ViewManager.refresh();
+//ViewManager.refresh();
 //console.log("manager",ViewManager);
-vpg.die();
-ViewManager.refresh();
+//vpg.die();
+//ViewManager.refresh();
 //console.log("manager",ViewManager);
 
 
@@ -634,4 +795,4 @@ ViewManager.refresh();
 //console.log(mpg,vpg);
 //console.log(v);
 //mpg.getSlot(0,0,0).notify();
-mpg.notify();
+//mpg.notify();
