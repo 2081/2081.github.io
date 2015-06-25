@@ -26,7 +26,7 @@
 	|-- instant
 
 
-|-- ItemEffect
+|-- Model.ItemEffect
 	|-o add( itemEffect ) : this
 	|-o set( attr, value ) : this
 	|
@@ -35,7 +35,7 @@
 	|-- flatPerClickBonus
 	|-- scalePerClickBonus
 
-|-- Leveling
+|-- Model.Leveling
 	|-o at( level ) : ItemEffect[]
 	|-o at( level, itemEffect ) : this
 */
