@@ -95,7 +95,10 @@ var Config = {
 		tiles : {
 			blank: "#917663",
 			blank_over: "#A18572",
-			blank_border : "#574030"
+			blank_border : "#574030",
+			green: "#587820",
+			green_over: "#658729",
+			green_border: "#415917"
 		}
 	},
 
@@ -103,6 +106,7 @@ var Config = {
 		{
 			id: 0,
 			name: Lang.get("item-0"),
+			tile: "green",
 			expFirstLevel: 10,
 			growth: 1.15,
 			leveling: {
@@ -440,21 +444,17 @@ var View = new Class({
 
 		domInit: function(){
 
-			/*this.svg.append("circle").attr({
-				cx:this.xyCenter().x,
-				cy:this.xyCenter().y,
-				r: 10,
-				fill: "yellow"
-			});*/
+			this.tileColor = "blank";
+			var slot = this;
 			this.svg.append("polygon")
 					.attr("points",this.hexagon.getSummits2D().join(" "))
 					.attr({
 						fill: Config.colors.tiles.blank,
-						stroke: Config.colors.tiles.blank_border,
+						stroke: Config.colors.tiles[slot.tileColor+"_border"],
 						"stroke-width": 0.5
 					}).on({
-						mouseover: function(){d3.select(this).attr("fill",Config.colors.tiles.blank_over);},
-						mouseout : function(){d3.select(this).attr("fill",Config.colors.tiles.blank);},
+						mouseover: function(){d3.select(this).attr("fill",Config.colors.tiles[slot.tileColor+"_over"]);},
+						mouseout : function(){d3.select(this).attr("fill",Config.colors.tiles[slot.tileColor]);},
 						mousedown: function(){
 							if(event.button != 0 ){
 								this.onSpecialClick();
@@ -471,6 +471,7 @@ var View = new Class({
 
 		onSpecialClick: function(){
 			this.model.item(0);
+			this.tileColor = Config.items[0].tile;
 		},
 
 		update: function(){
