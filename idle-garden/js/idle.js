@@ -70,6 +70,19 @@ var Data = {
 	]
 };
 
+var Leveling = function(every){
+
+	this.every = every || 1;
+	this.increment = null;
+
+	var that = this;
+	return function( fct ){
+		that.increment = fct;
+	}
+};
+Leveling.aritSeries 	= function(a){return function(n){return n+a;};};
+Leveling.geomSeries 	= function(a){return function(n){return n*a;};};
+Leveling.aritGeomSeries = function(a,b){return function(n){return n*a+b;};};
 ////
 var Config = {
 	playground : {
@@ -91,7 +104,21 @@ var Config = {
 			id: 0,
 			name: Lang.get("item-0"),
 			expFirstLevel: 10,
-			leveling: null//new Model.Leveling()//.at(3,{} 
+			growth: 1.15,
+			leveling: {
+				"0": [
+					{
+						fpa: 1,
+						_fpa: Leveling(1)(Leveling.aritSeries(1))
+					}
+				], 
+				"1": [
+					{
+						fps: 1,
+						_fps: Leveling(1)(Leveling.geomSeries(1.15))
+					}
+				]
+			}
 		}
 	],
 
@@ -543,13 +570,15 @@ var Model = new Class({
 		flatPerSecondBonus: 	'+',
 		scalePerSecondBonus: 	'*',
 		flatPerClickBonus: 		'+',
-		scalePerClickBonus: 	'*'
+		scalePerClickBonus: 	'*',
+		globalScale: 			'*'
 	};
 	Model.ItemEffectLexicon = {
 		fpcb: "flatPerClickBonus",
 		spcb: "scalePerClickBonus",
 		fpsb: "flatPerSecondBonus",
-		spsb: "scalePerSecondBonus"
+		spsb: "scalePerSecondBonus",
+		sc:   "globalScale"
 	};
 	Model.ItemEffect = new Class(Model).extend({
 		initialize: function(){
@@ -577,6 +606,12 @@ var Model = new Class({
 			return new Model.ItemEffect().add(this);
 		}
 
+	});
+	Model.ItemEffect.LevelingIE = new Class(Model.ItemEffect).extend({
+		initialize: function(){
+			this.parent();
+			//this.levelCount = 0;
+		},
 	});
 
 	Model.EfxHolder = new Class(Model).extend({
