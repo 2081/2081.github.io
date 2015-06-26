@@ -309,7 +309,7 @@ var Geom = {};
 		},
 
 		center2D: function(){
-			return new Geom.Vector2(Math.cos(Math.PI/6)*(this.v3.x - this.v3.y),this.v3.z - 0.5*(this.v3.x + this.v3.y));
+			return new Geom.Vector2(Math.cos(Math.PI/6)*(this.v3.x - this.v3.y),0.65*(this.v3.z - 0.5*(this.v3.x + this.v3.y)));
 		},
 
 		getSummits2D: function(){
@@ -317,7 +317,7 @@ var Geom = {};
 			var v2d = this.center2D();
 			for( var i = 0; i < Geom.H_ANGLES.length; ++i){
 				sums[i] = [ v2d.x+this.radius*Math.cos(Geom.H_ANGLES[i]),
-							v2d.y+this.radius*Math.sin(Geom.H_ANGLES[i]) ];
+							v2d.y+0.65*this.radius*Math.sin(Geom.H_ANGLES[i]) ];
 			}
 			return sums;
 		},
@@ -366,10 +366,10 @@ var ViewManager = new function(){
 		views.push(view);
 	};
 
-	this.refresh = function(date){
+	this.refresh = function(){
 		for (var i = views.length - 1; i >= 0; i--) {
 			if( views[i].refresh ) {
-				views[i].refresh(date);
+				views[i].refresh();
 			} else {
 				views.slice(i,1);
 			}
@@ -388,7 +388,7 @@ var View = new Class({
 	notify: function(){
 		this.update();
 	},
-	update: function(date){},
+	update: function(){},
 	refresh: function(){},
 	die: function(){
 		this.refresh = null;
@@ -439,11 +439,11 @@ var View = new Class({
 		},
 
 		onClick: function(){
-			console.log("left");
+			this.model.activate();
 		},
 
 		onSpecialClick: function(){
-			console.log("right");
+			this.model.item(0);
 		},
 
 		update: function(){
@@ -583,7 +583,7 @@ var Model = new Class({
 		initialize: function(){
 			this.parent();
 			this.efx = [];
-			this.sum = this.neutralEfx();
+			this.m_sum = this.neutralEfx();
 		},
 
 		neutralEfx: function(){return null;},
@@ -599,13 +599,13 @@ var Model = new Class({
 		},
 
 		update: function(){
-			this.sum = this.neutralEfx();
-			this.sum.add.apply(this.efx);
+			this.m_sum = this.neutralEfx();
+			this.m_sum.add.apply(this.efx);
 			return this;
 		},
 
 		sum: function(){
-			return this.sum.copy();
+			return this.m_sum.copy();
 		}
 
 	});
@@ -613,11 +613,20 @@ var Model = new Class({
 	Model.IEfxHolder = new Class(Model.EfxHolder).extend({
 		initialize: function(){
 			this.parent();
-			this.sum = new Model.ItemEffect();
+			this.m_sum = new Model.ItemEffect();
 		},
 		neutralEfx: function(){
 			return new Model.ItemEffect();
+		},
+
+		toProduction: function(opts){
+			var sum = this.sum();
+			var activations = opts["activations"] || Big(0);
+			var seconds = opts["seconds"] || new Big(0);
+			var prod = seconds.times(Big(0)) + activations.times(Big(1));
+			return prod;
 		}
+		
 	});
 
 	Model.Leveling = new Class(Model).extend({
@@ -641,7 +650,7 @@ var Model = new Class({
 
 	Model.ILevelHandler = new Class(Model).extend({
 		initialize: function( item ){
-			this.leveling = Data.items[id].leveling | new Model.Leveling();
+			this.leveling = Config.items[item.type].leveling | new Model.Leveling();
 			this.item = item;
 			this.level = 0;
 			this.experience = 0;
@@ -670,12 +679,13 @@ var Model = new Class({
 		initialize: function( id, date ){
 			this.parent();
 			this.type = id;
-			this.typeData = Data.items[id];
+			this.typeData = Config.items[id];
 
-			this.harvestTime = date;
+			this.harvestTime = date | new Date();
 
 			this.efxHolder = new Model.IEfxHolder();
-			this.levelHandler = new Model.ILevelHandler();
+			this.levelHandler = new Model.ILevelHandler(this);
+			this.activations = Big(0);
 		},
 		attr: function( a, b ){
 			if( Utils.defined(b) ){
@@ -684,6 +694,16 @@ var Model = new Class({
 			} else {
 				return this.data[a];
 			}
+		},
+
+		activate: function(){
+			this.activations = this.activations.plus(1);//var efc = this.efxHolder.sum();
+		},
+
+		production: function(date){
+			var prod = this.efxHolder.toProduction({activations:this.activations});
+			this.activations = Big(0);
+			return prod;
 		}
 	});
 
@@ -699,11 +719,26 @@ var Model = new Class({
 			this.parent();
 			this.v3 = vector3;
 			this.playground = playground;
+			this.m_item = null;
 		},
 
 		production: function(date){
-			return 3;
+			if(this.m_item)return this.m_item.production(date);
+			return 0;
+		},
+
+		item: function(id, date){
+			if( Utils.defined(id) ){
+				this.m_item = new Model.Item(id,date);
+				return this;
+			}
+			return this.m_item;
+		},
+
+		activate: function(){
+			if(this.m_item) this.m_item.activate();
 		}
+
 	});
 
 	Model.Playground = new Class(Model).extend({
@@ -754,9 +789,12 @@ var Model = new Class({
 			this.prod = this.prod.plus(prod); 
 		},
 
-		production: function(date){
-			this.updateProd(date);
+		production: function(){
 			return this.prod;
+		},
+
+		update: function(date){
+			this.updateProd(date);
 		}
 	});
 }
@@ -771,7 +809,8 @@ Control = new Class({
 	startTimer: function(){
 		var c = this;
 		this.timer = setTimeout(function(){
-			ViewManager.refresh(new Date());
+			c.game.update(new Date());
+			ViewManager.refresh();
 			c.startTimer();
 		}, 100);
 	}
