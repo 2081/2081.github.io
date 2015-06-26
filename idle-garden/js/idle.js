@@ -85,6 +85,11 @@ Leveling.geomSeries 	= function(a){return function(n){return n*a;};};
 Leveling.aritGeomSeries = function(a,b){return function(n){return n*a+b;};};
 ////
 var Config = {
+	files: {
+		sprites:{
+			path: "sprites/"
+		}
+	},
 	playground : {
 		layout : {
 			radius: 4
@@ -100,6 +105,10 @@ var Config = {
 			green_over: "#658729",
 			green_border: "#415917"
 		}
+	},
+
+	slot: {
+		bg: 'sprites/grass.png'
 	},
 
 	items: [
@@ -446,15 +455,16 @@ var View = new Class({
 
 			this.tileColor = "blank";
 			var slot = this;
-			this.svg.append("polygon")
-					.attr("points",this.hexagon.getSummits2D().join(" "))
+			/*this.dom = this.svg.append("polygon");
+			var polygon = this.dom;
+			this.dom.attr("points",this.hexagon.getSummits2D().join(" "))
 					.attr({
 						fill: Config.colors.tiles.blank,
 						stroke: Config.colors.tiles[slot.tileColor+"_border"],
 						"stroke-width": 0.5
 					}).on({
-						mouseover: function(){d3.select(this).attr("fill",Config.colors.tiles[slot.tileColor+"_over"]);},
-						mouseout : function(){d3.select(this).attr("fill",Config.colors.tiles[slot.tileColor]);},
+						mouseover: function(){polygon.attr("fill",Config.colors.tiles[slot.tileColor+"_over"]);},
+						mouseout : function(){polygon.attr("fill",Config.colors.tiles[slot.tileColor]);},
 						mousedown: function(){
 							if(event.button != 0 ){
 								this.onSpecialClick();
@@ -462,7 +472,42 @@ var View = new Class({
 								this.onClick();
 							}}.bind(this),
 						contextmenu: function(){event.preventDefault()}
-					});
+					});*/
+			this.dom = this.svg.append("g");
+			var group = this.dom;
+			var img = group.append("image");
+			var eventPolygon = group.append("polygon")
+				.attr("points",this.hexagon.getSummits2D().join(" "))
+				.classed("event-handler",true)
+				.attr({
+					fill: "transparent",
+					stroke: "transparent",
+					"stroke-width": 0
+				}).on({
+					mouseover: function(){eventPolygon.attr("fill","rgba(255, 255, 0, 0.1)");},
+					mouseout : function(){eventPolygon.attr("fill","transparent");},
+					mousedown: function(){
+						if(event.button != 0 ){
+							this.onSpecialClick();
+						} else {
+							this.onClick();
+						}}.bind(this),
+					contextmenu: function(){event.preventDefault()}
+				})
+				;
+
+
+			var width = this.hexagon.radius*2*Math.cos(Math.PI/6);
+			var height = this.hexagon.radius*6/2;
+			var c = this.hexagon.center2D();
+			group.data([this.hexagon.v3.z + c.x/100]);
+			img.attr("x",c.x-width/2)
+				.attr("y",c.y-height/2)
+				.attr("width",width)
+				.attr("height",height)
+				.attr("overflow","visible")
+				.attr("xlink:href",Config.slot.bg)
+				;
 		},
 
 		onClick: function(){
@@ -471,7 +516,20 @@ var View = new Class({
 
 		onSpecialClick: function(){
 			this.model.item(0);
-			this.tileColor = Config.items[0].tile;
+			//this.tileColor = Config.items[0].tile;
+			//this.dom.on('mouseover')();
+
+			var flower = this.dom.append("image");
+			var width = this.hexagon.radius*2*Math.cos(Math.PI/6);
+			var height = this.hexagon.radius*6/2;
+			var c = this.hexagon.center2D();
+			flower.attr("x",c.x-width/2)
+				.attr("y",c.y-height/2)
+				.attr("width",width)
+				.attr("height",height)
+				.attr("overflow","visible")
+				.attr("xlink:href","sprites/flower0.gif")
+				;
 		},
 
 		update: function(){
@@ -484,8 +542,8 @@ var View = new Class({
 			this.parent(config);
 			this.domInit();
 
-			var width = 95;
-			var origin = new Geom.Vector2(50,50);
+			var width = 100;
+			var origin = new Geom.Vector2(50,85);
 
 			this.slots = [];
 			var m_slots = this.model.getSlots();
@@ -509,6 +567,11 @@ var View = new Class({
 
 		update: function(){
 			console.log("updating playground",this);
+		},
+
+		refresh: function(){
+			//console.log("r",this.svg.selectAll('*'));
+			this.svg.selectAll('g').sort(function(a,b){return a - b;});
 		}
 	});
 

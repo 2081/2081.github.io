@@ -1,4 +1,6 @@
 html,body {
+	/*font-family: 'Chango', cursive;*/
+	font-family: 'Open Sans', sans-serif;
 	margin: 0;
 	padding: 0;
 	height: 100%;
@@ -19,26 +21,41 @@ html,body {
 }
 
 #game-header {
+	font-family: 'Chango', cursive;
 	position: absolute;
 	z-index: 100;
-	font-size: 25pt;
+	font-size: 200%%;
 	width: 100%;
 	text-align: center;
 	pointer-events: none;
+}
+#game-header h1 {
+	color: white;
+	font-size: 0.8em;
+}
+
+#bank {
+	color: #fff000;
+	font-size: 1.5em;
 }
 
 #playground {
 	position: absolute;
 	width: 100%;
 	height: 100%;
-	padding: 0 20px;
+	padding: 10;
 	z-index: 50;
-	background: #ddd;
+	background: #8abcde;
 }
 #playground > svg {
 	display: block;
 	width: 100%;
 	height: 100%;
+	pointer-events: none;
+}
+
+.event-handler {
+	pointer-events: bounding-box;
 }
 
 #control-panel {
