@@ -55,7 +55,7 @@ html,body {
 }
 
 .event-handler {
-	pointer-events: bounding-box;
+	pointer-events: all;
 }
 
 #control-panel {

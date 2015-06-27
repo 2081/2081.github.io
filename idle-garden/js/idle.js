@@ -1,4 +1,5 @@
 console = console || {log:function(){},warn:function(){}};
+Big = Decimal;
 
 var NORTH 		= "N" ;
 var NORTH_EAST 	= "NE";
@@ -439,6 +440,31 @@ var View = new Class({
 		initialize: function(config){this.parent(config);}
 	});
 
+	View.Desktop.Item = new Class(View.Desktop).extend({
+		initialize: function( item, dom, hexagon ){
+			this.parent();
+			this.hexagon = hexagon;
+			this.dom = dom;
+			this.item = item;
+			this.domInit();
+		},
+
+		domInit: function(){
+			var flower = this.dom.append("image");
+			var width = this.hexagon.radius*2*Math.cos(Math.PI/6);
+			var height = this.hexagon.radius*6/2;
+			var c = this.hexagon.center2D();
+			flower.attr("x",c.x-width/2)
+				.attr("y",c.y-height/2)
+				.attr("width",width)
+				.attr("height",height)
+				.attr("overflow","visible")
+				.attr("xlink:href","sprites/flower0.gif")
+				.classed("sprite",true);
+				;
+		}
+	});
+
 	View.Desktop.Slot = (new Class(View.Desktop)).extend({
 		initialize: function (model, svg, radius, origin) {
 			this.parent();
@@ -447,6 +473,8 @@ var View = new Class({
 			this.radius = radius;
 			this.origin = origin;
 			this.hexagon = new Geom.Hexagon(this.model.v3.scal(radius),radius).plus2D(origin);
+
+			this.itemView = null;
 
 			this.domInit();
 		},
@@ -485,7 +513,6 @@ var View = new Class({
 					"stroke-width": 0
 				}).on({
 					mouseover: function(){
-						console.log("hover");
 						eventPolygon.attr("fill","rgba(255, 255, 0, 0.2)");
 						group.selectAll(".sprite").style("filter","url(#hoverFilter)");
 						//<svg:feGaussianBlur stdDeviation="3"/>
@@ -531,24 +558,11 @@ var View = new Class({
 		},
 
 		onSpecialClick: function(){
-			console.log(this);
 			this.model.item(0);
 			//this.tileColor = Config.items[0].tile;
-
-			var flower = this.dom.append("image");
-			var width = this.hexagon.radius*2*Math.cos(Math.PI/6);
-			var height = this.hexagon.radius*6/2;
-			var c = this.hexagon.center2D();
-			flower.attr("x",c.x-width/2)
-				.attr("y",c.y-height/2)
-				.attr("width",width)
-				.attr("height",height)
-				.attr("overflow","visible")
-				.attr("xlink:href","sprites/flower0.gif")
-				.classed("sprite",true);
-				;
-			
+			this.itemView = new View.Desktop.Item(this.model.item(),this.dom,this.hexagon);
 			this.eventHandler.on('mouseover')();
+			
 		},
 
 		update: function(){
@@ -718,13 +732,13 @@ var Model = new Class({
 			} else {
 				this.efx.push.apply(this.efx,efx);
 			}
-			update();
+			this.update();
 			return this;
 		},
 
 		update: function(){
 			this.m_sum = this.neutralEfx();
-			this.m_sum.add.apply(this.efx);
+			this.m_sum.add.apply(this.m_sum,this.efx);
 			return this;
 		},
 
@@ -745,9 +759,9 @@ var Model = new Class({
 
 		toProduction: function(opts){
 			var sum = this.sum();
-			var activations = opts["activations"] || Big(0);
+			var activations = opts["activations"] || new Big(0);
 			var seconds = opts["seconds"] || new Big(0);
-			var prod = seconds.times(Big(0)) + activations.times(Big(1));
+			var prod = seconds.times(new Big(sum.flatPerSecondBonus)).plus(activations.times(new Big(1)));
 			return prod;
 		}
 		
@@ -774,28 +788,46 @@ var Model = new Class({
 
 	Model.ILevelHandler = new Class(Model).extend({
 		initialize: function( item ){
-			this.leveling = Config.items[item.type].leveling | new Model.Leveling();
+			this.leveling = /*Config.items[item.type].leveling |*/ new Model.Leveling().at(1,new Model.ItemEffect().set("flatPerSecondBonus",1));
 			this.item = item;
-			this.level = 0;
-			this.experience = 0;
+			this.level = new Big(0);
+			this.experience = new Big(0);
+			this.addEfx(0);
 		},
 		addEfx: function( level ){
-			if(this.leveling.at(level)) this.item.efxHolder.push.apply(this.leveling.at(level));
+			if(this.leveling.at(level)) {
+				var array = this.leveling.at(level);
+				for( var effect in array) {
+					this.item.efxHolder.add(array[effect]);
+				} 
+			}
 			return this;
 		},
 		addExp: function( exp ){
-			this.experience += exp;
-			var newLevel = levelFromExp(this.experience);
-			for(var i = this.level+1; i <= newLevel; ++i){
-				addEfx(i);
-				//this.dispatch('levelup');
+			assert(typeof exp !== 'number', "Model.ILevelHandler.addExp");
+			if(exp.greaterThan(0)){
+				this.experience = this.experience.plus(exp);
+				var newLevel = this.levelFromExp(this.experience);
+				for(var i = this.level.toNumber()+1; i <= newLevel.toNumber(); ++i){
+					console.log("levelup");
+					this.addEfx(i);
+					//this.dispatch('levelup');
+				}
+				this.level = newLevel;
 			}
-			this.level = newLevel;
 			return this;
 
 		},
 		levelFromExp: function( exp ){
-			return Math.log(exp/10)/Math.log(1.15);
+			var base = 10;
+			var growth = new Big(1.15);
+			return exp == 0 ? new Big(0) : Big.max(0,new Big(1).minus(exp.times(new Big(1).minus(growth)).dividedBy(base)).log(1.15)).floor();//Math.log(exp/10)/Math.log(1.15);
+		},
+		activation: function( big ){
+			this.addExp(big);
+		},
+		production: function( big ){
+			this.addExp(big);
 		}
 	});
 
@@ -809,7 +841,7 @@ var Model = new Class({
 
 			this.efxHolder = new Model.IEfxHolder();
 			this.levelHandler = new Model.ILevelHandler(this);
-			this.activations = Big(0);
+			this.activations = new Big(0);
 		},
 		attr: function( a, b ){
 			if( Utils.defined(b) ){
@@ -822,11 +854,13 @@ var Model = new Class({
 
 		activate: function(){
 			this.activations = this.activations.plus(1);//var efc = this.efxHolder.sum();
+			//this.levelHandler.activation(new Big(1));
 		},
 
-		production: function(date){
-			var prod = this.efxHolder.toProduction({activations:this.activations});
-			this.activations = Big(0);
+		production: function(seconds){
+			var prod = this.efxHolder.toProduction({activations:this.activations,seconds:seconds});
+			this.activations = new Big(0);
+			this.levelHandler.production(prod);
 			return prod;
 		}
 	});
@@ -846,8 +880,8 @@ var Model = new Class({
 			this.m_item = null;
 		},
 
-		production: function(date){
-			if(this.m_item)return this.m_item.production(date);
+		production: function(seconds){
+			if(this.m_item)return this.m_item.production(seconds);
 			return 0;
 		},
 
@@ -901,16 +935,20 @@ var Model = new Class({
 			this.parent();
 			this.playground = new Model.Playground(Config.playground);
 			this.prod = new Big(0);
+			this.prodLeftover = new Big(0);
 			this.last = new Date();
 		},
 
 		updateProd: function(date){
-			var prod = new Big(0);
-			var prods = this.playground.getAllSlots().map(function(slot){return slot.production(date);});
+			var prod = new Big(0).plus(this.prodLeftover);
+			var seconds = new Big(date.getTime()).minus(new Big(this.last.getTime())).dividedBy(1000);
+			var prods = this.playground.getAllSlots().map(function(slot){return slot.production(seconds);});
 			for( i in prods ){
 				prod = prod.plus(prods[i]);
 			}
-			this.prod = this.prod.plus(prod); 
+			this.prodLeftover = prod.minus(prod.floor());
+			this.prod = this.prod.plus(prod.floor()); 
+			this.last = date;
 		},
 
 		production: function(){
@@ -959,3 +997,4 @@ C.startTimer();
 //console.log(v);
 //mpg.getSlot(0,0,0).notify();
 //mpg.notify();
+console.log(new Big(0));
