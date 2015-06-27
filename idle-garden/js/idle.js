@@ -484,8 +484,22 @@ var View = new Class({
 					stroke: "transparent",
 					"stroke-width": 0
 				}).on({
-					mouseover: function(){eventPolygon.attr("fill","rgba(255, 255, 0, 0.1)");},
-					mouseout : function(){eventPolygon.attr("fill","transparent");},
+					mouseover: function(){
+						console.log("hover");
+						eventPolygon.attr("fill","rgba(255, 255, 0, 0.2)");
+						group.selectAll(".sprite").style("filter","url(#hoverFilter)");
+						//<svg:feGaussianBlur stdDeviation="3"/>
+						/*group.append("feColorMatrix").attr("values","0.3333 0.3333 0.3333 0 0 \
+																	 0.3333 0.3333 0.3333 0 0 \
+																	 0.3333 0.3333 0.3333 0 0 \
+																	 0      0      0      1 0");*/
+					},
+					mouseout : function(){
+						eventPolygon.attr("fill","transparent");
+						group.selectAll(".sprite").style("filter","none");
+						/*console.log(group.select("feColorMatrix"));
+						group.select("feColorMatrix").remove();*/
+					},
 					mousedown: function(){
 						if(event.button != 0 ){
 							this.onSpecialClick();
@@ -495,6 +509,8 @@ var View = new Class({
 					contextmenu: function(){event.preventDefault()}
 				})
 				;
+
+			this.eventHandler = eventPolygon;
 
 
 			var width = this.hexagon.radius*2*Math.cos(Math.PI/6);
@@ -515,9 +531,9 @@ var View = new Class({
 		},
 
 		onSpecialClick: function(){
+			console.log(this);
 			this.model.item(0);
 			//this.tileColor = Config.items[0].tile;
-			//this.dom.on('mouseover')();
 
 			var flower = this.dom.append("image");
 			var width = this.hexagon.radius*2*Math.cos(Math.PI/6);
@@ -529,7 +545,10 @@ var View = new Class({
 				.attr("height",height)
 				.attr("overflow","visible")
 				.attr("xlink:href","sprites/flower0.gif")
+				.classed("sprite",true);
 				;
+			
+			this.eventHandler.on('mouseover')();
 		},
 
 		update: function(){
@@ -563,6 +582,12 @@ var View = new Class({
 
 		domInit: function(){
 			this.svg = this.dom.append("svg").attr("viewBox","0 0 100 100");
+			var defs = this.svg.append("defs");
+			var f1 = defs.append("filter").attr("id","hoverFilter");
+			f1.append("feColorMatrix").attr("values","1.8 0 0 0 0 \
+													  0 1.8 0 0 0 \
+													  0 0 1 0 0 \
+													  0 0 0 1 0");
 		},
 
 		update: function(){
