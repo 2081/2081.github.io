@@ -540,7 +540,7 @@ var View = new Class({
 			this.eventHandler = eventPolygon;
 
 
-			var width = this.hexagon.radius*2*Math.cos(Math.PI/6);
+			var width = 1.2*this.hexagon.radius*2*Math.cos(Math.PI/6);
 			var height = this.hexagon.radius*6/2;
 			var c = this.hexagon.center2D();
 			group.data([this.hexagon.v3.z + c.x/100]);
