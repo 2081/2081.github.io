@@ -570,13 +570,46 @@ var View = new Class({
 		},
 	});
 
+	View.Desktop.Menu = new Class(View.Desktop).extend({
+		initialize: function( container ){
+			this.parent();
+			this.container = container;
+		},
+		show: function(){
+			this.container.classed("hidden",true);
+		},
+		hide: function(){
+			this.container.classed("hidden",false);
+		}
+	});
+	{
+		var Menu = View.Desktop.Menu;
+		var SlotMenu = new Class(Menu).extend({
+			/**
+			 * @param {Vector2} Center of the slot
+			 * @param {} 
+			 */
+			initialize: function( center, list ){
+				this.parent();
+				this.game = game;
+				this.slotView = slotView;
+			}
+		});
+
+		//-----------------
+		View.Desktop.Menu.Slot = {};
+		View.Desktop.Menu.Slot.build = function(){
+
+		};
+	}
+
 	View.Desktop.Playground = new Class(View.Desktop).extend({
 		initialize: function(config){
 			this.parent(config);
 			this.domInit();
 
-			var width = 100;
-			var origin = new Geom.Vector2(50,85);
+			var width = 80;
+			var origin = new Geom.Vector2(50,95);
 
 			this.slots = [];
 			var m_slots = this.model.getSlots();
