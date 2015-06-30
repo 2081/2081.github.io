@@ -450,16 +450,19 @@ var View = new Class({
 		},
 
 		domInit: function(){
+			var chromas = ["yellow","green","crab","rose"];
+
 			var flower = this.dom.append("image");
 			var width = this.hexagon.radius*2*Math.cos(Math.PI/6);
 			var height = this.hexagon.radius*6/2;
 			var c = this.hexagon.center2D();
+			var rand = Math.random();
 			flower.attr("x",c.x-width/2)
 				.attr("y",c.y-height/2)
 				.attr("width",width)
 				.attr("height",height)
 				.attr("overflow","visible")
-				.attr("xlink:href","sprites/flower0.gif")
+				.attr("xlink:href","sprites/croom_"+chromas[Math.floor(rand*chromas.length)]+".gif?time="+rand)
 				.classed("sprite",true);
 				;
 		}
