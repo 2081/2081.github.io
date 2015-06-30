@@ -462,7 +462,8 @@ var View = new Class({
 				.attr("width",width)
 				.attr("height",height)
 				.attr("overflow","visible")
-				.attr("xlink:href","sprites/croom_"+chromas[Math.floor(rand*chromas.length)]+".gif?time="+rand)
+				//.attr("xlink:href","sprites/croom_"+chromas[Math.floor(rand*chromas.length)]+".gif?time="+rand)
+				.attr("xlink:href","sprites/waura.gif?time="+rand)
 				.classed("sprite",true);
 				;
 		}
