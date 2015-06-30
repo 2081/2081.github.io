@@ -450,7 +450,7 @@ var View = new Class({
 		},
 
 		domInit: function(){
-			var chromas = ["yellow","green","crab","rose"];
+			var chromas = ["yellow","green","crab","rose","lake","sea","lemon","diamond"];
 
 			var flower = this.dom.append("image");
 			var width = this.hexagon.radius*2*Math.cos(Math.PI/6);
@@ -563,8 +563,10 @@ var View = new Class({
 		onSpecialClick: function(){
 			this.model.item(0);
 			//this.tileColor = Config.items[0].tile;
-			this.itemView = new View.Desktop.Item(this.model.item(),this.dom,this.hexagon);
-			this.eventHandler.on('mouseover')();
+			if( this.itemView == null) {
+				this.itemView = new View.Desktop.Item(this.model.item(),this.dom,this.hexagon);
+				this.eventHandler.on('mouseover')();
+			}
 			
 		},
 
