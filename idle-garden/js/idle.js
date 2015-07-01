@@ -93,7 +93,7 @@ var Config = {
 	},
 	playground : {
 		layout : {
-			radius: 4
+			radius: 3
 		}
 	},
 
@@ -109,7 +109,9 @@ var Config = {
 	},
 
 	slot: {
-		bg: 'sprites/grass.png'
+		bg: 'sprites/grass.png',
+		bgFactor : 1.4,
+		bgRatio: 440/380
 	},
 
 	items: [
@@ -462,8 +464,9 @@ var View = new Class({
 				.attr("width",width)
 				.attr("height",height)
 				.attr("overflow","visible")
-				//.attr("xlink:href","sprites/croom_"+chromas[Math.floor(rand*chromas.length)]+".gif?time="+rand)
-				.attr("xlink:href","sprites/waura.gif?time="+rand)
+				.attr("xlink:href","sprites/croom_"+chromas[Math.floor(rand*chromas.length)]+".gif?time="+rand)
+				//.attr("xlink:href","sprites/waura.gif?time="+rand)
+				//.attr("xlink:href","sprites/flower0.gif?time="+rand)
 				.classed("sprite",true);
 				;
 		}
@@ -544,8 +547,8 @@ var View = new Class({
 			this.eventHandler = eventPolygon;
 
 
-			var width = 1.2*this.hexagon.radius*2*Math.cos(Math.PI/6);
-			var height = this.hexagon.radius*6/2;
+			var width = Config.slot.bgFactor*this.hexagon.radius*2*Math.cos(Math.PI/6);
+			var height = width*Config.slot.bgRatio;//this.hexagon.radius*2*(440/380);
 			var c = this.hexagon.center2D();
 			group.data([this.hexagon.v3.z + c.x/100]);
 			img.attr("x",c.x-width/2)
