@@ -71,19 +71,38 @@ var Data = {
 	]
 };
 
-var Leveling = function(every){
+function Leveling(start, every){
 
-	this.every = every || 1;
-	this.increment = null;
+	function _Leveling(start, every){
+		this.start = start || 0;
+		this.start = new Big(this.start);
+		this.every = every || 1;
+		this.every = new Big(this.every);
 
-	var that = this;
-	return function( fct ){
-		that.increment = fct;
+		this.valueFunction = null;
+
+		var that = this;
+
+		this.getValue = function(level){
+			var a = level.minus(start).dividedBy(every).floor();
+			console.log("Value for level "+level.toNumber()+" = "+this.valueFunction(a)+"("+a.toNumber()+")");
+			return level.lt(that.start) ? 0 : this.valueFunction(level.minus(start).dividedBy(every).floor());
+		};
+
+		return function( fct ){
+			that.valueFunction = fct;
+			return that;
+		}
 	}
+	
+	return new _Leveling(start,every);
+	
 };
-Leveling.aritSeries 	= function(a){return function(n){return n+a;};};
-Leveling.geomSeries 	= function(a){return function(n){return n*a;};};
-Leveling.aritGeomSeries = function(a,b){return function(n){return n*a+b;};};
+Leveling.LEVEL_SUFIX = "_l";
+Leveling.aritSeries 	= function(n0, a){return function(n){return new Big(n0).plus(n.times(a));};};
+Leveling.geomSeries 	= function(n0, a){return function(n){return new Big(n0).times(Big.pow(a,n));};};
+//Leveling.aritGeomSeries = function(a,b, n0){return function(n){return n*a+b;};};
+
 ////
 var Config = {
 	files: {
@@ -93,7 +112,8 @@ var Config = {
 	},
 	playground : {
 		layout : {
-			radius: 3
+			zBound: 3,
+			radius: 15
 		}
 	},
 
@@ -134,7 +154,15 @@ var Config = {
 						_fps: Leveling(1)(Leveling.geomSeries(1.15))
 					}
 				]
-			}
+			},
+			effects: [
+				{
+					fpa_l: Leveling(0,1)(Leveling.geomSeries(1000,1.15))
+				},
+				{
+					fps_l: Leveling(1,1)(Leveling.geomSeries(10,1.15))
+				}
+			]
 		}
 	],
 
@@ -143,7 +171,9 @@ var Config = {
 			MAX_SIZE: 37,
 			coordinates: []
 		}
-	}
+	},
+
+	figures: ["M.","B.","Tr.","Quad.","Quin.","Sex.","Sept.","Oct.","Non.","Dec."]
 };
 
 Config.geom.hexaGrid.coordinates = (function(){
@@ -618,7 +648,7 @@ var View = new Class({
 			this.domInit();
 
 			var width = 80;
-			var origin = new Geom.Vector2(50,95);
+			var origin = new Geom.Vector2(0,95);
 
 			this.slots = [];
 			var m_slots = this.model.getSlots();
@@ -628,7 +658,7 @@ var View = new Class({
 							this.slots.push(new View.Desktop.Slot(
 								m_slots[i][j][k],
 								this.svg,
-								width/(Math.cos(Math.PI/6)*2*(2*Config.playground.layout.radius-1)),
+								width/(Math.cos(Math.PI/6)*2*(2*Config.playground.layout.zBound-1)),
 								origin
 							));
 					}
@@ -637,13 +667,28 @@ var View = new Class({
 		},
 
 		domInit: function(){
-			this.svg = this.dom.append("svg").attr("viewBox","0 0 100 100");
+			/*this.xOffset = 0;
+			this.xOsMin = 0;
+			this.xOsMax = 500;*/
+			this.svg = this.dom.append("svg").attr("viewBox","0 0 200 100");
 			var defs = this.svg.append("defs");
 			var f1 = defs.append("filter").attr("id","hoverFilter");
 			f1.append("feColorMatrix").attr("values","1.8 0 0 0 0 \
 													  0 1.8 0 0 0 \
 													  0 0 1 0 0 \
 													  0 0 0 1 0");
+			var that = this;
+			//d3.select("#playground").on("mousewheel",function(){that.onMouseWheel(event.wheelDelta)});
+		},
+
+		onMouseWheel: function( direction ){
+			if( direction < 0 ){
+				this.xOffset = Math.min(this.xOsMax, this.xOffset+20);
+			} else {
+				this.xOffset = Math.max(this.xOsMin, this.xOffset-20);
+			}
+			
+			this.svg.attr("viewBox",this.xOffset+" 0 100 100")
 		},
 
 		update: function(){
@@ -663,7 +708,17 @@ var View = new Class({
 			this.playground = new View.Desktop.Playground({model:this.model.playground, dom: d3.select("#playground")});
 		},
 		refresh: function(){
-			d3.select("#bank").text(this.model.production().toString());
+			this.numberFormat(this.model.production());
+			d3.select("#bank").text(this.numberFormat(this.model.production()));
+		},
+		numberFormat: function( big ){
+			console.log(big.e);
+			if( big.e < 6 ){
+				return big.toString();
+			} else {
+				var exp = Math.floor((big.e-6)/3);
+				return big.dividedBy("1e"+(6+exp*3)).toFixed(3).toString()+" "+ (Config.figures[exp] || "e"+(6+exp*3));
+			}
 		}
 	});
 }
@@ -702,12 +757,12 @@ var Model = new Class({
 {
 	Model.Math = {};
 	Model.Math.neutrals = {
-		'+': 0,
-		'*': 1
+		'+': new Big(0),
+		'*': new Big(1)
 	};
 	Model.Math.operations = {
-		'+': function(a,b){return a+b},
-		'*': function(a,b){return a*b}
+		'+': function(a,b){return a.plus(b)},
+		'*': function(a,b){return a.times(b)}
 	};
 
 
@@ -719,10 +774,10 @@ var Model = new Class({
 		globalScale: 			'*'
 	};
 	Model.ItemEffectLexicon = {
-		fpcb: "flatPerClickBonus",
-		spcb: "scalePerClickBonus",
-		fpsb: "flatPerSecondBonus",
-		spsb: "scalePerSecondBonus",
+		fpa: "flatPerClickBonus",
+		spa: "scalePerClickBonus",
+		fps: "flatPerSecondBonus",
+		sps: "scalePerSecondBonus",
 		sc:   "globalScale"
 	};
 	Model.ItemEffect = new Class(Model).extend({
@@ -735,6 +790,7 @@ var Model = new Class({
 		},
 
 		add: function(itemEffect) {
+			//console.log("add", itemEffect);
 			for( params in Model.ItemEffectPattern ){
 				this[params] = Model.Math.operations[Model.ItemEffectPattern[params]](this[params],itemEffect[params]);
 			}
@@ -742,7 +798,7 @@ var Model = new Class({
 		},
 
 		set: function(param, value){
-			assert( Utils.defined(this[param]), "Model.ItemEffect.set: trying to set a unexistant parameter" );
+			//assert( Utils.defined(this[param]), "Model.ItemEffect.set: trying to set a unexistant parameter" );
 			this[param] = value;
 			return this;
 		},
@@ -753,10 +809,32 @@ var Model = new Class({
 
 	});
 	Model.ItemEffect.LevelingIE = new Class(Model.ItemEffect).extend({
-		initialize: function(){
+		initialize: function( effectDescriptor ){
 			this.parent();
-			//this.levelCount = 0;
+			this.effectDescriptor = effectDescriptor || {};
+			this.level = new Big(0);
+			this.initStats();
+			this.setLevel( new Big(0));
 		},
+
+		initStats: function(){
+			for( efx in Model.ItemEffectLexicon ){
+				if( this.effectDescriptor[efx] ){
+					this[Model.ItemEffectLexicon[efx]] = this.effectDescriptor[efx];
+				}
+			}
+		},
+
+		setLevel: function( level ){
+			this.level = level;
+			//console.log("Model.ItemEffect.LevelingIE.setLevel", level.toNumber());
+			for( efx in Model.ItemEffectLexicon ){
+				if( this.effectDescriptor[efx+Leveling.LEVEL_SUFIX] ){
+					this[Model.ItemEffectLexicon[efx]] = this.effectDescriptor[efx+Leveling.LEVEL_SUFIX].getValue(level);
+					//console.log(Model.ItemEffectLexicon[efx],this[Model.ItemEffectLexicon[efx]].toNumber());
+				}
+			}
+		}
 	});
 
 	Model.EfxHolder = new Class(Model).extend({
@@ -780,7 +858,8 @@ var Model = new Class({
 
 		update: function(){
 			this.m_sum = this.neutralEfx();
-			this.m_sum.add.apply(this.m_sum,this.efx);
+			for( var e in this.efx) this.m_sum.add(this.efx[e]);
+			//console.log("EfxHolder updated :",this.m_sum,this.efx);
 			return this;
 		},
 
@@ -803,10 +882,32 @@ var Model = new Class({
 			var sum = this.sum();
 			var activations = opts["activations"] || new Big(0);
 			var seconds = opts["seconds"] || new Big(0);
-			var prod = seconds.times(new Big(sum.flatPerSecondBonus)).plus(activations.times(new Big(1)));
+			var prod = seconds.times(sum.flatPerSecondBonus).plus(activations.times(sum.flatPerClickBonus));
+			//console.log("Prod for "+seconds.toNumber()+"("+sum.flatPerSecondBonus+") seconds and "+activations.toNumber()+"("+sum.flatPerClickBonus+") = "+prod.toNumber());
 			return prod;
 		}
 		
+	});
+
+	Model.LIEfxHolder = new Class(Model.IEfxHolder).extend({
+		initialize: function(){
+			this.parent();
+			this.setLevel(new Big(0));
+		},
+		/*neutralEfx: function(){
+			return new Model.ItemEffect.LevelingIE();
+		},*/
+		setLevel: function(level){
+			if( typeof level === 'number') level = new Big(level);
+			//console.log("Model.LIEfxHolder.setLevel",level.toNumber(),this.efx);
+			for( var i in this.efx ){
+				if( this.efx[i].setLevel ){
+					this.efx[i].setLevel(level);
+				}
+			}
+			this.update();
+			//console.log(this);
+		}
 	});
 
 	Model.Leveling = new Class(Model).extend({
@@ -834,14 +935,18 @@ var Model = new Class({
 			this.item = item;
 			this.level = new Big(0);
 			this.experience = new Big(0);
-			this.addEfx(0);
+			this.addEfx();
+			this.item.efxHolder.setLevel(0);
 		},
 		addEfx: function( level ){
-			if(this.leveling.at(level)) {
+			/*if(this.leveling.at(level)) {
 				var array = this.leveling.at(level);
 				for( var effect in array) {
 					this.item.efxHolder.add(array[effect]);
 				} 
+			}*/
+			for( var e in Config.items[this.item.type].effects){
+				this.item.efxHolder.add(new Model.ItemEffect.LevelingIE(Config.items[this.item.type].effects[e]));
 			}
 			return this;
 		},
@@ -852,8 +957,9 @@ var Model = new Class({
 				var newLevel = this.levelFromExp(this.experience);
 				for(var i = this.level.toNumber()+1; i <= newLevel.toNumber(); ++i){
 					console.log("levelup");
-					this.addEfx(i);
+					//this.addEfx(i);
 					//this.dispatch('levelup');
+					this.item.efxHolder.setLevel(i);
 				}
 				this.level = newLevel;
 			}
@@ -881,7 +987,7 @@ var Model = new Class({
 
 			this.harvestTime = date | new Date();
 
-			this.efxHolder = new Model.IEfxHolder();
+			this.efxHolder = new Model.LIEfxHolder();
 			this.levelHandler = new Model.ILevelHandler(this);
 			this.activations = new Big(0);
 		},
@@ -892,6 +998,10 @@ var Model = new Class({
 			} else {
 				return this.data[a];
 			}
+		},
+
+		onLevelUp: function(){
+
 		},
 
 		activate: function(){
@@ -954,11 +1064,16 @@ var Model = new Class({
 					this.slots[i][j] = [];
 					for( var k = 0; k < this.layout.radius*2-1; ++k) {
 						if(i+j+k == 3*(this.layout.radius-1)){
-							this.slots[i][j][k] = new Model.Slot(
-								new Geom.Vector3(i-this.layout.radius+1,j-this.layout.radius+1,k-this.layout.radius+1),
-								this
-							);
-							this.shuffledSlots.push(this.slots[i][j][k]);
+							var x = i-this.layout.radius+1;
+							var y = j-this.layout.radius+1;
+							var z = k-this.layout.radius+1;
+							if( x >= 0 && y <= 0 && Math.abs(z) < this.layout.zBound ){
+								this.slots[i][j][k] = new Model.Slot(
+									new Geom.Vector3(x,y,z),
+									this
+								);
+								this.shuffledSlots.push(this.slots[i][j][k]);
+							}
 						}
 					}
 				}
@@ -1016,7 +1131,7 @@ Control = new Class({
 			c.game.update(new Date());
 			ViewManager.refresh();
 			c.startTimer();
-		}, 100);
+		}, 33);
 	}
 });
 
