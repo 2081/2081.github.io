@@ -105,6 +105,13 @@ Leveling.geomSeries 	= function(n0, a){return function(n){return new Big(n0).tim
 
 ////
 var Config = {
+	svg: {
+		vbx: -50,
+		vby: -60,
+		vbw: 100,
+		vbh: 100,
+		width: 0.8
+	},
 	files: {
 		sprites:{
 			path: "sprites/"
@@ -113,7 +120,7 @@ var Config = {
 	playground : {
 		layout : {
 			zBound: 3,
-			radius: 15
+			radius: 25
 		}
 	},
 
@@ -267,12 +274,17 @@ var Geom = {};
 		},
 
 		plus: function(){
-			var v = new Geom.Vector2(0,0);
+			var v = this.copy();
 			for( i in arguments){
 				assert(typeof arguments[i] === "object", "Geom.Vector2.plus: one of the parameters is not an object.");
 				v._plus(arguments[i]);
 			}
 			return v;
+		},
+
+		neg: function(){
+			return new Geom.Vector2(-this.x,
+									-this.y);
 		},
 
 		scal: function( number ){
@@ -311,6 +323,12 @@ var Geom = {};
 				v._plus(arguments[i]);
 			}
 			return v;
+		},
+
+		neg: function(){
+			return new Geom.Vector3(-this.x,
+									-this.y,
+									-this.z);
 		},
 
 		scal: function( number ){
@@ -472,6 +490,32 @@ var View = new Class({
 		initialize: function(config){this.parent(config);}
 	});
 
+	View.Desktop.Tooltip = new Class(View).extend({
+		initialize: function( pos ){
+			this.pos = pos;
+		},
+
+		show: function(){
+			if( ! this.div ) {
+				this.div = d3.select("#playground")
+							.append("div")
+								.classed("tooltip-container",true)
+								.style({
+									"left": (100*(1-Config.svg.width)/2+Config.svg.width*this.pos.x)+"%",
+									"top": this.pos.y+"%"
+								});
+
+				this.body = this.div.append("div").classed("tooltip-body",true);
+			}
+		},
+
+		hide: function(){
+			this.body = null;
+			this.div.remove();
+			this.div = null;
+		}
+	});
+
 	View.Desktop.Item = new Class(View.Desktop).extend({
 		initialize: function( item, dom, hexagon ){
 			this.parent();
@@ -538,9 +582,12 @@ var View = new Class({
 							}}.bind(this),
 						contextmenu: function(){event.preventDefault()}
 					});*/
+			this.tooltip = new View.Desktop.Tooltip(this.hexagon.center2D().plus(new Geom.Vector2(Config.svg.vbx,Config.svg.vby).neg()));
+
 			this.dom = this.svg.append("g");
 			var group = this.dom;
 			var img = group.append("image");
+			var that = this;
 			var eventPolygon = group.append("polygon")
 				.attr("points",this.hexagon.getSummits2D().join(" "))
 				.classed("event-handler",true)
@@ -557,10 +604,12 @@ var View = new Class({
 																	 0.3333 0.3333 0.3333 0 0 \
 																	 0.3333 0.3333 0.3333 0 0 \
 																	 0      0      0      1 0");*/
+						that.tooltip.show();
 					},
 					mouseout : function(){
 						eventPolygon.attr("fill","transparent");
 						group.selectAll(".sprite").style("filter","none");
+						that.tooltip.hide();
 						/*console.log(group.select("feColorMatrix"));
 						group.select("feColorMatrix").remove();*/
 					},
@@ -580,6 +629,9 @@ var View = new Class({
 			var width = Config.slot.bgFactor*this.hexagon.radius*2*Math.cos(Math.PI/6);
 			var height = width*Config.slot.bgRatio;//this.hexagon.radius*2*(440/380);
 			var c = this.hexagon.center2D();
+
+			//this.pagePos = new Geom.Vector2(c.x - width/2)
+
 			group.data([this.hexagon.v3.z + c.x/100]);
 			img.attr("x",c.x-width/2)
 				.attr("y",c.y-height/2)
@@ -592,6 +644,8 @@ var View = new Class({
 
 		onClick: function(){
 			this.model.activate();
+			//console.log(this.hexagon.center2D());
+			
 		},
 
 		onSpecialClick: function(){
@@ -647,8 +701,8 @@ var View = new Class({
 			this.parent(config);
 			this.domInit();
 
-			var width = 80;
-			var origin = new Geom.Vector2(0,95);
+			var width = Config.svg.width*100;
+			var origin = new Geom.Vector2(0,0);
 
 			this.slots = [];
 			var m_slots = this.model.getSlots();
@@ -667,10 +721,12 @@ var View = new Class({
 		},
 
 		domInit: function(){
-			/*this.xOffset = 0;
-			this.xOsMin = 0;
-			this.xOsMax = 500;*/
-			this.svg = this.dom.append("svg").attr("viewBox","0 0 200 100");
+			this.xOffset = 0;
+			this.xOsMin = -50;
+			this.xOsMax = 500;
+			this.svg = this.dom.append("svg").attr("viewBox", [Config.svg.vbx,Config.svg.vby,Config.svg.vbw,Config.svg.vbh].join(" "))
+											 .attr("width","100%")
+											 .attr("height","100%");
 			var defs = this.svg.append("defs");
 			var f1 = defs.append("filter").attr("id","hoverFilter");
 			f1.append("feColorMatrix").attr("values","1.8 0 0 0 0 \
@@ -678,7 +734,7 @@ var View = new Class({
 													  0 0 1 0 0 \
 													  0 0 0 1 0");
 			var that = this;
-			//d3.select("#playground").on("mousewheel",function(){that.onMouseWheel(event.wheelDelta)});
+			d3.select("#playground").on("mousewheel",function(){that.onMouseWheel(event.wheelDelta)});
 		},
 
 		onMouseWheel: function( direction ){
@@ -688,7 +744,7 @@ var View = new Class({
 				this.xOffset = Math.max(this.xOsMin, this.xOffset-20);
 			}
 			
-			this.svg.attr("viewBox",this.xOffset+" 0 100 100")
+			this.svg.transition().ease('quad-out').attr("viewBox",(this.xOffset+Config.svg.vbx)+" "+[Config.svg.vby,Config.svg.vbw,Config.svg.vbh].join(" "))
 		},
 
 		update: function(){
@@ -712,7 +768,6 @@ var View = new Class({
 			d3.select("#bank").text(this.numberFormat(this.model.production()));
 		},
 		numberFormat: function( big ){
-			console.log(big.e);
 			if( big.e < 6 ){
 				return big.toString();
 			} else {
@@ -1154,4 +1209,3 @@ C.startTimer();
 //console.log(v);
 //mpg.getSlot(0,0,0).notify();
 //mpg.notify();
-console.log(new Big(0));
