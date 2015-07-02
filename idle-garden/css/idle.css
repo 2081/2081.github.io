@@ -1,6 +1,6 @@
 html,body {
 	/*font-family: 'Chango', cursive;*/
-	font-family: 'Open Sans', sans-serif;
+	font-family: 'Open Sans', cursive, sans-serif;
 	cursor: url("../sprites/cursor.png"), url("sprites/cursor.ani"), url("../sprites/cursor.gif"), auto;
 	margin: 0;
 	padding: 0;
@@ -31,7 +31,6 @@ html,body {
 }
 
 #game-header {
-	font-family: 'Chango', cursive;
 	position: absolute;
 	z-index: 100;
 	font-size: 200%%;
@@ -46,6 +45,7 @@ html,body {
 
 #bank {
 	color: #fff000;
+	font-family: 'Chango', cursive;
 	text-shadow: 1px 1px 1px rgba(34, 82, 198,0.2),-1px -1px 1px rgba(34, 82, 198,0.2),-1px 1px 1px rgba(34, 82, 198,0.2),1px -1px 1px rgba(34, 82, 198,0.2);
 	font-size: 1.5em;
 }
@@ -131,6 +131,7 @@ html,body {
 }
 
 .tooltip-container {
+	font-family: 'Roboto Condensed';
 	position: absolute;
 	overflow: visible;
 	text-align: center;
@@ -140,15 +141,54 @@ html,body {
 }
 
 .tooltip-body {
-	background: rgba(42,42,42,0.67);
+	
 	position: absolute;
 	left: -100px;
 	bottom: 0px;
-	bottom: 60px;
+	bottom: 70px;
 	width: 200px;
 	min-height: 50px;
 	height: auto;
 
+}
+.tooltip-item {
+	position: relative;
+	display: block;
+
+	background: rgba(42,42,42,0.67);
+	color: #9DBE00;
+
+	margin-top: 5px;
+	width: 100%;
+	min-height: 40px;
+	padding-top: 5px;
+
+	text-align: center;
+
 	border-radius: 5px;
 	border: 3px solid rgba(0,0,0,0.2);
+}
+
+.tooltip-item > .thumbnail {
+	position: absolute;
+	border-radius: 40%;
+	border: 2px solid #ddd;
+	overflow: hidden;
+	background: linear-gradient(#505050, #333);;
+	left: -17px;
+	top: -17px;
+	width: 40px;
+	height: 40px;
+	padding: 0;
+	text-align: center;
+}
+
+.tooltip-item > .thumbnail > img{
+	/*margin-top: -10px;*/
+	width: 100%;
+	height: auto;
+}
+
+.tooltip-item > p {
+	-webkit-margin-before: 0.5em;
 }

@@ -110,7 +110,8 @@ var Config = {
 		vby: -60,
 		vbw: 100,
 		vbh: 100,
-		width: 0.8
+		width: 0.8,
+		currentVbx: -50
 	},
 	files: {
 		sprites:{
@@ -287,9 +288,16 @@ var Geom = {};
 									-this.y);
 		},
 
-		scal: function( number ){
-			return new Geom.Vector2(this.x*number,
-									this.y*number);
+		scal: function( sc ){
+			switch(typeof sc){
+				case 'number':
+					return new Geom.Vector2(this.x*sc,
+											this.y*sc);
+				default:
+					return new Geom.Vector2(this.x*sc.x,
+											this.y*sc.y);
+			}
+			
 		},
 
 		copy: function(){
@@ -462,6 +470,7 @@ var ViewManager = new function(){
 			if( views[i].refresh ) {
 				views[i].refresh();
 			} else {
+				console.log(views[i]);
 				views.slice(i,1);
 			}
 		}
@@ -490,29 +499,112 @@ var View = new Class({
 		initialize: function(config){this.parent(config);}
 	});
 
-	View.Desktop.Tooltip = new Class(View).extend({
+	View.Desktop.Tooltip = new Class(View.Desktop).extend({
 		initialize: function( pos ){
+			this.parent();
 			this.pos = pos;
+		},
+
+		_show: function(){
+			var actPos = this.pos
+							.plus(new Geom.Vector2(Config.svg.vbx - Config.svg.currentVbx, 0))
+							.scal(new Geom.Vector2(0.7,1))
+							.plus(new Geom.Vector2(-Config.svg.vbx,-Config.svg.vby));
+
+			this.div = d3.select("#playground")
+						.append("div")
+							.classed("tooltip-container",true)
+							.style({
+								"left": actPos.x+"%",
+								"top" : actPos.y+"%",
+								"opacity": 0
+							});
+			//this.div.transition().delay(150).style("opacity",1).duration(200);
+
+			this.body = this.div.append("div").classed("tooltip-body",true);
+
+			var that = this;
+			d3.select("#playground").on("mousewheel.tooltip",function(){that.hide();});
 		},
 
 		show: function(){
 			if( ! this.div ) {
-				this.div = d3.select("#playground")
-							.append("div")
-								.classed("tooltip-container",true)
-								.style({
-									"left": (100*(1-Config.svg.width)/2+Config.svg.width*this.pos.x)+"%",
-									"top": this.pos.y+"%"
-								});
+				this._show();
 
-				this.body = this.div.append("div").classed("tooltip-body",true);
+				if( !this.body.selectAll("*")[0] || this.body.selectAll("*")[0].length == 0 )
+					this.body.append("div")
+								.classed("tooltip-item",true)
+								.text("No data available");
+
+				this.div.transition().delay(150).style("opacity",1).duration(200);
+
+				var that = this;
+				d3.select("#playground").on("mousewheel.tooltip",function(){that.hide();});
 			}
 		},
 
 		hide: function(){
-			this.body = null;
-			this.div.remove();
-			this.div = null;
+			if( this.div ){
+				if(this._hide)this._hide();
+				this.body = null;
+				this.div.transition().style("opacity",0).duration(200).remove();
+				this.div = null;
+			}
+		},
+
+		clear: function(){
+			this.body.remove();
+		},
+
+		append: function( element ){
+			return this.body.append(element);
+		}
+	});
+
+	View.Desktop.TTSlot = new Class(View.Desktop.Tooltip).extend({
+		initialize: function( pos, slot ){
+			this.parent(pos);
+			this.slot = slot;
+			this.refreshed = 0;
+			this.divItem = null;
+			this.divSlot = null;
+		},
+
+		_show: function(){
+			this.parent();
+			if( this.slot.item() ){
+				this.divItem = this.addItem(this.slot.item().imageUrl());
+			}
+			this.divSlot = this.addItem(this.slot.backgroundUrl());
+			this.divSlot.append("p").text("No bonus.");
+			
+		},
+
+		_hide: function(){
+			this.divItem = null;
+			this.divSlot = null;
+		},
+
+		addItem: function( thumbnailUrl ){
+			var item =  this.body.append("div").classed("tooltip-item",true);
+			if(thumbnailUrl) {
+				var tb = item.append("div").classed("thumbnail",true);
+				tb.append("img")
+				.classed("thumbnail", true)
+				.attr({
+					src: thumbnailUrl,
+					alt: "item"
+				});
+			}
+			return item;
+		},
+
+		refresh: function(){
+			/*if( this.divSlot != null){
+				console.log(this.divSlot.select("p").empty());
+				this.divSlot.select("p").text(this.refreshed++);
+			} */
+
 		}
 	});
 
@@ -533,16 +625,21 @@ var View = new Class({
 			var height = this.hexagon.radius*6/2;
 			var c = this.hexagon.center2D();
 			var rand = Math.random();
+			this._imageUrl = "sprites/croom_"+chromas[Math.floor(rand*chromas.length)]+".gif?time="+rand;
 			flower.attr("x",c.x-width/2)
 				.attr("y",c.y-height/2)
 				.attr("width",width)
 				.attr("height",height)
 				.attr("overflow","visible")
-				.attr("xlink:href","sprites/croom_"+chromas[Math.floor(rand*chromas.length)]+".gif?time="+rand)
+				.attr("xlink:href",this._imageUrl)
 				//.attr("xlink:href","sprites/waura.gif?time="+rand)
 				//.attr("xlink:href","sprites/flower0.gif?time="+rand)
 				.classed("sprite",true);
 				;
+		},
+
+		imageUrl: function(){
+			return this._imageUrl;
 		}
 	});
 
@@ -582,7 +679,7 @@ var View = new Class({
 							}}.bind(this),
 						contextmenu: function(){event.preventDefault()}
 					});*/
-			this.tooltip = new View.Desktop.Tooltip(this.hexagon.center2D().plus(new Geom.Vector2(Config.svg.vbx,Config.svg.vby).neg()));
+			this.tooltip = new View.Desktop.TTSlot(this.hexagon.center2D(), this);
 
 			this.dom = this.svg.append("g");
 			var group = this.dom;
@@ -596,7 +693,7 @@ var View = new Class({
 					stroke: "transparent",
 					"stroke-width": 0
 				}).on({
-					mouseover: function(){
+					mouseenter: function(){
 						eventPolygon.attr("fill","rgba(255, 255, 0, 0.2)");
 						group.selectAll(".sprite").style("filter","url(#hoverFilter)");
 						//<svg:feGaussianBlur stdDeviation="3"/>
@@ -610,6 +707,7 @@ var View = new Class({
 						eventPolygon.attr("fill","transparent");
 						group.selectAll(".sprite").style("filter","none");
 						that.tooltip.hide();
+						console.log("mouseout");
 						/*console.log(group.select("feColorMatrix"));
 						group.select("feColorMatrix").remove();*/
 					},
@@ -642,6 +740,14 @@ var View = new Class({
 				;
 		},
 
+		backgroundUrl: function(){
+			return Config.slot.bg;
+		},
+
+		item: function(){
+			return this.itemView;
+		},
+
 		onClick: function(){
 			this.model.activate();
 			//console.log(this.hexagon.center2D());
@@ -653,7 +759,8 @@ var View = new Class({
 			//this.tileColor = Config.items[0].tile;
 			if( this.itemView == null) {
 				this.itemView = new View.Desktop.Item(this.model.item(),this.dom,this.hexagon);
-				this.eventHandler.on('mouseover')();
+				this.eventHandler.on('mouseout')();
+				this.eventHandler.on('mouseenter')();
 			}
 			
 		},
@@ -743,8 +850,10 @@ var View = new Class({
 			} else {
 				this.xOffset = Math.max(this.xOsMin, this.xOffset-20);
 			}
+			Config.svg.currentVbx = this.xOffset+Config.svg.vbx;
 			
-			this.svg.transition().ease('quad-out').attr("viewBox",(this.xOffset+Config.svg.vbx)+" "+[Config.svg.vby,Config.svg.vbw,Config.svg.vbh].join(" "))
+			this.svg.transition().ease('quad-out').attr("viewBox",Config.svg.currentVbx+" "+[Config.svg.vby,Config.svg.vbw,Config.svg.vbh].join(" "))
+			//d3.select("#playground").on("mousemove");
 		},
 
 		update: function(){
