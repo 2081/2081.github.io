@@ -137,7 +137,7 @@ var Config = {
 	},
 
 	slot: {
-		bg: 'sprites/grass.png',
+		bg: 'sprites/grass_ghost.png',
 		bgFactor : 1.4,
 		bgRatio: 440/380
 	},
@@ -398,17 +398,18 @@ var Geom = {};
 		/**
 		 * x,y,z,radius
 		 */
-		initialize: function(vector3, radius){
+		initialize: function(vector3, radius, zCoef){
 			//console.log(vector3,radius);
 			if( !Utils.defined(vector3) || !Utils.defined(radius) ) throw "Geom.Hexagon.initialize: missing parameter";
 			this.v3 = vector3;
 			this.radius = radius;
+			this.zCoef = zCoef;
 
 			//assert(this.v3.x+this.v3.y+this.v3.z == 0,"Geom.Hexagon.initialize: The sum of an hexagon tile coordinates should be equal to 0.",this);
 		},
 
 		plus: function( directions ){
-			return new Geom.Hexagon(this.v3.plus(directions),this.radius);
+			return new Geom.Hexagon(this.v3.plus(directions),this.radius,this.zCoef);
 		},
 
 		plus2D: function( v2d ){
@@ -421,15 +422,15 @@ var Geom = {};
 		},
 
 		center2D: function(){
-			return new Geom.Vector2(Math.cos(Math.PI/6)*(this.v3.x - this.v3.y),0.65*(this.v3.z - 0.5*(this.v3.x + this.v3.y)));
+			return new Geom.Vector2(Math.cos(Math.PI/6)*(this.v3.x - this.v3.y),this.zCoef*(this.v3.z - 0.5*(this.v3.x + this.v3.y)));
 		},
 
-		getSummits2D: function(){
+		getSummits2D: function( ){
 			var sums = [];
 			var v2d = this.center2D();
 			for( var i = 0; i < Geom.H_ANGLES.length; ++i){
 				sums[i] = [ v2d.x+this.radius*Math.cos(Geom.H_ANGLES[i]),
-							v2d.y+0.65*this.radius*Math.sin(Geom.H_ANGLES[i]) ];
+							v2d.y+this.zCoef*this.radius*Math.sin(Geom.H_ANGLES[i]) ];
 			}
 			return sums;
 		},
@@ -443,7 +444,7 @@ var Geom = {};
 			}
 		},
 
-		copy: function(){return new Hexagon(this.v3.copy(),this.radius);}
+		copy: function(){return new Hexagon(this.v3.copy(),this.radius,this.zCoef);}
 
 	});
 	
@@ -512,114 +513,140 @@ var View = new Class({
 		initialize: function(config){this.parent(config);}
 	});
 
-	View.Desktop.Tooltip = new Class(View.Desktop).extend({
-		initialize: function( pos ){
-			this.parent();
-			this.pos = pos;
-		},
+	View.Desktop.UI = {};
+	{
+		var UI = View.Desktop.UI;
 
-		_show: function(){
-			var actPos = this.pos
-							.plus(new Geom.Vector2(Config.svg.vbx - Config.svg.currentVbx, 0))
-							.scal(new Geom.Vector2(0.7,1))
+		var FloatingUI = new Class(View.Desktop).extend({
+			initialize: function(){this.parent()},
+
+			toScreenXY: function( pos ){
+				var w = parseInt(d3.select("#playground").style("width"));
+				var h = parseInt(d3.select("#playground").style("height"));
+				return   pos.plus(new Geom.Vector2(Config.svg.vbx - Config.svg.currentVbx, 0))
+							.scal(new Geom.Vector2(Math.min(h/w,1),1))
 							.plus(new Geom.Vector2(-Config.svg.vbx,-Config.svg.vby));
+			},
 
-			this.div = d3.select("#playground")
-						.append("div")
-							.classed("tooltip-container",true)
-							.style({
-								"left": actPos.x+"%",
-								"top" : actPos.y+"%",
-								"opacity": 0
-							});
-			//this.div.transition().delay(150).style("opacity",1).duration(200);
+			fdiv: function( pos ){
+				var actPos = this.toScreenXY(pos);
+				return d3.select("#playground")
+							.append("div")
+								.classed("fui-container",true)
+								.style({
+									"left": actPos.x+"%",
+									"top" : actPos.y+"%",
+									"opacity": 0
+								});
+			}
+		});
 
-			this.body = this.div.append("div").classed("tooltip-body",true);
+		var Tooltip = new Class(FloatingUI).extend({
+			initialize: function( pos ){
+				this.parent();
+				this.pos = pos;
+			},
 
-			var that = this;
-			d3.select("#playground").on("mousewheel.tooltip",function(){that.hide();});
-		},
+			_show: function(){
 
-		show: function(){
-			if( ! this.div ) {
-				this._show();
+				this.div = this.fdiv(this.pos);
 
-				if( !this.body.selectAll("*")[0] || this.body.selectAll("*")[0].length == 0 )
-					this.body.append("div")
-								.classed("tooltip-item",true)
-								.text("No data available");
-
-				this.div.transition().delay(150).style("opacity",1).duration(200);
+				this.body = this.div.append("div").classed("tooltip-body",true);
 
 				var that = this;
 				d3.select("#playground").on("mousewheel.tooltip",function(){that.hide();});
+			},
+
+			show: function(){
+				if( ! this.div ) {
+					this._show();
+
+					if( !this.body.selectAll("*")[0] || this.body.selectAll("*")[0].length == 0 )
+						this.body.append("div")
+									.classed("tooltip-item",true)
+									.text("No data available");
+
+					this.div.transition().delay(150).style("opacity",1).duration(200);
+
+				}
+			},
+
+			hide: function(){
+				if( this.div ){
+					if(this._hide)this._hide();
+					this.body = null;
+					this.div.transition().style("opacity",0).duration(200).remove();
+					this.div = null;
+				}
+			},
+
+			clear: function(){
+				this.body.remove();
+			},
+
+			append: function( element ){
+				return this.body.append(element);
 			}
-		},
+		});
 
-		hide: function(){
-			if( this.div ){
-				if(this._hide)this._hide();
-				this.body = null;
-				this.div.transition().style("opacity",0).duration(200).remove();
-				this.div = null;
+		var SlotTT = new Class(Tooltip).extend({
+			initialize: function( pos, slot ){
+				this.parent(pos);
+				this.slot = slot;
+				this.refreshed = 0;
+				this.divItem = null;
+				this.divSlot = null;
+			},
+
+			_show: function(){
+				this.parent();
+				if( this.slot.item() ){
+					this.divItem = this.addItem(this.slot.item().imageUrl());
+				}
+				this.divSlot = this.addItem(this.slot.backgroundUrl());
+				this.divSlot.append("p").text("No bonus.");
+				
+			},
+
+			_hide: function(){
+				this.divItem = null;
+				this.divSlot = null;
+			},
+
+			addItem: function( thumbnailUrl ){
+				var item =  this.body.append("div").classed("tooltip-item",true);
+				if(thumbnailUrl) {
+					var tb = item.append("div").classed("thumbnail",true);
+					tb.append("img")
+					.classed("thumbnail", true)
+					.attr({
+						src: thumbnailUrl,
+						alt: "item"
+					});
+				}
+				return item;
+			},
+
+			refresh: function(){
+				/*if( this.divSlot != null){
+					console.log(this.divSlot.select("p").empty());
+					this.divSlot.select("p").text(this.refreshed++);
+				} */
+
 			}
-		},
+		});
 
-		clear: function(){
-			this.body.remove();
-		},
-
-		append: function( element ){
-			return this.body.append(element);
-		}
-	});
-
-	View.Desktop.TTSlot = new Class(View.Desktop.Tooltip).extend({
-		initialize: function( pos, slot ){
-			this.parent(pos);
-			this.slot = slot;
-			this.refreshed = 0;
-			this.divItem = null;
-			this.divSlot = null;
-		},
-
-		_show: function(){
-			this.parent();
-			if( this.slot.item() ){
-				this.divItem = this.addItem(this.slot.item().imageUrl());
+		var HexagonMenu = new Class(FloatingUI).extend({
+			initialize: function(pos){
+				this.parent();
+				this.pos = pos;
 			}
-			this.divSlot = this.addItem(this.slot.backgroundUrl());
-			this.divSlot.append("p").text("No bonus.");
-			
-		},
+		});
 
-		_hide: function(){
-			this.divItem = null;
-			this.divSlot = null;
-		},
-
-		addItem: function( thumbnailUrl ){
-			var item =  this.body.append("div").classed("tooltip-item",true);
-			if(thumbnailUrl) {
-				var tb = item.append("div").classed("thumbnail",true);
-				tb.append("img")
-				.classed("thumbnail", true)
-				.attr({
-					src: thumbnailUrl,
-					alt: "item"
-				});
-			}
-			return item;
-		},
-
-		refresh: function(){
-			/*if( this.divSlot != null){
-				console.log(this.divSlot.select("p").empty());
-				this.divSlot.select("p").text(this.refreshed++);
-			} */
-
-		}
-	});
+		//-------
+		View.Desktop.UI.SlotToolTip = function(pos, slot){return new SlotTT(pos,slot);};
+		View.Desktop.UI.SlotMenu = function(pos, slot){return new HexagonMenu(pos,slot);};
+	}
 
 	View.Desktop.Item = new Class(View.Desktop).extend({
 		initialize: function( item, dom, hexagon ){
@@ -631,16 +658,18 @@ var View = new Class({
 		},
 
 		domInit: function(){
-			var chromas = ["yellow","green","crab","rose","lake","sea","lemon","diamond"];
+			//var chromas = ["yellow","green","crab","rose","lake","sea","lemon","diamond"];
+			var chromas = ["corail","purple"];
 
 			var flower = this.dom.append("image");
-			var width = this.hexagon.radius*2*Math.cos(Math.PI/6);
+			var width = this.hexagon.radius*2*Math.cos(Math.PI/6)*0.9;
 			var height = this.hexagon.radius*6/2;
 			var c = this.hexagon.center2D();
 			var rand = Math.random();
-			this._imageUrl = "sprites/croom_"+chromas[Math.floor(rand*chromas.length)]+".gif?time="+rand;
+			//this._imageUrl = "sprites/croom_"+chromas[Math.floor(rand*chromas.length)]+".gif?time="+rand;
+			this._imageUrl = "sprites/octoplant_"+chromas[Math.floor(rand*chromas.length)]+".png";
 			flower.attr("x",c.x-width/2)
-				.attr("y",c.y-height/2)
+				.attr("y",c.y-height/1.7)
 				.attr("width",width)
 				.attr("height",height)
 				.attr("overflow","visible")
@@ -663,7 +692,7 @@ var View = new Class({
 			this.svg 	= svg;
 			this.radius = radius;
 			this.origin = origin;
-			this.hexagon = new Geom.Hexagon(this.model.v3.scal(radius),radius).plus2D(origin);
+			this.hexagon = new Geom.Hexagon(this.model.v3.scal(radius),radius,0.65).plus2D(origin);
 
 			this.itemView = null;
 
@@ -692,7 +721,7 @@ var View = new Class({
 							}}.bind(this),
 						contextmenu: function(){event.preventDefault()}
 					});*/
-			this.tooltip = new View.Desktop.TTSlot(this.hexagon.center2D(), this);
+			this.tooltip = View.Desktop.UI.SlotToolTip(this.hexagon.center2D(), this);
 
 			this.dom = this.svg.append("g");
 			var group = this.dom;
@@ -707,8 +736,9 @@ var View = new Class({
 					"stroke-width": 0
 				}).on({
 					mouseenter: function(){
-						eventPolygon.attr("fill","rgba(255, 255, 0, 0.2)");
+						//eventPolygon.attr("fill","rgba(255, 255, 0, 0.2)");
 						group.selectAll(".sprite").style("filter","url(#hoverFilter)");
+						group.select('.bg').style("opacity",1);
 						//<svg:feGaussianBlur stdDeviation="3"/>
 						/*group.append("feColorMatrix").attr("values","0.3333 0.3333 0.3333 0 0 \
 																	 0.3333 0.3333 0.3333 0 0 \
@@ -717,8 +747,9 @@ var View = new Class({
 						that.tooltip.show();
 					},
 					mouseout : function(){
-						eventPolygon.attr("fill","transparent");
+						//eventPolygon.attr("fill","transparent");
 						group.selectAll(".sprite").style("filter","none");
+						group.select('.bg').style("opacity",0.3);
 						that.tooltip.hide();
 						console.log("mouseout");
 						/*console.log(group.select("feColorMatrix"));
@@ -750,6 +781,8 @@ var View = new Class({
 				.attr("height",height)
 				.attr("overflow","visible")
 				.attr("xlink:href",Config.slot.bg)
+				.classed("bg",true)
+				.style("opacity",0.3)
 				;
 		},
 

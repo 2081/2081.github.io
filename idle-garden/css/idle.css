@@ -16,7 +16,7 @@ html,body {
 	}
 }
 
-.noselect {
+.noselect, .tooltip-container {
     -webkit-touch-callout: none;
     -webkit-user-select: none;
     -khtml-user-select: none;
@@ -130,7 +130,7 @@ html,body {
 	min-height: 200px;
 }
 
-.tooltip-container {
+.fui-container {
 	font-family: 'Roboto Condensed';
 	position: absolute;
 	overflow: visible;
