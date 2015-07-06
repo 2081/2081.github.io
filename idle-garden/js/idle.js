@@ -256,6 +256,19 @@ var Utils = {};
 		}
 		return obj;
 	};
+
+	Utils.slice = function( array, begin, end ){
+		if(Utils.defined(begin)){
+			if( ! Utils.defined(end) ) end = array.length;
+
+			var result = [];
+			for(var i = begin; i < end; ++i){
+				result[result.length] = array[i];
+			}
+			return result;
+		}
+		return array;
+	}
 }
 ////
 
@@ -1318,3 +1331,79 @@ C.startTimer();
 //console.log(v);
 //mpg.getSlot(0,0,0).notify();
 //mpg.notify();
+
+var HGrid/*<E>*/ = new Class({
+	initialize: function( E ){
+		this.E = E;
+		this.cells = {};
+
+		this.HCell = new Class(E).extend({
+			initialize: function( grid, v3 ){
+				this.parent(); // do not forget to add initialize to the class
+				this.grid = grid;
+				this.gridPos = v3;
+
+				for( var dir in Geom.dir ){
+					this[dir] = function(){
+						return this.grid.get(this.gridPos.plus(Geom.dir[dir]));
+					}
+				}
+			},
+
+			select: function( selection ){
+				var results = [];
+				//cf tree spec
+				for( var i in selection ){
+					var si = selection[i];
+					if( typeof si === 'string' ){
+						if( this[si] ) {
+							var cell = this[si]();
+							if( cell ) results.push( cell );
+						}
+					} else if( typeof si === 'object'){
+						if( si.length > 1 ){
+							var next = this[si[0]];
+							if( next ) results.push.apply(null, next.select( si.slice(1) ));
+						}
+					}
+				}
+				return results;
+			},
+
+			path: function( path ){
+				if( path.length == 1 ){
+					return this[path[0]]();
+				} else if ( path.length > 1 ){
+					return this[path[0]]().path(path.slice(1));
+				} else {
+					return null;
+				}
+			}
+		});
+	},
+
+	hash: function(v3){
+		return v3.x+"_"+v3.y+"_"+v3.z;
+	},
+
+	hasCell: function( v3 ){
+		return Utils.defined(this.cells[this.hash(v3)]);
+	},
+
+	get: function( v3 ){
+		if(this.hasCell(v3)){
+			return this.cells[this.hash(v3)];
+		}
+		return this.cells[this.hash(v3)] = new this.HCell(this,v3);
+	}
+});
+
+var MyClass = new Class({
+	initialize: function(a,b,c){console.log(a,b,c)},
+	sayHello: function(){console.log("hello")}
+});
+
+var grid = new HGrid(MyClass);
+//grid.new(new Geom.Vector3(1,-5,2))(3,2,1);
+grid.get(new Geom.Vector3(1,-5,2));
+console.log(grid);
