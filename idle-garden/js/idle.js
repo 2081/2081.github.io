@@ -861,18 +861,16 @@ var View = new Class({
 				}).on({
 					mouseenter: function(){
 						//eventPolygon.attr("fill","rgba(255, 255, 0, 0.2)");
-						group.selectAll(".sprite").style("filter","url(#hoverFilter)");
+						group.selectAll(".sprite"+(that.state == SLOT_STATE.SOLID ? " , image.bg":""))
+								.style("filter","url(#hoverFilter)");
 						group.select('.bg').style("opacity",that.appearence.hoverOpactity);
-						//<svg:feGaussianBlur stdDeviation="3"/>
-						/*group.append("feColorMatrix").attr("values","0.3333 0.3333 0.3333 0 0 \
-																	 0.3333 0.3333 0.3333 0 0 \
-																	 0.3333 0.3333 0.3333 0 0 \
-																	 0      0      0      1 0");*/
+
+						//if( that.state == SLOT_STATE.SOLID) group.select("image.bg").style("filter")
 						if( that.state != SLOT_STATE.VOID) that.tooltip.show();
 					},
 					mouseout : function(){
 						//eventPolygon.attr("fill","transparent");
-						group.selectAll(".sprite").style("filter","none");
+						group.selectAll("*").style("filter","none");
 						group.select('.bg').style("opacity",that.appearence.opacity);
 						that.tooltip.hide();
 						console.log("mouseout");
@@ -1022,8 +1020,8 @@ var View = new Class({
 											 .attr("height","100%");
 			var defs = this.svg.append("defs");
 			var f1 = defs.append("filter").attr("id","hoverFilter");
-			f1.append("feColorMatrix").attr("values","1.8 0 0 0 0 \
-													  0 1.8 0 0 0 \
+			f1.append("feColorMatrix").attr("values","1.3 0 0 0 0 \
+													  0 1.3 0 0 0 \
 													  0 0 1 0 0 \
 													  0 0 0 1 0");
 			var that = this;
