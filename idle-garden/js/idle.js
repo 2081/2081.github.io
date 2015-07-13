@@ -137,7 +137,8 @@ var Config = {
 	},
 
 	slot: {
-		bg: 'sprites/grass_ghost.png',
+		bg: 'sprites/grass.png',
+		bg_ghost: 'sprites/grass_ghost.png',
 		bgFactor : 1.4,
 		bgRatio: 440/380
 	},
@@ -368,18 +369,25 @@ var Geom = {};
 	});
 
 	Geom.dir = {};
-	Geom.dir.NORTH 		= new Geom.Vector3( 1, 1,-2);
-	Geom.dir.NORTH_EAST = new Geom.Vector3( 1, 0,-1);
-	Geom.dir.EAST 		= new Geom.Vector3( 1,-1, 0);
-	Geom.dir.SOUTH_EAST = new Geom.Vector3( 0,-1, 1);
-	Geom.dir.SOUTH 		= new Geom.Vector3(-1,-1, 2);
-	Geom.dir.SOUTH_WEST = new Geom.Vector3(-1, 0, 1);
-	Geom.dir.WEST 		= new Geom.Vector3(-1, 1, 0);
-	Geom.dir.NORTH_WEST = new Geom.Vector3( 0, 1,-1);
-	Geom.dir.EAST_NORTH_EAST = new Geom.Vector3( 2,-1,-1);
-	Geom.dir.EAST_SOUTH_EAST = new Geom.Vector3( 1,-2, 1);
-	Geom.dir.WEST_SOUTH_WEST = new Geom.Vector3(-2, 1, 1);
-	Geom.dir.WEST_NORTH_WEST = new Geom.Vector3(-1, 2,-1);
+	Geom.dir.C 		= Geom.dir.CENTER 			= new Geom.Vector3( 0, 0, 0);
+	Geom.dir.N 		= Geom.dir.NORTH 			= new Geom.Vector3( 1, 1,-2);
+	Geom.dir.NE 	= Geom.dir.NORTH_EAST 		= new Geom.Vector3( 1, 0,-1);
+	Geom.dir.E 		= Geom.dir.EAST 			= new Geom.Vector3( 1,-1, 0);
+	Geom.dir.SE 	= Geom.dir.SOUTH_EAST 		= new Geom.Vector3( 0,-1, 1);
+	Geom.dir.S 		= Geom.dir.SOUTH 			= new Geom.Vector3(-1,-1, 2);
+	Geom.dir.SW 	= Geom.dir.SOUTH_WEST 		= new Geom.Vector3(-1, 0, 1);
+	Geom.dir.W 		= Geom.dir.WEST 			= new Geom.Vector3(-1, 1, 0);
+	Geom.dir.NW 	= Geom.dir.NORTH_WEST 		= new Geom.Vector3( 0, 1,-1);
+	Geom.dir.ENE 	= Geom.dir.EAST_NORTH_EAST 	= new Geom.Vector3( 2,-1,-1);
+	Geom.dir.ESE 	= Geom.dir.EAST_SOUTH_EAST 	= new Geom.Vector3( 1,-2, 1);
+	Geom.dir.WSW 	= Geom.dir.WEST_SOUTH_WEST 	= new Geom.Vector3(-2, 1, 1);
+	Geom.dir.WNW 	= Geom.dir.WEST_NORTH_WEST 	= new Geom.Vector3(-1, 2,-1);
+	Geom.dir.NNW 	= Geom.dir.NORTH_NORTH_WEST = new Geom.Vector3( 0, 2,-2);
+	Geom.dir.NNE 	= Geom.dir.NORTH_NORTH_EAST = new Geom.Vector3( 2, 0,-2);
+	Geom.dir.EE 	= Geom.dir.EAST_EAST 		= new Geom.Vector3( 2,-2, 0);
+	Geom.dir.SSE 	= Geom.dir.SOUTH_SOUTH_EAST = new Geom.Vector3( 0,-2, 2);
+	Geom.dir.SSW 	= Geom.dir.SOUTH_SOUTH_WEST = new Geom.Vector3(-2, 0,-2);
+	Geom.dir.WW 	= Geom.dir.WEST_WEST 		= new Geom.Vector3(-2, 2, 0);
 
 	if(TESTING){
 		var v = new Geom.Vector3(0,0,0);
@@ -457,17 +465,131 @@ var Geom = {};
 		assert( h.plus(v2).equals(h2), "Geom.Hexagon-1 failed");
 	}
 
-	Geom.HexaGrid = new Class({
-		initialize: function(config){
-			/**
-			 * n : num. of hexagons in the grid
-			 */
-			if(! Utils.checkConfig(config,"n")) throw "Geom.Hexagon.initialize : n parameter is missing.";
-			Utils.assumeConfig(this,config);
+	Geom.HGrid/*<E>*/ = new Class({
+		initialize: function( E, constraints ){
+			this.E = E;
+			this.cells = {};
+
+			this.constraints = function(){return true};
+			if(constraints) this.setConstraints(constraints);
+
+			var cellFunctions = {};
+			for( var dir in Geom.dir ){
+				(function(){
+					var a = dir;
+					cellFunctions[dir] = function(){
+						return this.grid.get(this.gridPos.plus(Geom.dir[a]));
+					}
+				})();
+			}
+
+			this._extrema = {
+				mx: 0,
+				my: 0,
+				mz: 0,
+				MX: 0,
+				MY: 0,
+				MZ: 0,
+			};
+			this._extrema.update = function(v3){
+				var min = Math.min;
+				var max = Math.max;
+				this.mx = min(this.mx,v3.x);
+				this.my = min(this.my,v3.y);
+				this.mz = min(this.mz,v3.z);
+				this.MX = max(this.MX,v3.x);
+				this.MY = max(this.MY,v3.y);
+				this.MZ = max(this.MZ,v3.z);
+			};
+
+			Geom.HGrid.NEIGHBOURHOOD = ["NE","E","SE","SW","W","NW"];
+
+			this.HCell = new Class(E).extend({
+				initialize: function( grid, v3 ){
+					this.grid = grid;
+					this.gridPos = v3;
+					this.id = "cell"+grid.hash(v3);
+
+					this.parent(); // do not forget to add initialize to the class
+
+					for( var dir in Geom.dir ){
+						this[dir] = cellFunctions[dir];
+					}
+					
+				},
+
+				select: function( selection ){
+					var results = [];
+					//cf tree spec
+					for( var i in selection ){
+						var si = selection[i];
+						if( typeof si === 'string' ){
+							if( this[si] ) {
+								var cell = this[si]();
+								if( cell ) results.push( cell );
+							}
+						} else if( typeof si === 'object'){
+							if( si.length > 1 ){
+								var next = this[si[0]];
+								if( next ) results.push.apply(results, next.select( si.slice(1) ));
+							}
+						}
+					}
+					return results;
+				},
+
+				path: function( path ){
+					if( path.length == 1 ){
+						return this[path[0]]();
+					} else if ( path.length > 1 ){
+						return this[path[0]]().path(path.slice(1));
+					} else {
+						return null;
+					}
+				},
+
+				callNeighbourhood: function( fct, args ){
+					var cells = this.select(Geom.HGrid.NEIGHBOURHOOD);
+					for( var i in cells){
+						cells[i][fct](args);
+					}
+				}
+			});
+
+			this._origin = new Geom.Vector3(0,0,0);
 		},
 
-		setGrid: function(){
+		extrema: function(){
+			var obj = {};
+			for( var i in this._extrema) obj[i] = this._extrema[i];
+			return obj;
+		},
 
+		setConstraints: function( constraints ){
+			this.constraints = constraints;
+		},
+
+		hash: function(v3){
+			return v3.x+"_"+v3.y+"_"+v3.z;
+		},
+
+		hasCell: function( v3 ){
+			return Utils.defined(this.cells[this.hash(v3)]);
+		},
+
+		get: function( v3 ){
+			if( this.constraints(v3)){
+				if(this.hasCell(v3)){
+					return this.cells[this.hash(v3)];
+				}
+				this._extrema.update(v3);
+				return this.cells[this.hash(v3)] = new this.HCell(this,v3);
+			}
+			return null;
+		},
+
+		origin: function(){
+			return this.get(this._origin);
 		}
 	});
 }
@@ -484,7 +606,6 @@ var ViewManager = new function(){
 			if( views[i].refresh ) {
 				views[i].refresh();
 			} else {
-				console.log(views[i]);
 				views.slice(i,1);
 			}
 		}
@@ -685,16 +806,19 @@ var View = new Class({
 		}
 	});
 
-	View.Desktop.Slot = (new Class(View.Desktop)).extend({
+	View.Desktop.Slot = new Class(View.Desktop).extend({
 		initialize: function (model, svg, radius, origin) {
 			this.parent();
 			this.model 	= model;
-			this.svg 	= svg;
-			this.radius = radius;
-			this.origin = origin;
-			this.hexagon = new Geom.Hexagon(this.model.v3.scal(radius),radius,0.65).plus2D(origin);
+			this.svg 	= View.Desktop.Slot.SVG;
+			this.radius = View.Desktop.Slot.RADIUS;
+			this.origin = View.Desktop.Slot.ORIGIN;
+			this.hexagon = new Geom.Hexagon(this.model.gridPos.scal(this.radius),this.radius,0.65).plus2D(this.origin);
+			this.appearence = {};
 
 			this.itemView = null;
+
+			this.state = null;
 
 			this.domInit();
 		},
@@ -738,18 +862,18 @@ var View = new Class({
 					mouseenter: function(){
 						//eventPolygon.attr("fill","rgba(255, 255, 0, 0.2)");
 						group.selectAll(".sprite").style("filter","url(#hoverFilter)");
-						group.select('.bg').style("opacity",1);
+						group.select('.bg').style("opacity",that.appearence.hoverOpactity);
 						//<svg:feGaussianBlur stdDeviation="3"/>
 						/*group.append("feColorMatrix").attr("values","0.3333 0.3333 0.3333 0 0 \
 																	 0.3333 0.3333 0.3333 0 0 \
 																	 0.3333 0.3333 0.3333 0 0 \
 																	 0      0      0      1 0");*/
-						that.tooltip.show();
+						if( that.state != SLOT_STATE.VOID) that.tooltip.show();
 					},
 					mouseout : function(){
 						//eventPolygon.attr("fill","transparent");
 						group.selectAll(".sprite").style("filter","none");
-						group.select('.bg').style("opacity",0.3);
+						group.select('.bg').style("opacity",that.appearence.opacity);
 						that.tooltip.hide();
 						console.log("mouseout");
 						/*console.log(group.select("feColorMatrix"));
@@ -769,10 +893,9 @@ var View = new Class({
 
 
 			var width = Config.slot.bgFactor*this.hexagon.radius*2*Math.cos(Math.PI/6);
-			var height = width*Config.slot.bgRatio;//this.hexagon.radius*2*(440/380);
+			var height = width*Config.slot.bgRatio;
 			var c = this.hexagon.center2D();
 
-			//this.pagePos = new Geom.Vector2(c.x - width/2)
 
 			group.data([this.hexagon.v3.z + c.x/100]);
 			img.attr("x",c.x-width/2)
@@ -780,14 +903,13 @@ var View = new Class({
 				.attr("width",width)
 				.attr("height",height)
 				.attr("overflow","visible")
-				.attr("xlink:href",Config.slot.bg)
+				.attr("xlink:href","")
 				.classed("bg",true)
-				.style("opacity",0.3)
 				;
 		},
 
 		backgroundUrl: function(){
-			return Config.slot.bg;
+			return this.appearence.bg;
 		},
 
 		item: function(){
@@ -814,6 +936,31 @@ var View = new Class({
 		update: function(){
 			console.log("updating slot",this);
 		},
+
+		refresh: function(){
+			if( this.state != this.model.state() ){
+				this.state = this.model.state();
+				var img = this.dom.select("image.bg");
+
+				this.appearence.bg = "";
+				this.appearence.opacity = 1;
+				this.appearence.hoverOpactity = 1;
+
+				switch(this.state ){
+					case SLOT_STATE.GHOST:
+						this.appearence.bg = Config.slot.bg_ghost;
+						this.appearence.opacity = 0.3;
+						break;
+					case SLOT_STATE.SOLID:
+						this.appearence.bg = Config.slot.bg;
+						break;
+					case SLOT_STATE.VOID:
+						break;
+				}
+				img.attr("xlink:href",this.appearence.bg)
+				   .style("opacity",this.appearence.opacity);
+			}
+		}
 	});
 
 	View.Desktop.Menu = new Class(View.Desktop).extend({
@@ -850,33 +997,26 @@ var View = new Class({
 	}
 
 	View.Desktop.Playground = new Class(View.Desktop).extend({
-		initialize: function(config){
-			this.parent(config);
+		initialize: function(model){
+			this.parent();
+			this.model = model;
+			this.dom = View.Desktop.Playground.DOM;
 			this.domInit();
 
 			var width = Config.svg.width*100;
 			var origin = new Geom.Vector2(0,0);
 
 			this.slots = [];
-			var m_slots = this.model.getSlots();
-			for( var i in m_slots ){
-				for( var j in m_slots[i] ){
-					for( var k in m_slots[i][j]){
-							this.slots.push(new View.Desktop.Slot(
-								m_slots[i][j][k],
-								this.svg,
-								width/(Math.cos(Math.PI/6)*2*(2*Config.playground.layout.zBound-1)),
-								origin
-							));
-					}
-				}
-			}
+
+			View.Desktop.Slot.SVG = this.svg;
+			View.Desktop.Slot.RADIUS = width/(Math.cos(Math.PI/6)*2*(2*Config.playground.layout.zBound-1));
+			View.Desktop.Slot.ORIGIN = origin;
 		},
 
 		domInit: function(){
 			this.xOffset = 0;
-			this.xOsMin = -50;
-			this.xOsMax = 500;
+			this.xOsMin = -30;
+			this.xOsMax = 30;
 			this.svg = this.dom.append("svg").attr("viewBox", [Config.svg.vbx,Config.svg.vby,Config.svg.vbw,Config.svg.vbh].join(" "))
 											 .attr("width","100%")
 											 .attr("height","100%");
@@ -907,7 +1047,8 @@ var View = new Class({
 		},
 
 		refresh: function(){
-			//console.log("r",this.svg.selectAll('*'));
+			var ex = this.model.grid.extrema();
+			this.xOsMax = 30+(ex.MX-ex.mx-2)*View.Desktop.Slot.RADIUS*1.7;
 			this.svg.selectAll('g').sort(function(a,b){return a - b;});
 		}
 	});
@@ -916,7 +1057,7 @@ var View = new Class({
 		initialize: function(model){
 			this.parent();
 			this.model = model;
-			this.playground = new View.Desktop.Playground({model:this.model.playground, dom: d3.select("#playground")});
+			View.Desktop.Playground.DOM = d3.select("#playground");
 		},
 		refresh: function(){
 			this.numberFormat(this.model.production());
@@ -944,7 +1085,7 @@ var Model = new Class({
 	},
 	notify: function(){
 		for( var i in this.observers){
-			this.observers[i].notify();
+			this.observers[i].notify.apply(this.observers[i],arguments);
 		}
 	},
 	addObserver: function( obs ){
@@ -1227,6 +1368,12 @@ var Model = new Class({
 		}
 	});
 
+	var SLOT_STATE = Object.freeze({
+		VOID	: 0,
+		GHOST 	: 1,
+		SOLID	: 2
+	});
+
 	Model.Slot = new Class(Model).extend({
 		/*{
 		x: 0,
@@ -1235,11 +1382,13 @@ var Model = new Class({
 		playground: null,
 		
 		}*/
-		initialize: function(vector3, playground){
+		initialize: function(){
 			this.parent();
-			this.v3 = vector3;
-			this.playground = playground;
+			//this.v3 = vector3;
+			this._state = SLOT_STATE.VOID;
+			//this.playground = playground;
 			this.m_item = null;
+			this.m_view = new View.Desktop.Slot(this);
 		},
 
 		production: function(seconds){
@@ -1256,7 +1405,31 @@ var Model = new Class({
 		},
 
 		activate: function(){
-			if(this.m_item) this.m_item.activate();
+			if(this._state == SLOT_STATE.GHOST) this.state(SLOT_STATE.SOLID);
+			//if(this.m_item) this.m_item.activate();
+		},
+
+		state: function( state ){
+			if( state && state != this._state){
+				this._state = state;
+				this.callNeighbourhood("updateState");
+				return this;
+			} else {
+				return this._state;
+			}
+		},
+
+		updateState: function(){
+			if( this._state == SLOT_STATE.VOID ){
+				var slots = this.select(Geom.HGrid.NEIGHBOURHOOD);
+				for( var i in slots ){
+					var slot = slots[i];
+					if(slot._state == SLOT_STATE.SOLID){
+						this.state(SLOT_STATE.GHOST);
+						break;
+					}
+				}
+			}
 		}
 
 	});
@@ -1268,45 +1441,44 @@ var Model = new Class({
 			//console.log("playground",this);
 			this.slots = [];
 			this.shuffledSlots = [];
-			for( var i = 0; i < this.layout.radius*2-1; ++i) {
-				this.slots[i] = [];
-				for( var j = 0; j < this.layout.radius*2-1; ++j) {
-					this.slots[i][j] = [];
-					for( var k = 0; k < this.layout.radius*2-1; ++k) {
-						if(i+j+k == 3*(this.layout.radius-1)){
-							var x = i-this.layout.radius+1;
-							var y = j-this.layout.radius+1;
-							var z = k-this.layout.radius+1;
-							if( x >= 0 && y <= 0 && Math.abs(z) < this.layout.zBound ){
-								this.slots[i][j][k] = new Model.Slot(
-									new Geom.Vector3(x,y,z),
-									this
-								);
-								this.shuffledSlots.push(this.slots[i][j][k]);
-							}
-						}
-					}
-				}
-			}
+
+			this.m_view = new View.Desktop.Playground(this);
+
+			this.grid = new Geom.HGrid(Model.Slot, function( v3 ){
+				return 	v3.x >= 0 && v3.y <= 0 && ( v3.z > -3 && v3.z < 3);
+			});
+
+			console.log("grid", this.grid);
+
+			this.grid.origin().state(SLOT_STATE.SOLID);
+
 		},
 		getSlot: function(x,y,z) {
 			var r = this.layout.radius;
 			return this.slots[x+r-1][y+r-1][z+r-1];
 		},
 		getSlots: function(){return this.slots},
-		getAllSlots: function(){return this.shuffledSlots}
+		getAllSlots: function(){
+			var that = this;
+			return Object.keys(this.grid.cells).map(function (key) {return that.grid.cells[key]});
+		}
 	});
 
 	Model.Game = new Class(Model).extend({
 		initialize: function(){
 			this.parent();
+		},
+
+		build: function(){
 			this.playground = new Model.Playground(Config.playground);
 			this.prod = new Big(0);
 			this.prodLeftover = new Big(0);
 			this.last = new Date();
+			return this;
 		},
 
-		updateProd: function(date){
+		// todo : duration instead, so we can pause the game
+		updateProd: function(date){ 
 			var prod = new Big(0).plus(this.prodLeftover);
 			var seconds = new Big(date.getTime()).minus(new Big(this.last.getTime())).dividedBy(1000);
 			var prods = this.playground.getAllSlots().map(function(slot){return slot.production(seconds);});
@@ -1332,6 +1504,7 @@ Control = new Class({
 	initialize: function(){
 		this.game = new Model.Game();
 		this.game_view = new View.Game(this.game);
+		this.game.build();
 		this.timer = null;
 	},
 
@@ -1365,78 +1538,23 @@ C.startTimer();
 //mpg.getSlot(0,0,0).notify();
 //mpg.notify();
 
-var HGrid/*<E>*/ = new Class({
-	initialize: function( E ){
-		this.E = E;
-		this.cells = {};
 
-		this.HCell = new Class(E).extend({
-			initialize: function( grid, v3 ){
-				this.parent(); // do not forget to add initialize to the class
-				this.grid = grid;
-				this.gridPos = v3;
-
-				for( var dir in Geom.dir ){
-					this[dir] = function(){
-						return this.grid.get(this.gridPos.plus(Geom.dir[dir]));
-					}
-				}
-			},
-
-			select: function( selection ){
-				var results = [];
-				//cf tree spec
-				for( var i in selection ){
-					var si = selection[i];
-					if( typeof si === 'string' ){
-						if( this[si] ) {
-							var cell = this[si]();
-							if( cell ) results.push( cell );
-						}
-					} else if( typeof si === 'object'){
-						if( si.length > 1 ){
-							var next = this[si[0]];
-							if( next ) results.push.apply(null, next.select( si.slice(1) ));
-						}
-					}
-				}
-				return results;
-			},
-
-			path: function( path ){
-				if( path.length == 1 ){
-					return this[path[0]]();
-				} else if ( path.length > 1 ){
-					return this[path[0]]().path(path.slice(1));
-				} else {
-					return null;
-				}
-			}
-		});
-	},
-
-	hash: function(v3){
-		return v3.x+"_"+v3.y+"_"+v3.z;
-	},
-
-	hasCell: function( v3 ){
-		return Utils.defined(this.cells[this.hash(v3)]);
-	},
-
-	get: function( v3 ){
-		if(this.hasCell(v3)){
-			return this.cells[this.hash(v3)];
-		}
-		return this.cells[this.hash(v3)] = new this.HCell(this,v3);
-	}
-});
-
+/*
 var MyClass = new Class({
 	initialize: function(a,b,c){console.log(a,b,c)},
 	sayHello: function(){console.log("hello")}
 });
 
-var grid = new HGrid(MyClass);
+var grid = new Geom.HGrid(MyClass, function( v3 ){
+	return 	v3.x >= 0 && v3.y <= 0 && ( v3.z > -3 || v3.z < 3);
+});
 //grid.new(new Geom.Vector3(1,-5,2))(3,2,1);
-grid.get(new Geom.Vector3(1,-5,2));
-console.log(grid);
+//console.log(grid.get(new Geom.Vector3(1,-3,2)).EAST());
+//console.log(grid);
+
+console.log(grid.origin().select(["E","W","NE","WW","EE"]));*/
+
+
+
+
+//? Create view before model, then notify ? Or create model, create view, init model
