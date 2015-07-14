@@ -934,12 +934,14 @@ var View = new Class({
 		},
 
 		onSpecialClick: function(){
-			this.model.item(0);
-			//this.tileColor = Config.items[0].tile;
-			if( this.itemView == null) {
-				this.itemView = new View.Desktop.Item(this.model.item(),this.dom,this.hexagon);
-				this.eventHandler.on('mouseout')();
-				this.eventHandler.on('mouseenter')();
+			if( this.state == SLOT_STATE.SOLID ){
+				this.model.item(0);
+				//this.tileColor = Config.items[0].tile;
+				if( this.itemView == null) {
+					this.itemView = new View.Desktop.Item(this.model.item(),this.dom,this.hexagon);
+					this.eventHandler.on('mouseout')();
+					this.eventHandler.on('mouseenter')();
+				}
 			}
 			
 		},
@@ -1062,6 +1064,8 @@ var View = new Class({
 		updateScroll: function(){
 			var s = this._scrolling, scrollDelta = 3;
 			if( s[KEYCODES.UP] || s[KEYCODES.RIGHT] || s[KEYCODES.DOWN] || s[KEYCODES.LEFT] ){
+				
+				
 				this.viewBox.center.x = this.viewBox.center.x + (s[KEYCODES.RIGHT]? scrollDelta : 0) - (s[KEYCODES.LEFT]? scrollDelta : 0);
 				this.viewBox.center.y = this.viewBox.center.y + (s[KEYCODES.DOWN]? scrollDelta : 0) - (s[KEYCODES.UP]? scrollDelta : 0);
 				for( var i in {x:null,y:null}) this.viewBox.center[i] = Math.max( this.viewBox.min[i], Math.min( this.viewBox.max[i], this.viewBox.center[i] ));
