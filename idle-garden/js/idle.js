@@ -10,6 +10,13 @@ var SOUTH_WEST 	= "SW";
 var WEST 		=  "W";
 var NORTH_WEST 	= "NW";
 
+KEYCODES = {
+	LEFT: 37,
+	UP: 38,
+	RIGHT: 39,
+	DOWN: 40
+};
+
 var TESTING		= true;
 var assert = function(assertion){
 	if( TESTING && !assertion ){
@@ -119,6 +126,7 @@ var Config = {
 		}
 	},
 	playground : {
+		zCoef: 0.65,
 		layout : {
 			zBound: 3,
 			radius: 25
@@ -490,6 +498,8 @@ var Geom = {};
 				MX: 0,
 				MY: 0,
 				MZ: 0,
+				mx2d: 0,
+				MX2d: 0
 			};
 			this._extrema.update = function(v3){
 				var min = Math.min;
@@ -500,6 +510,9 @@ var Geom = {};
 				this.MX = max(this.MX,v3.x);
 				this.MY = max(this.MY,v3.y);
 				this.MZ = max(this.MZ,v3.z);
+
+				this.mx2d = min(this.mx2d,v3.x/2 - v3.y/2);
+				this.MX2d = max(this.MX2d,v3.x/2 - v3.y/2);
 			};
 
 			Geom.HGrid.NEIGHBOURHOOD = ["NE","E","SE","SW","W","NW"];
@@ -813,7 +826,7 @@ var View = new Class({
 			this.svg 	= View.Desktop.Slot.SVG;
 			this.radius = View.Desktop.Slot.RADIUS;
 			this.origin = View.Desktop.Slot.ORIGIN;
-			this.hexagon = new Geom.Hexagon(this.model.gridPos.scal(this.radius),this.radius,0.65).plus2D(this.origin);
+			this.hexagon = new Geom.Hexagon(this.model.gridPos.scal(this.radius),this.radius,Config.playground.zCoef).plus2D(this.origin);
 			this.appearence = {};
 
 			this.itemView = null;
@@ -1001,20 +1014,28 @@ var View = new Class({
 			this.dom = View.Desktop.Playground.DOM;
 			this.domInit();
 
+			this.viewBox = {};
+			this.viewBox.center = new Geom.Vector2(0,0);
+			this.viewBox.min = new Geom.Vector2(-30,-30);
+			this.viewBox.max = new Geom.Vector2(30,10);
+
+			this._scrolling = {};
+			var dirs = [KEYCODES.UP,KEYCODES.RIGHT,KEYCODES.DOWN,KEYCODES.LEFT];
+			for( var i in dirs) this._scrolling[dirs[i]] = false;
+
 			var width = Config.svg.width*100;
 			var origin = new Geom.Vector2(0,0);
 
 			this.slots = [];
 
 			View.Desktop.Slot.SVG = this.svg;
-			View.Desktop.Slot.RADIUS = width/(Math.cos(Math.PI/6)*2*(2*Config.playground.layout.zBound-1));
+			View.Desktop.Slot.X_GAP = width/(2*Config.playground.layout.zBound-1);
+			View.Desktop.Slot.RADIUS = View.Desktop.Slot.X_GAP/(2*Math.cos(Math.PI/6));
+			View.Desktop.Slot.Z_GAP = 1.5*View.Desktop.Slot.RADIUS*Config.playground.zCoef;
 			View.Desktop.Slot.ORIGIN = origin;
 		},
 
 		domInit: function(){
-			this.xOffset = 0;
-			this.xOsMin = -30;
-			this.xOsMax = 30;
 			this.svg = this.dom.append("svg").attr("viewBox", [Config.svg.vbx,Config.svg.vby,Config.svg.vbw,Config.svg.vbh].join(" "))
 											 .attr("width","100%")
 											 .attr("height","100%");
@@ -1025,11 +1046,36 @@ var View = new Class({
 													  0 0 1 0 0 \
 													  0 0 0 1 0");
 			var that = this;
-			d3.select("#playground").on("mousewheel",function(){that.onMouseWheel(event.wheelDelta)});
+			//d3.select("#playground").on("mousewheel",function(){that.onMouseWheel(event.wheelDelta)});
+			d3.select("body").on("keydown",function(){that.onKeyDown(d3.event.keyCode)});
+			d3.select("body").on("keyup",function(){that.onKeyUp(d3.event.keyCode)});
+		},
+
+		onKeyDown: function( code ){
+			this._scrolling[code] = true;
+		},
+
+		onKeyUp: function( code ){
+			this._scrolling[code] = false;
+		},
+
+		updateScroll: function(){
+			var s = this._scrolling, scrollDelta = 3;
+			if( s[KEYCODES.UP] || s[KEYCODES.RIGHT] || s[KEYCODES.DOWN] || s[KEYCODES.LEFT] ){
+				this.viewBox.center.x = this.viewBox.center.x + (s[KEYCODES.RIGHT]? scrollDelta : 0) - (s[KEYCODES.LEFT]? scrollDelta : 0);
+				this.viewBox.center.y = this.viewBox.center.y + (s[KEYCODES.DOWN]? scrollDelta : 0) - (s[KEYCODES.UP]? scrollDelta : 0);
+				for( var i in {x:null,y:null}) this.viewBox.center[i] = Math.max( this.viewBox.min[i], Math.min( this.viewBox.max[i], this.viewBox.center[i] ));
+			
+				Config.svg.currentVbx = this.viewBox.center.x+Config.svg.vbx;
+				Config.svg.currentVby = this.viewBox.center.y+Config.svg.vby;
+			
+				this.svg.transition().ease('quad-out').attr("viewBox",Config.svg.currentVbx+" "+Config.svg.currentVby+" "+[Config.svg.vbw,Config.svg.vbh].join(" "))
+			}
+			
 		},
 
 		onMouseWheel: function( direction ){
-			if( direction < 0 ){
+			/*if( direction < 0 ){
 				this.xOffset = Math.min(this.xOsMax, this.xOffset+20);
 			} else {
 				this.xOffset = Math.max(this.xOsMin, this.xOffset-20);
@@ -1037,7 +1083,7 @@ var View = new Class({
 			Config.svg.currentVbx = this.xOffset+Config.svg.vbx;
 			
 			this.svg.transition().ease('quad-out').attr("viewBox",Config.svg.currentVbx+" "+[Config.svg.vby,Config.svg.vbw,Config.svg.vbh].join(" "))
-			//d3.select("#playground").on("mousemove");
+			//d3.select("#playground").on("mousemove");*/
 		},
 
 		update: function(){
@@ -1046,7 +1092,11 @@ var View = new Class({
 
 		refresh: function(){
 			var ex = this.model.grid.extrema();
-			this.xOsMax = 30+(ex.MX-ex.mx-2)*View.Desktop.Slot.RADIUS*1.7;
+			this.viewBox.max.x = 30+(ex.MX2d-2)*View.Desktop.Slot.X_GAP;
+			this.viewBox.min.x = -30+(ex.mx2d+2)*View.Desktop.Slot.X_GAP;
+			this.viewBox.max.y = 30+(ex.MZ-2)*View.Desktop.Slot.Z_GAP;
+			this.viewBox.min.y = -10+(ex.mz+2)*View.Desktop.Slot.Z_GAP;
+			this.updateScroll();
 			this.svg.selectAll('g').sort(function(a,b){return a - b;});
 		}
 	});
@@ -1443,7 +1493,7 @@ var Model = new Class({
 			this.m_view = new View.Desktop.Playground(this);
 
 			this.grid = new Geom.HGrid(Model.Slot, function( v3 ){
-				return 	v3.x >= 0 && v3.y <= 0 && ( v3.z > -3 && v3.z < 3);
+				return 	true;//v3.x >= 0 && v3.y <= 0 && ( v3.z > -3 && v3.z < 3);
 			});
 
 			console.log("grid", this.grid);
