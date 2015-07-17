@@ -118,7 +118,8 @@ var Config = {
 		vbw: 100,
 		vbh: 100,
 		width: 0.8,
-		currentVbx: -50
+		currentVbx: -50,
+		currentVby: -60
 	},
 	files: {
 		sprites:{
@@ -298,11 +299,15 @@ var Geom = {};
 
 		plus: function(){
 			var v = this.copy();
-			for( i in arguments){
+			for( var i in arguments){
 				assert(typeof arguments[i] === "object", "Geom.Vector2.plus: one of the parameters is not an object.");
 				v._plus(arguments[i]);
 			}
 			return v;
+		},
+
+		minus: function( vector2){
+			return this.plus(vector2.neg());
 		},
 
 		neg: function(){
@@ -348,7 +353,7 @@ var Geom = {};
 
 		plus: function(){
 			var v = this.copy();
-			for( i in arguments){
+			for( var i in arguments){
 				assert(typeof arguments[i] === "object", "Geom.Vector3.plus: one of the parameters is not an object.");
 				v._plus(arguments[i]);
 			}
@@ -657,7 +662,7 @@ var View = new Class({
 			toScreenXY: function( pos ){
 				var w = parseInt(d3.select("#playground").style("width"));
 				var h = parseInt(d3.select("#playground").style("height"));
-				return   pos.plus(new Geom.Vector2(Config.svg.vbx - Config.svg.currentVbx, 0))
+				return   pos.plus(new Geom.Vector2(Config.svg.vbx - Config.svg.currentVbx, Config.svg.vby - Config.svg.currentVby))
 							.scal(new Geom.Vector2(Math.min(h/w,1),1))
 							.plus(new Geom.Vector2(-Config.svg.vbx,-Config.svg.vby));
 			},
@@ -886,7 +891,7 @@ var View = new Class({
 						group.selectAll("*").style("filter","none");
 						group.select('.bg').style("opacity",that.appearence.opacity);
 						that.tooltip.hide();
-						console.log("mouseout");
+						//console.log("mouseout");
 						/*console.log(group.select("feColorMatrix"));
 						group.select("feColorMatrix").remove();*/
 					},
@@ -894,8 +899,9 @@ var View = new Class({
 						if(event.button != 0 ){
 							this.onSpecialClick();
 						} else {
-							this.onClick();
+							//this.onClick();
 						}}.bind(this),
+					click: function(){ that.onClick();},
 					contextmenu: function(){event.preventDefault()}
 				})
 				;
@@ -1016,6 +1022,8 @@ var View = new Class({
 			this.dom = View.Desktop.Playground.DOM;
 			this.domInit();
 
+			this.states = {};
+
 			this.viewBox = {};
 			this.viewBox.center = new Geom.Vector2(0,0);
 			this.viewBox.min = new Geom.Vector2(-30,-30);
@@ -1051,6 +1059,29 @@ var View = new Class({
 			//d3.select("#playground").on("mousewheel",function(){that.onMouseWheel(event.wheelDelta)});
 			d3.select("body").on("keydown",function(){that.onKeyDown(d3.event.keyCode)});
 			d3.select("body").on("keyup",function(){that.onKeyUp(d3.event.keyCode)});
+			d3.select("body").on("mousedown",function(){var p = d3.mouse(this);that.onMouseDown(new Geom.Vector2(p[0],p[1]))});
+			d3.select("body").on("mouseup",function(){that.onMouseUp()});
+			d3.select("body").on("mousemove",function(){var p = d3.mouse(this);that.onMouseMove(new Geom.Vector2(p[0],p[1]))});
+		},
+
+		onMouseDown: function( pos ){
+			console.log("MOUSEDOWN");
+			this.states.mouseDown = true;
+		},
+
+		onMouseMove: function( pos ){
+			if( this.states.dragging ){
+				this.states.dragging.to = pos;
+			} else if ( this.states.mouseDown ){
+				this.states.dragging = {};
+				this.states.dragging.from = pos ;
+				this.states.dragging.to = pos ;
+			}
+		},
+
+		onMouseUp: function(){
+			this.states.dragging.end = true;
+			this.states.mouseDown = false;
 		},
 
 		onKeyDown: function( code ){
@@ -1061,19 +1092,67 @@ var View = new Class({
 			this._scrolling[code] = false;
 		},
 
+		_updateScroll: function( ease, bound ){
+			if(bound)for( var i in {x:null,y:null}) this.viewBox.center[i] = Math.max( this.viewBox.min[i], Math.min( this.viewBox.max[i], this.viewBox.center[i] ));
+			Config.svg.currentVbx = this.viewBox.center.x+Config.svg.vbx;
+			Config.svg.currentVby = this.viewBox.center.y+Config.svg.vby;
+			var a = this.svg;
+			if(ease) a = a.transition().ease('quad-out');
+			a.attr("viewBox",Config.svg.currentVbx+" "+Config.svg.currentVby+" "+[Config.svg.vbw,Config.svg.vbh].join(" "));
+		},
+
 		updateScroll: function(){
 			var s = this._scrolling, scrollDelta = 3;
-			if( s[KEYCODES.UP] || s[KEYCODES.RIGHT] || s[KEYCODES.DOWN] || s[KEYCODES.LEFT] ){
+
+			if( this.states.dragging ) {
+
+				if( ! this.states.dragging.old ) {
+					console.log("oldcenter");
+					this.states.dragging.old = {};
+					this.states.dragging.old.center = this.viewBox.center.copy();
+					this.states.dragging.old.dx = 0;
+					this.states.dragging.old.dy = 0;
+				}
+
+				var w = parseInt(d3.select("body").style("width"));
+				var h = parseInt(d3.select("body").style("height"));
+
+				var from = this.states.dragging.from, to = this.states.dragging.to;
+				var dx = to.minus(from).x/w*100
+					dy = to.minus(from).y/h*100;
+
+
+				if( this.states.dragging.end ){
+
+					console.log(dx-this.states.dragging.old.dx,dy-this.states.dragging.old.dy);
+
+					this.viewBox.center.x = this.states.dragging.old.center.x - dx*1.7 -(dx-this.states.dragging.old.dx)*5;
+					this.viewBox.center.y = this.states.dragging.old.center.y - dy -(dy-this.states.dragging.old.dy)*5;
+
+					this._updateScroll(true,true);
+					this.states.dragging = null;
+
+				} else {
+
+					this.states.dragging.old.dx = dx;
+					this.states.dragging.old.dy = dy;
+					
+
+					this.viewBox.center.x = this.states.dragging.old.center.x - dx*1.7;
+					this.viewBox.center.y = this.states.dragging.old.center.y - dy;
+
+					this._updateScroll();
+				}
+
+				
+
+			} else if( s[KEYCODES.UP] || s[KEYCODES.RIGHT] || s[KEYCODES.DOWN] || s[KEYCODES.LEFT] ){
 				
 				
 				this.viewBox.center.x = this.viewBox.center.x + (s[KEYCODES.RIGHT]? scrollDelta : 0) - (s[KEYCODES.LEFT]? scrollDelta : 0);
 				this.viewBox.center.y = this.viewBox.center.y + (s[KEYCODES.DOWN]? scrollDelta : 0) - (s[KEYCODES.UP]? scrollDelta : 0);
-				for( var i in {x:null,y:null}) this.viewBox.center[i] = Math.max( this.viewBox.min[i], Math.min( this.viewBox.max[i], this.viewBox.center[i] ));
 			
-				Config.svg.currentVbx = this.viewBox.center.x+Config.svg.vbx;
-				Config.svg.currentVby = this.viewBox.center.y+Config.svg.vby;
-			
-				this.svg.transition().ease('quad-out').attr("viewBox",Config.svg.currentVbx+" "+Config.svg.currentVby+" "+[Config.svg.vbw,Config.svg.vbh].join(" "))
+				this._updateScroll(true,true);
 			}
 			
 		},
@@ -1150,7 +1229,7 @@ var Model = new Class({
 		return this;
 	},
 	dispatch: function( topic,  e ){
-		for( i in this.topics[topic]){
+		for( var i in this.topics[topic]){
 			var listener = this.topics[topic][i];
 			if( typeof listener['on'+topic] === 'function') listener['on'+topic](e);
 		}
