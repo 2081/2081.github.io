@@ -67,3 +67,6 @@ Story:
 
 Music
 	Put a 10H YouTube video in background, with a little button to hide/show div
+	https://www.youtube.com/watch?v=_-fkM4K_26U
+	https://www.youtube.com/watch?v=JjOlUbaKT5A
+	https://www.youtube.com/watch?v=IAONT0n5jOg :))
