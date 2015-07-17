@@ -1062,6 +1062,7 @@ var View = new Class({
 			d3.select("body").on("mousedown",function(){var p = d3.mouse(this);that.onMouseDown(new Geom.Vector2(p[0],p[1]))});
 			d3.select("body").on("mouseup",function(){that.onMouseUp()});
 			d3.select("body").on("mousemove",function(){var p = d3.mouse(this);that.onMouseMove(new Geom.Vector2(p[0],p[1]))});
+			d3.select("body").on("mouseleave",function(){that.onMouseLeave()});
 		},
 
 		onMouseDown: function( pos ){
@@ -1071,7 +1072,11 @@ var View = new Class({
 
 		onMouseMove: function( pos ){
 			if( this.states.dragging ){
-				this.states.dragging.to = pos;
+				/*if( ! this.states.mouseDown ){
+					this.onMouseUp();
+				} else {*/
+					this.states.dragging.to = pos;
+				//}
 			} else if ( this.states.mouseDown ){
 				this.states.dragging = {};
 				this.states.dragging.from = pos ;
@@ -1079,8 +1084,13 @@ var View = new Class({
 			}
 		},
 
+		onMouseLeave: function(){
+			this.onMouseUp();
+		},
+
 		onMouseUp: function(){
-			this.states.dragging.end = true;
+			console.log("MOUSEUP");
+			if(this.states.dragging) this.states.dragging.end = true;
 			this.states.mouseDown = false;
 		},
 
@@ -1107,7 +1117,6 @@ var View = new Class({
 			if( this.states.dragging ) {
 
 				if( ! this.states.dragging.old ) {
-					console.log("oldcenter");
 					this.states.dragging.old = {};
 					this.states.dragging.old.center = this.viewBox.center.copy();
 					this.states.dragging.old.dx = 0;
@@ -1123,8 +1132,6 @@ var View = new Class({
 
 
 				if( this.states.dragging.end ){
-
-					console.log(dx-this.states.dragging.old.dx,dy-this.states.dragging.old.dy);
 
 					this.viewBox.center.x = this.states.dragging.old.center.x - dx*1.7 -(dx-this.states.dragging.old.dx)*5;
 					this.viewBox.center.y = this.states.dragging.old.center.y - dy -(dy-this.states.dragging.old.dy)*5;
@@ -1652,40 +1659,46 @@ Control = new Class({
 var C = new Control();
 C.startTimer();
 
-//var mpg = new Model.Playground(Config.playground);
-//var vpg = new View.Desktop.Playground({model:mpg, dom: d3.select("#playground")});
-
-//ViewManager.refresh();
-//console.log("manager",ViewManager);
-//vpg.die();
-//ViewManager.refresh();
-//console.log("manager",ViewManager);
-
-
-//var v = new View.Slot({model:mpg.getSlot(0,0,0)});
-
-//console.log(mpg,vpg);
-//console.log(v);
-//mpg.getSlot(0,0,0).notify();
-//mpg.notify();
-
-
+// PRODUCTION ? 
 /*
-var MyClass = new Class({
-	initialize: function(a,b,c){console.log(a,b,c)},
-	sayHello: function(){console.log("hello")}
+
+	Objectives: build a production system which can :
+		easily support new kind of productions ( per click, per second, dependant, based on epxerience... )
+		lead to an simple leveled bonus system
+
+*/
+var Producer = new Class({
+	initialize: function(){
+		this.perTick = new Big(0);
+		this.totalProduced = new Big(0);
+		this.cachedProduction = new Big(0);
+
+		this.priority = 0;
+	},
+
+	produce: function( tickCount ){
+		this.cachedProduction = this.cachedProduction.plus(tickCount.times(this.perTick));
+	},
+
+	production: function(){
+		return this.totalProduced.plus(this.cachedProduction);
+	}
+
+	flush: function(){
+		this.totalProduced = this.totalProduced.plus(this.cachedProduction);
+		this.cachedProduction = new Big(0);
+	}
 });
 
-var grid = new Geom.HGrid(MyClass, function( v3 ){
-	return 	v3.x >= 0 && v3.y <= 0 && ( v3.z > -3 || v3.z < 3);
+var Bonus = new Class({
+	initialize: function(){
+		this.flat = new Big(0);
+		this.mult = new Big(1);
+	}
 });
-//grid.new(new Geom.Vector3(1,-5,2))(3,2,1);
-//console.log(grid.get(new Geom.Vector3(1,-3,2)).EAST());
-//console.log(grid);
 
-console.log(grid.origin().select(["E","W","NE","WW","EE"]));*/
+/* USE CASES
 
+var bonusID = BonusFactory(".land").on("perClick").add( new Bonus(10,50) )
 
-
-
-//? Create view before model, then notify ? Or create model, create view, init model
+*/
