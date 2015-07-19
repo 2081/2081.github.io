@@ -775,10 +775,31 @@ var View = new Class({
 			}
 		});
 
+		var HMenuTile = new Class({
+			initialize: function(id, thumbnail, tooltip, activated ){
+
+			}
+		});
+
 		var HexagonMenu = new Class(FloatingUI).extend({
 			initialize: function(pos){
 				this.parent();
 				this.pos = pos;
+				this.hgrid = new HGrid(HMenuTile);
+			},
+
+			addItem: function( id, thumbnail, tooltip, activated ){
+
+			},
+
+			open: function( callback ){
+				this._callback = callback;
+			}
+		});
+
+		var SlotCM = new Class(HexagonMenu).extend({
+			initialize: function( pos, slot){
+
 			}
 		});
 
@@ -1674,6 +1695,7 @@ var Producer = new Class({
 		this.cachedProduction = new Big(0);
 
 		this.priority = 0;
+		this._bonusTags = [];
 	},
 
 	produce: function( tickCount ){
@@ -1682,23 +1704,172 @@ var Producer = new Class({
 
 	production: function(){
 		return this.totalProduced.plus(this.cachedProduction);
-	}
+	},
 
 	flush: function(){
 		this.totalProduced = this.totalProduced.plus(this.cachedProduction);
 		this.cachedProduction = new Big(0);
+	},
+
+	bonusTags: function(){
+		if( arguments.length == 0 ){
+			return this._bonusTags;
+		}
+		this._bonusTags = [];
+		for( var i in arguments ) this._bonusTags.push( arguments[i] );
+		return this;
 	}
 });
 
-var Bonus = new Class({
-	initialize: function(){
-		this.flat = new Big(0);
-		this.mult = new Big(1);
+
+
+
+
+var BonusFactory;
+(function(){
+
+	var BonusData = new Class({
+		initialize: function(id){
+			this.id = id;
+			this.stackGroup = 0; // mult coefs stack additively in a group then multiplicatively
+			this.tags = {};
+			this.prodType = {};
+			this.resources = {};
+			this.location = [];
+		},
+
+		formula: function(){return [0,1];}
+	})
+
+	var BonusHandler = new Class({
+		initialize: function( bonusData ){
+			this.bonusData = bonusData || new BonusData();
+		},
+
+		get: function( producer ){
+			var res = this.bonusData.formula(producer);
+			return {
+				flat: new Big(res[0]),
+				mult: new Big(res[1])
+			};
+		},
+
+		_formula: function(){return [0,1];},
+
+		formula: function( f ){
+			if( arguments.length == 0){
+				return this.bonusData.formula;
+			}
+			if( typeof f === 'function'){
+				this.bonusData.formula = f;
+			}
+			return this;
+		},
+
+		fixed: function( flat, mult ){
+			var f = flat || 0;
+			var m = mult || 1;
+			this.bonusData.formula = function(){ return [f,m]};
+			return this;
+		},
+
+		stackGroup: function( sg ){
+			if( arguments.length == 0){
+				return this.bonusData.stackGroup;
+			}
+			this.bonusData.stackGroup = sg;
+			return this;
+		},
+
+		tags: function( tags, value ){
+			if( arguments.length == 0){
+				return this.bonusData.tags;
+			}
+			var t = tags.split(" ");
+			for( var i in t ) this.bonusData.tags[t[i]] = value;
+			return this;
+		},
+
+		resources: function( resources, value ){
+			if( arguments.length == 0){
+				return this.bonusData.resources;
+			}
+			var r = resources.split(" ");
+			for( var i in r ) this.bonusData.resources[r[i]] = value;
+			return this;
+		},
+
+		location: function( loc ){
+			if( arguments.length == 0){
+				return this.bonusData.location;
+			}
+			this.bonusData.location = loc;
+			return this;
+		},
+
+		data: function(){
+			return this.bonusData;
+		},
+
+		build: function(){
+			return this.bonusData.id;
+		}
+
+	});
+
+	var bonuses = {};
+	var lastID = 0;
+
+	BonusFactory = function( id ){
+		var bdata;
+		if( typeof id !== 'string' ){
+			id = "bonus"+lastID++;
+			bdata = new BonusData(id);
+			bonuses[id] = bdata;
+		} else {
+			bdata = bonuses[id];
+			if( bdata == null ) throw new Error("Cannot retrieve bonus from id : "+id);
+		}
+		return new BonusHandler(bdata);
 	}
-});
+})();
+
 
 /* USE CASES
 
+IdleD(this) // adds this._IdleD = "SIJDJnsysDJN"
+
 var bonusID = BonusFactory(".land").on("perClick").add( new Bonus(10,50) )
 
+var bonusID = BonusFactory( /id )
+						  .resources("all dps dpc")
+						  .tags("items grandma")
+						  .location( [ HCells ] )
+						  .fixed( flat, mult )
+						  .formula( function( producer ){ return [ flat, mult ] })
+						  .stackGroup( number )
+						  .build();
+
+var bonusID = BonusFactory().location( hcell.select( ["NE","E","SE","SW","W","NW"] ) )
+							.type("all") // dps, dpc...
+							.
+
+							.resources("dps")
+							.tags("octoplant")
+							.formula( function( producer ){
+								var flat = producer.getLevel();
+								return [ flat, 1 ];
+							})
+							;
+
+uniqueBonusId ?
+
 */
+/*
+ var bonusID = BonusFactory()
+ 							.resources("dps dpc")
+ 							.tags("octoplant land", true)
+ 							.fixed(1,1.5)
+ 							.build();
+ console.log( bonusID, BonusFactory(bonusID), BonusFactory(bonusID).formula()());
+ */
