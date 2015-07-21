@@ -25,6 +25,22 @@ var assert = function(assertion){
 	}
 }
 
+var GUID;
+(function(){
+	// No need to save any value
+	// Though keys wont have the same length
+	var d = new Date().getTime().toString(35);
+	var i = 0;
+	
+	GUID = function(){
+		return d+"z"+(i++).toString(35);
+	}
+
+	// for rfc4122 compliance on GUID, see
+	// http://stackoverflow.com/a/2117523
+	// Generates xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx ids
+})();
+
 ////
 var Lang = {
 	all: ["en"],
@@ -1688,9 +1704,14 @@ C.startTimer();
 		lead to an simple leveled bonus system
 
 */
-var Producer = new Class({
+var RESOURCES = {
+	"dps": "dust/s",
+	"dpc": "dust/click"
+};
+
+/*var Producer = new Class({
 	initialize: function(){
-		this.perTick = new Big(0);
+		//this.perTick = new Big(0);
 		this.totalProduced = new Big(0);
 		this.cachedProduction = new Big(0);
 
@@ -1719,26 +1740,177 @@ var Producer = new Class({
 		for( var i in arguments ) this._bonusTags.push( arguments[i] );
 		return this;
 	}
-});
+});*/
+
+var RESC = {
+	DPS: "dps",
+	DPC: "dpc"
+};
+
+var Producer;
+(function(){
+
+	var ProducerData = function(id){
+		return {
+			id 			: id,
+			total 		: new Big(0),
+			pending 	: new Big(0),
+
+			//perTick 	: new Big(0),
+
+			resource 	: "",
+			//location	: null,
+
+			//userData	: null,
+
+			priority 	: 100,
+			tags 		: {}
+		}
+	};
+
+	var ProducerHandler = new Class({
+		initialize: function( pdata ){
+			this.pdata = pdata;
+		},
+
+		id: function(){
+			return this.pdata.id;
+		},
+
+		attr: function( attr, value ){
+			if( arguments.length == 1 ) return this.pdata[attr];
+			this.pdata[attr] = value;
+			return this;
+		},
+
+		resource: function( resc ){
+			if( arguments.length == 0 ) return this.pdata.resource;
+			this.pdata.resource = resc;
+			return this;
+		},
+
+		addTags: function( tags ){
+			tags.split(" ").map(function(obj){this.pdata.tags[obj] = true}.bind(this));
+			return this;
+		},
+
+		removeTags: function( tags ){
+			tags.split(" ").map(function(obj){delete this.pdata.tags[obj]}.bind(this));
+			return this;
+		}
+	});
+
+	var pDatas = {};
 
 
+	ProductionFactory = function( id ){
+		var pdata;
+		if( typeof id !== 'string' ){
+			id = GUID();
+			pdata = new ProducerData(id);
+			pDatas[id] = pdata;
+		} else {
+			pdata = pDatas[id];
+			if( pdata == null ) throw new Error("Cannot retrieve prod from id : "+id);
+		}
+		return new ProducerHandler(pdata);
+	}
+
+	ProductionFactory.getAll = function(){
+		return Object.keys(pDatas)
+					 .map(function(key){return pDatas[key];})
+					 .sort(function(a,b){return b.priority - a.priority}); // DESC
+	}
+
+	ProductionFactory.save = function(){
+		var str = "{";
+		for( var item in pDatas ){
+			var pdata = pDatas[item];
+			str += '"'+item+"\":{";
+			for( var att in pdata ){
+				str += '"'+att+"\":";
+				str += ( pdata[att] ? '"'+pdata[att].toString()+'"' : "null" );
+				str += ",";
+			}
+			str = str.slice(0, -1)+"},";
+		} 
+		return str.slice(0, -1)+"}";
+	}
+
+	ProductionFactory.load = function( str ){
+		pDatas = JSON.parse(str);
+		for( var item in pDatas ){
+			var pdata = pDatas[item];
+			pdata.total = new Big(pdata.total);
+			pdata.pending = new Big(pdata.pending);
+			pdata.perTick = new Big(pdata.perTick);
+			pdata.priority = parseInt(pdata.priority);
+		} 
+		console.log(pDatas);
+	}
+
+})();
+
+/*var prodID = ProductionFactory().addTags("octoplant land")
+								.removeTags("land milk")
+								.resource(RESC.DPS)
+								.attr("level", 56)
+								.attr("total",new Big(500))
+								.attr("priority",5)
+								.id();
+
+console.log(prodID, ProductionFactory(prodID).pdata);*/
+//for( var i = 0; i < 3; ++i) ProductionFactory().attr("priority",Math.round(Math.random()*100)).addTags("octoplant land");
+//console.log(ProductionFactory.getAll());
+
+/* USE CASES
+
+Thinking about saving the game: Data classes to compact information
+
+var productionID = ProductionFactory()/(id)
+								.location( HCell )
+								.resource( RESC.DPS )
+								.priority( 50 )
+								.tags( "octoplant land" )
+								.total( Big )
+								.pending( Big )
+								.userData( this )
+								.id();
+
+ProductionFactory.destroy(id);
+
+
+Production.produce( timelapse );
+
+
+*/
 
 
 
 var BonusFactory;
+var Bonus;
 (function(){
+
+	/*
+		Tags should cover every cases.
+		Leveling bonus -> item tag + custom formula based on level
+		Land to item -> location
+		Global bonus -> tag all
+		
+		if linking a bonus to an item becomes neccessary (divine buf ?)
+		targetID[] can be added
+	*/
 
 	var BonusData = new Class({
 		initialize: function(id){
 			this.id = id;
 			this.stackGroup = 0; // mult coefs stack additively in a group then multiplicatively
 			this.tags = {};
-			this.prodType = {};
 			this.resources = {};
 			this.location = [];
 		},
 
-		formula: function(){return [0,1];}
+		formula: function(){return [0,0];}
 	})
 
 	var BonusHandler = new Class({
@@ -1746,15 +1918,15 @@ var BonusFactory;
 			this.bonusData = bonusData || new BonusData();
 		},
 
-		get: function( producer ){
-			var res = this.bonusData.formula(producer);
+		get: function( userData ){
+			var res = this.bonusData.formula( userData );
 			return {
 				flat: new Big(res[0]),
-				mult: new Big(res[1])
+				mult: new Big(res[0])
 			};
 		},
 
-		_formula: function(){return [0,1];},
+		_formula: function(){return [0,0];},
 
 		formula: function( f ){
 			if( arguments.length == 0){
@@ -1768,7 +1940,7 @@ var BonusFactory;
 
 		fixed: function( flat, mult ){
 			var f = flat || 0;
-			var m = mult || 1;
+			var m = mult || 0;
 			this.bonusData.formula = function(){ return [f,m]};
 			return this;
 		},
@@ -1781,21 +1953,23 @@ var BonusFactory;
 			return this;
 		},
 
-		tags: function( tags, value ){
-			if( arguments.length == 0){
-				return this.bonusData.tags;
-			}
-			var t = tags.split(" ");
-			for( var i in t ) this.bonusData.tags[t[i]] = value;
+		addTags: function( tags ){
+			tags.split(" ").map(function(obj){this.bonusData.tags[obj] = true}.bind(this));
 			return this;
 		},
 
-		resources: function( resources, value ){
-			if( arguments.length == 0){
-				return this.bonusData.resources;
-			}
-			var r = resources.split(" ");
-			for( var i in r ) this.bonusData.resources[r[i]] = value;
+		removeTags: function( tags ){
+			tags.split(" ").map(function(obj){delete this.bonusData.tags[obj]}.bind(this));
+			return this;
+		},
+
+		addResources: function( resc ){
+			resc.split(" ").map(function(obj){this.bonusData.resources[obj] = true}.bind(this));
+			return this;
+		},
+
+		removeResources: function( resc ){
+			resc.split(" ").map(function(obj){delete this.bonusData.resources[obj]}.bind(this));
 			return this;
 		},
 
@@ -1818,12 +1992,14 @@ var BonusFactory;
 	});
 
 	var bonuses = {};
-	var lastID = 0;
+
+	/*bonuses["all"] = {};
+	for( var i in RESOURCES ) bonuses[i] = {};*/
 
 	BonusFactory = function( id ){
 		var bdata;
 		if( typeof id !== 'string' ){
-			id = "bonus"+lastID++;
+			id = GUID();
 			bdata = new BonusData(id);
 			bonuses[id] = bdata;
 		} else {
@@ -1832,7 +2008,58 @@ var BonusFactory;
 		}
 		return new BonusHandler(bdata);
 	}
+
+	function hasAll( obj, ref ){
+		if( ref["all"] ) return true;
+		for( var key in ref )if( ! obj[key] ) return false;
+		return true;
+	}
+
+	function isOf( str, ref ){
+		if( ref["all"] ) return true;
+		return ref[str];
+	}
+
+	BonusFactory.getAll = function(){
+		return Object.keys(bonuses)
+					 .map(function(key){return bonuses[key];})
+					 .sort(function(a,b){return a.stackGroup - b.stackGroup}); // DESC
+	}
+
+	BonusFactory.applyBonuses = function( ){
+		var producers = ProductionFactory.getAll();
+		var bonuses = BonusFactory.getAll();
+
+		for( var i in producers ){
+			var producer = producers[i];
+			var filtered = bonuses.filter(function(obj){ return hasAll(producer.tags,obj.tags) && isOf(producer.resource, obj.resources);});
+			var flat = new Big(0), mult = new Big(0);
+			//console.log("list",bonuses,filtered);
+			for( var j in filtered ){
+				var p = filtered[j].formula(producer);
+				//console.log("bonus", p);
+				flat = flat.plus(p[0]);
+				mult = mult.plus(p[1]);
+			}
+			producer.perTick = flat.times(mult.plus(1));
+			console.log("producer", producer, producer.perTick.toString());
+		}
+	}
+
 })();
+
+ProductionFactory().addTags("octoplant land").resource(RESC.DPS);
+ProductionFactory().addTags("octoplant flower");
+ProductionFactory().addTags("flower").attr("level",25).resource(RESC.DPS);;
+ProductionFactory().addTags("flower").attr("level",50);
+
+BonusFactory().addTags("octoplant").fixed(5,-0.5).addResources("dps");
+BonusFactory().addTags("all").fixed(0, 1).addResources("all");
+BonusFactory().addTags("octoplant flower").fixed(30);
+BonusFactory().addTags("flower").formula(function( flower ){ return [100,flower.level ? flower.level/100 : 0]});
+
+BonusFactory.applyBonuses();
+
 
 
 /* USE CASES
@@ -1861,8 +2088,11 @@ var bonusID = BonusFactory().location( hcell.select( ["NE","E","SE","SW","W","NW
 								return [ flat, 1 ];
 							})
 							;
-
 uniqueBonusId ?
+
+var producer   = new Producer().tags("octoplant land");
+var production = producer.getProduction( timelapse );
+
 
 */
 /*
@@ -1872,4 +2102,6 @@ uniqueBonusId ?
  							.fixed(1,1.5)
  							.build();
  console.log( bonusID, BonusFactory(bonusID), BonusFactory(bonusID).formula()());
- */
+ 
+*/
+ // plant that gain exp by moving around
