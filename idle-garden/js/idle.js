@@ -1822,6 +1822,21 @@ var Producer;
 					 .sort(function(a,b){return b.priority - a.priority}); // DESC
 	}
 
+	ProductionFactory.getProduction = function( ticks ){
+		var pdatas = ProductionFactory.getAll();
+		var prod = new Big(0);
+		for( var key in RESC ){
+			console.log(ticks,RESC[key], ticks[RESC[key]]);
+			if( typeof ticks[RESC[key]] !== 'undefined' ){
+				var filt = pdatas.filter(function(obj){return obj.resource == RESC[key]});
+				for( var i in filt ){
+					prod = prod.plus(filt[i].perTick.times(ticks[RESC[key]]));
+				}
+			}
+		}
+		return prod;
+	}
+
 	ProductionFactory.save = function(){
 		var str = "{";
 		for( var item in pDatas ){
@@ -2049,17 +2064,17 @@ var Bonus;
 })();
 
 ProductionFactory().addTags("octoplant land").resource(RESC.DPS);
-ProductionFactory().addTags("octoplant flower");
+ProductionFactory().addTags("octoplant flower").resource(RESC.DPC);
 ProductionFactory().addTags("flower").attr("level",25).resource(RESC.DPS);;
 ProductionFactory().addTags("flower").attr("level",50);
 
-BonusFactory().addTags("octoplant").fixed(5,-0.5).addResources("dps");
+BonusFactory().addTags("octoplant").fixed(5,-0.5).addResources(RESC.DPS);
 BonusFactory().addTags("all").fixed(0, 1).addResources("all");
-BonusFactory().addTags("octoplant flower").fixed(30);
+BonusFactory().addTags("octoplant flower").fixed(30).addResources(RESC.DPC);
 BonusFactory().addTags("flower").formula(function( flower ){ return [100,flower.level ? flower.level/100 : 0]});
 
 BonusFactory.applyBonuses();
-
+console.log( ProductionFactory.getProduction( { "dps": 0.5, "dpc": 3 } ).toString() );
 
 
 /* USE CASES
