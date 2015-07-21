@@ -1249,6 +1249,321 @@ var View = new Class({
 	});
 }
 
+var RESC = {
+	DPS: "dps",
+	DPC: "dpc"
+};
+
+var ProductionFactory;
+(function(){
+
+	var ProducerData = function(id){
+		return {
+			id 			: id,
+			total 		: new Big(0),
+			pending 	: new Big(0),
+
+			//perTick 	: new Big(0),
+
+			resource 	: "",
+			//location	: null,
+
+			//userData	: null,
+
+			priority 	: 100,
+			tags 		: {}
+		}
+	};
+
+	var ProducerHandler = new Class({
+		initialize: function( pdata ){
+			this.pdata = pdata;
+		},
+
+		id: function(){
+			return this.pdata.id;
+		},
+
+		attr: function( attr, value ){
+			if( arguments.length == 1 ) return this.pdata[attr];
+			this.pdata[attr] = value;
+			return this;
+		},
+
+		resource: function( resc ){
+			if( arguments.length == 0 ) return this.pdata.resource;
+			this.pdata.resource = resc;
+			return this;
+		},
+
+		addTags: function( tags ){
+			tags.split(" ").map(function(obj){this.pdata.tags[obj] = true}.bind(this));
+			return this;
+		},
+
+		removeTags: function( tags ){
+			tags.split(" ").map(function(obj){delete this.pdata.tags[obj]}.bind(this));
+			return this;
+		}
+	});
+
+	var pDatas = {};
+
+
+	ProductionFactory = function( id ){
+		var pdata;
+		if( typeof id !== 'string' ){
+			id = GUID();
+			pdata = new ProducerData(id);
+			pDatas[id] = pdata;
+		} else {
+			pdata = pDatas[id];
+			if( pdata == null ) throw new Error("Cannot retrieve prod from id : "+id);
+		}
+		return new ProducerHandler(pdata);
+	}
+
+	ProductionFactory.getAll = function(){
+		return Object.keys(pDatas)
+					 .map(function(key){return pDatas[key];})
+					 .sort(function(a,b){return b.priority - a.priority}); // DESC
+	}
+
+	ProductionFactory.getProduction = function( ticks ){
+		var pdatas = ProductionFactory.getAll();
+		var prod = new Big(0);
+		for( var key in RESC ){
+			console.log(ticks,RESC[key], ticks[RESC[key]]);
+			if( typeof ticks[RESC[key]] !== 'undefined' ){
+				var filt = pdatas.filter(function(obj){return obj.resource == RESC[key]});
+				for( var i in filt ){
+					prod = prod.plus(filt[i].perTick.times(ticks[RESC[key]]));
+				}
+			}
+		}
+		return prod;
+	}
+
+	ProductionFactory.save = function(){
+		var str = "{";
+		for( var item in pDatas ){
+			var pdata = pDatas[item];
+			str += '"'+item+"\":{";
+			for( var att in pdata ){
+				str += '"'+att+"\":";
+				str += ( pdata[att] ? '"'+pdata[att].toString()+'"' : "null" );
+				str += ",";
+			}
+			str = str.slice(0, -1)+"},";
+		} 
+		return str.slice(0, -1)+"}";
+	}
+
+	ProductionFactory.load = function( str ){
+		pDatas = JSON.parse(str);
+		for( var item in pDatas ){
+			var pdata = pDatas[item];
+			pdata.total = new Big(pdata.total);
+			pdata.pending = new Big(pdata.pending);
+			pdata.perTick = new Big(pdata.perTick);
+			pdata.priority = parseInt(pdata.priority);
+		} 
+		console.log(pDatas);
+	}
+
+})();
+
+/*var prodID = ProductionFactory().addTags("octoplant land")
+								.removeTags("land milk")
+								.resource(RESC.DPS)
+								.attr("level", 56)
+								.attr("total",new Big(500))
+								.attr("priority",5)
+								.id();
+*/
+/* USE CASES
+
+Thinking about saving the game: Data classes to compact information
+
+var productionID = ProductionFactory()/(id)
+								.location( HCell )
+								.resource( RESC.DPS )
+								.priority( 50 )
+								.addTags( "octoplant land" )
+								.total( Big )
+								.pending( Big )
+								.userData( this )
+								.id();
+
+ProductionFactory.destroy(id);
+
+
+ProductionFactory.getProduction( ticks );
+
+
+*/
+
+
+
+var BonusFactory;
+var Bonus;
+(function(){
+
+	/*
+		Tags should cover every cases.
+		Leveling bonus -> item tag + custom formula based on level
+		Land to item -> location
+		Global bonus -> tag all
+		
+		if linking a bonus to an item becomes neccessary (divine buf ?)
+		targetID[] can be added
+	*/
+
+	var BonusData = new Class({
+		initialize: function(id){
+			this.id = id;
+			this.stackGroup = 0; // mult coefs stack additively in a group then multiplicatively
+			this.tags = {};
+			this.resources = {};
+			this.location = [];
+		},
+
+		formula: function(){return [0,0];}
+	})
+
+	var BonusHandler = new Class({
+		initialize: function( bonusData ){
+			this.bonusData = bonusData || new BonusData();
+		},
+
+		get: function( userData ){
+			var res = this.bonusData.formula( userData );
+			return {
+				flat: new Big(res[0]),
+				mult: new Big(res[0])
+			};
+		},
+
+		_formula: function(){return [0,0];},
+
+		formula: function( f ){
+			if( arguments.length == 0){
+				return this.bonusData.formula;
+			}
+			if( typeof f === 'function'){
+				this.bonusData.formula = f;
+			}
+			return this;
+		},
+
+		fixed: function( flat, mult ){
+			var f = flat || 0;
+			var m = mult || 0;
+			this.bonusData.formula = function(){ return [f,m]};
+			return this;
+		},
+
+		stackGroup: function( sg ){
+			if( arguments.length == 0){
+				return this.bonusData.stackGroup;
+			}
+			this.bonusData.stackGroup = sg;
+			return this;
+		},
+
+		addTags: function( tags ){
+			tags.split(" ").map(function(obj){this.bonusData.tags[obj] = true}.bind(this));
+			return this;
+		},
+
+		removeTags: function( tags ){
+			tags.split(" ").map(function(obj){delete this.bonusData.tags[obj]}.bind(this));
+			return this;
+		},
+
+		addResources: function( resc ){
+			resc.split(" ").map(function(obj){this.bonusData.resources[obj] = true}.bind(this));
+			return this;
+		},
+
+		removeResources: function( resc ){
+			resc.split(" ").map(function(obj){delete this.bonusData.resources[obj]}.bind(this));
+			return this;
+		},
+
+		location: function( loc ){
+			if( arguments.length == 0){
+				return this.bonusData.location;
+			}
+			this.bonusData.location = loc;
+			return this;
+		},
+
+		data: function(){
+			return this.bonusData;
+		},
+
+		build: function(){
+			return this.bonusData.id;
+		}
+
+	});
+
+	var bonuses = {};
+
+	/*bonuses["all"] = {};
+	for( var i in RESOURCES ) bonuses[i] = {};*/
+
+	BonusFactory = function( id ){
+		var bdata;
+		if( typeof id !== 'string' ){
+			id = GUID();
+			bdata = new BonusData(id);
+			bonuses[id] = bdata;
+		} else {
+			bdata = bonuses[id];
+			if( bdata == null ) throw new Error("Cannot retrieve bonus from id : "+id);
+		}
+		return new BonusHandler(bdata);
+	}
+
+	function hasAll( obj, ref ){
+		if( ref["all"] ) return true;
+		for( var key in ref )if( ! obj[key] ) return false;
+		return true;
+	}
+
+	function isOf( str, ref ){
+		if( ref["all"] ) return true;
+		return ref[str];
+	}
+
+	BonusFactory.getAll = function(){
+		return Object.keys(bonuses)
+					 .map(function(key){return bonuses[key];})
+					 .sort(function(a,b){return a.stackGroup - b.stackGroup}); // DESC
+	}
+
+	BonusFactory.applyBonuses = function( ){
+		var producers = ProductionFactory.getAll();
+		var bonuses = BonusFactory.getAll();
+
+		for( var i in producers ){
+			var producer = producers[i];
+			var filtered = bonuses.filter(function(obj){ return hasAll(producer.tags,obj.tags) && isOf(producer.resource, obj.resources);});
+			var flat = new Big(0), mult = new Big(0);
+			//console.log("list",bonuses,filtered);
+			for( var j in filtered ){
+				var p = filtered[j].formula(producer);
+				//console.log("bonus", p);
+				flat = flat.plus(p[0]);
+				mult = mult.plus(p[1]);
+			}
+			producer.perTick = flat.times(mult.plus(1));
+		}
+	}
+
+})();
 
 
 ////
@@ -1511,11 +1826,11 @@ var Model = new Class({
 			this.type = id;
 			this.typeData = Config.items[id];
 
-			this.harvestTime = date | new Date();
+			//this.harvestTime = date | new Date();
 
-			this.efxHolder = new Model.LIEfxHolder();
-			this.levelHandler = new Model.ILevelHandler(this);
-			this.activations = new Big(0);
+			//this.efxHolder = new Model.LIEfxHolder();
+			//this.levelHandler = new Model.ILevelHandler(this);
+			//this.activations = new Big(0);
 		},
 		attr: function( a, b ){
 			if( Utils.defined(b) ){
@@ -1531,14 +1846,14 @@ var Model = new Class({
 		},
 
 		activate: function(){
-			this.activations = this.activations.plus(1);//var efc = this.efxHolder.sum();
+			//this.activations = this.activations.plus(1);//var efc = this.efxHolder.sum();
 			//this.levelHandler.activation(new Big(1));
 		},
 
 		production: function(seconds){
-			var prod = this.efxHolder.toProduction({activations:this.activations,seconds:seconds});
+			/*var prod = this.efxHolder.toProduction({activations:this.activations,seconds:seconds});
 			this.activations = new Big(0);
-			this.levelHandler.production(prod);
+			this.levelHandler.production(prod);*/
 			return prod;
 		}
 	});
@@ -1567,7 +1882,7 @@ var Model = new Class({
 		},
 
 		production: function(seconds){
-			if(this.m_item)return this.m_item.production(seconds);
+			//if(this.m_item)return this.m_item.production(seconds);
 			return 0;
 		},
 
@@ -1670,7 +1985,7 @@ var Model = new Class({
 		},
 
 		update: function(date){
-			this.updateProd(date);
+			//this.updateProd(date);
 		}
 	});
 }
@@ -1742,326 +2057,7 @@ var RESOURCES = {
 	}
 });*/
 
-var RESC = {
-	DPS: "dps",
-	DPC: "dpc"
-};
 
-var Producer;
-(function(){
-
-	var ProducerData = function(id){
-		return {
-			id 			: id,
-			total 		: new Big(0),
-			pending 	: new Big(0),
-
-			//perTick 	: new Big(0),
-
-			resource 	: "",
-			//location	: null,
-
-			//userData	: null,
-
-			priority 	: 100,
-			tags 		: {}
-		}
-	};
-
-	var ProducerHandler = new Class({
-		initialize: function( pdata ){
-			this.pdata = pdata;
-		},
-
-		id: function(){
-			return this.pdata.id;
-		},
-
-		attr: function( attr, value ){
-			if( arguments.length == 1 ) return this.pdata[attr];
-			this.pdata[attr] = value;
-			return this;
-		},
-
-		resource: function( resc ){
-			if( arguments.length == 0 ) return this.pdata.resource;
-			this.pdata.resource = resc;
-			return this;
-		},
-
-		addTags: function( tags ){
-			tags.split(" ").map(function(obj){this.pdata.tags[obj] = true}.bind(this));
-			return this;
-		},
-
-		removeTags: function( tags ){
-			tags.split(" ").map(function(obj){delete this.pdata.tags[obj]}.bind(this));
-			return this;
-		}
-	});
-
-	var pDatas = {};
-
-
-	ProductionFactory = function( id ){
-		var pdata;
-		if( typeof id !== 'string' ){
-			id = GUID();
-			pdata = new ProducerData(id);
-			pDatas[id] = pdata;
-		} else {
-			pdata = pDatas[id];
-			if( pdata == null ) throw new Error("Cannot retrieve prod from id : "+id);
-		}
-		return new ProducerHandler(pdata);
-	}
-
-	ProductionFactory.getAll = function(){
-		return Object.keys(pDatas)
-					 .map(function(key){return pDatas[key];})
-					 .sort(function(a,b){return b.priority - a.priority}); // DESC
-	}
-
-	ProductionFactory.getProduction = function( ticks ){
-		var pdatas = ProductionFactory.getAll();
-		var prod = new Big(0);
-		for( var key in RESC ){
-			console.log(ticks,RESC[key], ticks[RESC[key]]);
-			if( typeof ticks[RESC[key]] !== 'undefined' ){
-				var filt = pdatas.filter(function(obj){return obj.resource == RESC[key]});
-				for( var i in filt ){
-					prod = prod.plus(filt[i].perTick.times(ticks[RESC[key]]));
-				}
-			}
-		}
-		return prod;
-	}
-
-	ProductionFactory.save = function(){
-		var str = "{";
-		for( var item in pDatas ){
-			var pdata = pDatas[item];
-			str += '"'+item+"\":{";
-			for( var att in pdata ){
-				str += '"'+att+"\":";
-				str += ( pdata[att] ? '"'+pdata[att].toString()+'"' : "null" );
-				str += ",";
-			}
-			str = str.slice(0, -1)+"},";
-		} 
-		return str.slice(0, -1)+"}";
-	}
-
-	ProductionFactory.load = function( str ){
-		pDatas = JSON.parse(str);
-		for( var item in pDatas ){
-			var pdata = pDatas[item];
-			pdata.total = new Big(pdata.total);
-			pdata.pending = new Big(pdata.pending);
-			pdata.perTick = new Big(pdata.perTick);
-			pdata.priority = parseInt(pdata.priority);
-		} 
-		console.log(pDatas);
-	}
-
-})();
-
-/*var prodID = ProductionFactory().addTags("octoplant land")
-								.removeTags("land milk")
-								.resource(RESC.DPS)
-								.attr("level", 56)
-								.attr("total",new Big(500))
-								.attr("priority",5)
-								.id();
-
-console.log(prodID, ProductionFactory(prodID).pdata);*/
-//for( var i = 0; i < 3; ++i) ProductionFactory().attr("priority",Math.round(Math.random()*100)).addTags("octoplant land");
-//console.log(ProductionFactory.getAll());
-
-/* USE CASES
-
-Thinking about saving the game: Data classes to compact information
-
-var productionID = ProductionFactory()/(id)
-								.location( HCell )
-								.resource( RESC.DPS )
-								.priority( 50 )
-								.tags( "octoplant land" )
-								.total( Big )
-								.pending( Big )
-								.userData( this )
-								.id();
-
-ProductionFactory.destroy(id);
-
-
-Production.produce( timelapse );
-
-
-*/
-
-
-
-var BonusFactory;
-var Bonus;
-(function(){
-
-	/*
-		Tags should cover every cases.
-		Leveling bonus -> item tag + custom formula based on level
-		Land to item -> location
-		Global bonus -> tag all
-		
-		if linking a bonus to an item becomes neccessary (divine buf ?)
-		targetID[] can be added
-	*/
-
-	var BonusData = new Class({
-		initialize: function(id){
-			this.id = id;
-			this.stackGroup = 0; // mult coefs stack additively in a group then multiplicatively
-			this.tags = {};
-			this.resources = {};
-			this.location = [];
-		},
-
-		formula: function(){return [0,0];}
-	})
-
-	var BonusHandler = new Class({
-		initialize: function( bonusData ){
-			this.bonusData = bonusData || new BonusData();
-		},
-
-		get: function( userData ){
-			var res = this.bonusData.formula( userData );
-			return {
-				flat: new Big(res[0]),
-				mult: new Big(res[0])
-			};
-		},
-
-		_formula: function(){return [0,0];},
-
-		formula: function( f ){
-			if( arguments.length == 0){
-				return this.bonusData.formula;
-			}
-			if( typeof f === 'function'){
-				this.bonusData.formula = f;
-			}
-			return this;
-		},
-
-		fixed: function( flat, mult ){
-			var f = flat || 0;
-			var m = mult || 0;
-			this.bonusData.formula = function(){ return [f,m]};
-			return this;
-		},
-
-		stackGroup: function( sg ){
-			if( arguments.length == 0){
-				return this.bonusData.stackGroup;
-			}
-			this.bonusData.stackGroup = sg;
-			return this;
-		},
-
-		addTags: function( tags ){
-			tags.split(" ").map(function(obj){this.bonusData.tags[obj] = true}.bind(this));
-			return this;
-		},
-
-		removeTags: function( tags ){
-			tags.split(" ").map(function(obj){delete this.bonusData.tags[obj]}.bind(this));
-			return this;
-		},
-
-		addResources: function( resc ){
-			resc.split(" ").map(function(obj){this.bonusData.resources[obj] = true}.bind(this));
-			return this;
-		},
-
-		removeResources: function( resc ){
-			resc.split(" ").map(function(obj){delete this.bonusData.resources[obj]}.bind(this));
-			return this;
-		},
-
-		location: function( loc ){
-			if( arguments.length == 0){
-				return this.bonusData.location;
-			}
-			this.bonusData.location = loc;
-			return this;
-		},
-
-		data: function(){
-			return this.bonusData;
-		},
-
-		build: function(){
-			return this.bonusData.id;
-		}
-
-	});
-
-	var bonuses = {};
-
-	/*bonuses["all"] = {};
-	for( var i in RESOURCES ) bonuses[i] = {};*/
-
-	BonusFactory = function( id ){
-		var bdata;
-		if( typeof id !== 'string' ){
-			id = GUID();
-			bdata = new BonusData(id);
-			bonuses[id] = bdata;
-		} else {
-			bdata = bonuses[id];
-			if( bdata == null ) throw new Error("Cannot retrieve bonus from id : "+id);
-		}
-		return new BonusHandler(bdata);
-	}
-
-	function hasAll( obj, ref ){
-		if( ref["all"] ) return true;
-		for( var key in ref )if( ! obj[key] ) return false;
-		return true;
-	}
-
-	function isOf( str, ref ){
-		if( ref["all"] ) return true;
-		return ref[str];
-	}
-
-	BonusFactory.getAll = function(){
-		return Object.keys(bonuses)
-					 .map(function(key){return bonuses[key];})
-					 .sort(function(a,b){return a.stackGroup - b.stackGroup}); // DESC
-	}
-
-	BonusFactory.applyBonuses = function( ){
-		var producers = ProductionFactory.getAll();
-		var bonuses = BonusFactory.getAll();
-
-		for( var i in producers ){
-			var producer = producers[i];
-			var filtered = bonuses.filter(function(obj){ return hasAll(producer.tags,obj.tags) && isOf(producer.resource, obj.resources);});
-			var flat = new Big(0), mult = new Big(0);
-			//console.log("list",bonuses,filtered);
-			for( var j in filtered ){
-				var p = filtered[j].formula(producer);
-				//console.log("bonus", p);
-				flat = flat.plus(p[0]);
-				mult = mult.plus(p[1]);
-			}
-			producer.perTick = flat.times(mult.plus(1));
-			console.log("producer", producer, producer.perTick.toString());
-		}
-	}
-
-})();
 
 ProductionFactory().addTags("octoplant land").resource(RESC.DPS);
 ProductionFactory().addTags("octoplant flower").resource(RESC.DPC);
@@ -2120,3 +2116,13 @@ var production = producer.getProduction( timelapse );
  
 */
  // plant that gain exp by moving around
+
+ // How to handle clicks ? How to attribute them to the right producer.
+ /*
+	1) add attr "clicked" when set resource to DPC
+
+	2) ??
+
+ */
+
+ // Buy upgrades to grow the clicking area
