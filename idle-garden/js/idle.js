@@ -543,6 +543,7 @@ var Geom = {};
 					this.grid = grid;
 					this.gridPos = v3;
 					this.id = "cell"+grid.hash(v3);
+					this.hash = grid.hash(v3);
 
 					this.parent(); // do not forget to add initialize to the class
 
@@ -628,6 +629,31 @@ var Geom = {};
 	});
 }
 
+
+
+var Click;
+(function(){
+
+	var clicks = {};
+
+	Click = function( hashCell ){
+		if( typeof clicks[hashCell] === 'undefined' ){
+			clicks[hashCell] = 1;
+		} else {
+			clicks[hashCell]++;
+		}
+	}
+
+	Click.get = function( hashCell ){
+		return clicks[hashCell] || 0;
+	}
+
+	Click.flush = function(){
+		clicks = {};
+	}
+
+})();
+
 ////
 var ViewManager = new function(){
 	var views = [];
@@ -683,9 +709,10 @@ var View = new Class({
 							.plus(new Geom.Vector2(-Config.svg.vbx,-Config.svg.vby));
 			},
 
-			fdiv: function( pos ){
+			fdiv: function( pos, container ){
+				var ctn = container || "#playground";
 				var actPos = this.toScreenXY(pos);
-				return d3.select("#playground")
+				return d3.select(ctn)
 							.append("div")
 								.classed("fui-container",true)
 								.style({
@@ -791,37 +818,60 @@ var View = new Class({
 			}
 		});
 
-		var HMenuTile = new Class({
+		/*var HMenuTile = new Class({
 			initialize: function(id, thumbnail, tooltip, activated ){
 
 			}
+		});*/
+
+		var MenuItem = new Class({
+			initialize: function(){}
 		});
 
-		var HexagonMenu = new Class(FloatingUI).extend({
+		var SlotMenu = new Class(FloatingUI).extend({
 			initialize: function(pos){
 				this.parent();
-				this.pos = pos;
-				this.hgrid = new HGrid(HMenuTile);
 			},
 
-			addItem: function( id, thumbnail, tooltip, activated ){
-
+			addCancel: function(){
+				var item = this.items.append("div").classed("item",true);
+				item.append("img").attr("src","sprites/octoplant/octoplant_tbn.jpg");
+				/*this.items.append("div").classed("item",true).classed("cancel",true)
+						.append("p").text("Cancel");*/
 			},
 
 			open: function( callback ){
 				this._callback = callback;
+				console.log("OPEN");
+				d3.select("#slot-menu-container").style("pointer-events","all").transition().style("opacity",1);
+				//setTimeout(this.close.bind(this), 5000);
+
+				this.body = d3.select("#slot-menu-container").append("div").classed("slot-menu-body",true);
+				this.items = this.body.append("div").classed("items-holder",true);
+
+				for(var i = 0; i < 21; ++i)this.addCancel();
+
+				this.body.append("div").classed("quit",true).text("\u2716").on("click",this.close.bind(this));
+			},
+
+			close: function(){
+				console.log("CLOSE");
+				d3.select("#slot-menu-container").transition().style("opacity",0).style("pointer-events","none");
+				this._callback();
+
+				this.body.remove();
 			}
 		});
 
-		var SlotCM = new Class(HexagonMenu).extend({
-			initialize: function( pos, slot){
-
+		/*var SlotCM = new Class(HexagonMenu).extend({
+			initialize: function( pos, slot ){
+				this.parent( pos );
 			}
-		});
+		});*/
 
 		//-------
 		View.Desktop.UI.SlotToolTip = function(pos, slot){return new SlotTT(pos,slot);};
-		View.Desktop.UI.SlotMenu = function(pos, slot){return new HexagonMenu(pos,slot);};
+		View.Desktop.UI.SlotMenu = function(pos, slot){return new SlotMenu(pos,slot);};
 	}
 
 	View.Desktop.Item = new Class(View.Desktop).extend({
@@ -843,7 +893,7 @@ var View = new Class({
 			var c = this.hexagon.center2D();
 			var rand = Math.random();
 			//this._imageUrl = "sprites/croom_"+chromas[Math.floor(rand*chromas.length)]+".gif?time="+rand;
-			this._imageUrl = "sprites/octoplant_"+chromas[Math.floor(rand*chromas.length)]+".png";
+			this._imageUrl = "sprites/octoplant/octoplant_"+chromas[Math.floor(rand*chromas.length)]+".png";
 			flower.attr("x",c.x-width/2)
 				.attr("y",c.y-height/1.7)
 				.attr("width",width)
@@ -873,6 +923,7 @@ var View = new Class({
 
 			this.itemView = null;
 
+
 			this.state = null;
 
 			this.domInit();
@@ -901,6 +952,7 @@ var View = new Class({
 						contextmenu: function(){event.preventDefault()}
 					});*/
 			this.tooltip = View.Desktop.UI.SlotToolTip(this.hexagon.center2D(), this);
+			this.slotMenu = View.Desktop.UI.SlotMenu(this.hexagon.center2D(), this.model); 
 
 			this.dom = this.svg.append("g");
 			var group = this.dom;
@@ -931,13 +983,17 @@ var View = new Class({
 						//console.log("mouseout");
 						/*console.log(group.select("feColorMatrix"));
 						group.select("feColorMatrix").remove();*/
+						that.cancelLongClickTimer();
 					},
 					mousedown: function(){
 						if(event.button != 0 ){
 							this.onSpecialClick();
 						} else {
-							//this.onClick();
+							this.setLongClickTimer();
 						}}.bind(this),
+					mouseup: function(){
+						this.cancelLongClickTimer();
+					}.bind(this),
 					click: function(){ that.onClick();},
 					contextmenu: function(){event.preventDefault()}
 				})
@@ -971,9 +1027,30 @@ var View = new Class({
 		},
 
 		onClick: function(){
-			this.model.activate();
+			if( ! this.menuOpened ) Click(this.model.hash);
+			//this.model.activate();
 			//console.log(this.hexagon.center2D());
 			
+		},
+
+		backFromMenu: function(){
+			this.menuOpened = false;
+		},
+
+		onLongClick: function(){
+			delete this.mousedown_timer;
+			this.menuOpened = true;
+			this.eventHandler.on("mouseout")();
+			this.slotMenu.open( this.backFromMenu.bind(this) );
+		},
+		setLongClickTimer: function(){
+			if( ! this.menuOpened && this.state == SLOT_STATE.SOLID ) this.mousedown_timer = setTimeout(this.onLongClick.bind(this),500);
+		},
+		cancelLongClickTimer: function(){
+			if( this.mousedown_timer ){
+				clearTimeout(this.mousedown_timer);
+				delete this.mousedown_timer;
+			}
 		},
 
 		onSpecialClick: function(){
@@ -1031,26 +1108,6 @@ var View = new Class({
 			this.container.classed("hidden",false);
 		}
 	});
-	{
-		var Menu = View.Desktop.Menu;
-		var SlotMenu = new Class(Menu).extend({
-			/**
-			 * @param {Vector2} Center of the slot
-			 * @param {} 
-			 */
-			initialize: function( center, list ){
-				this.parent();
-				this.game = game;
-				this.slotView = slotView;
-			}
-		});
-
-		//-----------------
-		View.Desktop.Menu.Slot = {};
-		View.Desktop.Menu.Slot.build = function(){
-
-		};
-	}
 
 	View.Desktop.Playground = new Class(View.Desktop).extend({
 		initialize: function(model){
@@ -1096,10 +1153,10 @@ var View = new Class({
 			//d3.select("#playground").on("mousewheel",function(){that.onMouseWheel(event.wheelDelta)});
 			d3.select("body").on("keydown",function(){that.onKeyDown(d3.event.keyCode)});
 			d3.select("body").on("keyup",function(){that.onKeyUp(d3.event.keyCode)});
-			d3.select("body").on("mousedown",function(){var p = d3.mouse(this);that.onMouseDown(new Geom.Vector2(p[0],p[1]))});
+			/*d3.select("body").on("mousedown",function(){var p = d3.mouse(this);that.onMouseDown(new Geom.Vector2(p[0],p[1]))});
 			d3.select("body").on("mouseup",function(){that.onMouseUp()});
 			d3.select("body").on("mousemove",function(){var p = d3.mouse(this);that.onMouseMove(new Geom.Vector2(p[0],p[1]))});
-			d3.select("body").on("mouseleave",function(){that.onMouseLeave()});
+			d3.select("body").on("mouseleave",function(){that.onMouseLeave()});*/
 		},
 
 		onMouseDown: function( pos ){
@@ -1249,10 +1306,28 @@ var View = new Class({
 	});
 }
 
+
 var RESC = {
 	DPS: "dps",
 	DPC: "dpc"
 };
+
+var Ticks;
+(function(){
+	var timelapse = 0;
+
+	Ticks = function( pdata ){
+		switch( pdata.resource ){
+		case RESC.DPS:
+			return timelapse;
+		case RESC.DPC:
+			return Click.get(pdata.location);
+		}
+		return 0;
+	}
+
+	Ticks.setTimeLapse = function( tl ){ timelapse = tl }
+})();
 
 var ProductionFactory;
 (function(){
@@ -1263,7 +1338,7 @@ var ProductionFactory;
 			total 		: new Big(0),
 			pending 	: new Big(0),
 
-			//perTick 	: new Big(0),
+			perTick 	: new Big(0),
 
 			resource 	: "",
 			//location	: null,
@@ -1316,6 +1391,7 @@ var ProductionFactory;
 			id = GUID();
 			pdata = new ProducerData(id);
 			pDatas[id] = pdata;
+			console.log("created new pdata", pdata);
 		} else {
 			pdata = pDatas[id];
 			if( pdata == null ) throw new Error("Cannot retrieve prod from id : "+id);
@@ -1329,17 +1405,17 @@ var ProductionFactory;
 					 .sort(function(a,b){return b.priority - a.priority}); // DESC
 	}
 
-	ProductionFactory.getProduction = function( ticks ){
+	ProductionFactory.getProduction = function(){
 		var pdatas = ProductionFactory.getAll();
 		var prod = new Big(0);
-		for( var key in RESC ){
-			console.log(ticks,RESC[key], ticks[RESC[key]]);
-			if( typeof ticks[RESC[key]] !== 'undefined' ){
-				var filt = pdatas.filter(function(obj){return obj.resource == RESC[key]});
-				for( var i in filt ){
-					prod = prod.plus(filt[i].perTick.times(ticks[RESC[key]]));
-				}
-			}
+		for( var i in pdatas ){
+			var pdata = pdatas[i];
+			var ticks = Ticks(pdata);
+			pdata.pending = pdata.pending.plus(pdata.perTick.times(ticks));
+			var fl = pdata.pending.floor();
+			prod = prod.plus(fl);
+			pdata.pending = pdata.pending.minus(fl);
+			pdata.total = pdata.total.plus(fl);
 		}
 		return prod;
 	}
@@ -1821,10 +1897,15 @@ var Model = new Class({
 	});
 
 	Model.Item = new Class(Model).extend({
-		initialize: function( id, date ){
+		initialize: function( id, location ){
 			this.parent();
 			this.type = id;
 			this.typeData = Config.items[id];
+
+			this.prodID = ProductionFactory().addTags("octoplant")
+											.resource(RESC.DPS)
+											.attr("level",0)
+											.attr("location",location);
 
 			//this.harvestTime = date | new Date();
 
@@ -1888,7 +1969,7 @@ var Model = new Class({
 
 		item: function(id, date){
 			if( Utils.defined(id) ){
-				this.m_item = new Model.Item(id,date);
+				this.m_item = new Model.Item(id,this.hash);
 				return this;
 			}
 			return this.m_item;
@@ -1962,22 +2043,9 @@ var Model = new Class({
 		build: function(){
 			this.playground = new Model.Playground(Config.playground);
 			this.prod = new Big(0);
-			this.prodLeftover = new Big(0);
+			//this.prodLeftover = new Big(0);
 			this.last = new Date();
 			return this;
-		},
-
-		// todo : duration instead, so we can pause the game
-		updateProd: function(date){ 
-			var prod = new Big(0).plus(this.prodLeftover);
-			var seconds = new Big(date.getTime()).minus(new Big(this.last.getTime())).dividedBy(1000);
-			var prods = this.playground.getAllSlots().map(function(slot){return slot.production(seconds);});
-			for( i in prods ){
-				prod = prod.plus(prods[i]);
-			}
-			this.prodLeftover = prod.minus(prod.floor());
-			this.prod = this.prod.plus(prod.floor()); 
-			this.last = date;
 		},
 
 		production: function(){
@@ -1985,6 +2053,9 @@ var Model = new Class({
 		},
 
 		update: function(date){
+			BonusFactory.applyBonuses();
+			this.prod = this.prod.plus(ProductionFactory.getProduction());
+			Click.flush();
 			//this.updateProd(date);
 		}
 	});
@@ -1996,17 +2067,24 @@ Control = new Class({
 		this.game_view = new View.Game(this.game);
 		this.game.build();
 		this.timer = null;
+		this.lastDate = new Date();
 	},
 
 	startTimer: function(){
 		var c = this;
 		this.timer = setTimeout(function(){
-			c.game.update(new Date());
+			var date = new Date();
+			Ticks.setTimeLapse( new Big(date.getTime()).minus(c.lastDate.getTime()).dividedBy(1000));
+			c.lastDate = date;
+			c.game.update();
 			ViewManager.refresh();
 			c.startTimer();
 		}, 33);
 	}
 });
+
+BonusFactory().addTags("octoplant").addResources(RESC.DPC).fixed(2);
+BonusFactory().addTags("octoplant").addResources(RESC.DPS).fixed(8.65);
 
 var C = new Control();
 C.startTimer();
@@ -2019,58 +2097,20 @@ C.startTimer();
 		lead to an simple leveled bonus system
 
 */
-var RESOURCES = {
-	"dps": "dust/s",
-	"dpc": "dust/click"
-};
-
-/*var Producer = new Class({
-	initialize: function(){
-		//this.perTick = new Big(0);
-		this.totalProduced = new Big(0);
-		this.cachedProduction = new Big(0);
-
-		this.priority = 0;
-		this._bonusTags = [];
-	},
-
-	produce: function( tickCount ){
-		this.cachedProduction = this.cachedProduction.plus(tickCount.times(this.perTick));
-	},
-
-	production: function(){
-		return this.totalProduced.plus(this.cachedProduction);
-	},
-
-	flush: function(){
-		this.totalProduced = this.totalProduced.plus(this.cachedProduction);
-		this.cachedProduction = new Big(0);
-	},
-
-	bonusTags: function(){
-		if( arguments.length == 0 ){
-			return this._bonusTags;
-		}
-		this._bonusTags = [];
-		for( var i in arguments ) this._bonusTags.push( arguments[i] );
-		return this;
-	}
-});*/
 
 
+//ProductionFactory().addTags("lala land").resource(RESC.DPS);
+//ProductionFactory().addTags("lala flower").resource(RESC.DPC);
+//ProductionFactory().addTags("flower").attr("level",25).resource(RESC.DPS);;
+//ProductionFactory().addTags("flower").attr("level",50);
+//BonusFactory().addTags("lala").fixed(5,-0.5).addResources(RESC.DPS);
+//BonusFactory().addTags("all").fixed(0, 0.236).addResources("all");
+//BonusFactory().addTags("lala flower").fixed(30).addResources(RESC.DPC);
+//BonusFactory().addTags("flower").formula(function( flower ){ return [100,flower.level ? flower.level/100 : 0]}).addResources(RESC.DPS);
 
-ProductionFactory().addTags("octoplant land").resource(RESC.DPS);
-ProductionFactory().addTags("octoplant flower").resource(RESC.DPC);
-ProductionFactory().addTags("flower").attr("level",25).resource(RESC.DPS);;
-ProductionFactory().addTags("flower").attr("level",50);
-
-BonusFactory().addTags("octoplant").fixed(5,-0.5).addResources(RESC.DPS);
-BonusFactory().addTags("all").fixed(0, 1).addResources("all");
-BonusFactory().addTags("octoplant flower").fixed(30).addResources(RESC.DPC);
-BonusFactory().addTags("flower").formula(function( flower ){ return [100,flower.level ? flower.level/100 : 0]});
-
-BonusFactory.applyBonuses();
-console.log( ProductionFactory.getProduction( { "dps": 0.5, "dpc": 3 } ).toString() );
+//BonusFactory.applyBonuses();
+//Ticks.setTimeLapse(1);
+//console.log( ProductionFactory.getProduction( ).toString() );
 
 
 /* USE CASES
@@ -2119,7 +2159,7 @@ var production = producer.getProduction( timelapse );
 
  // How to handle clicks ? How to attribute them to the right producer.
  /*
-	1) add attr "clicked" when set resource to DPC
+	1) add attr "clicked"(number) when set resource to DPC
 
 	2) ??
 
