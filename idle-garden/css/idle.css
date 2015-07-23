@@ -286,3 +286,19 @@ img {
 	cursor: pointer;
 
 }
+
+/* SVG */
+
+svg > g.gridpos {
+	pointer-events: none;
+}
+
+svg > g.gridpos > .event-handler {
+	fill: transparent;
+	stroke: transparent;
+	stroke-width: 0;
+}
+
+svg > g.gridpos > .event-handler:hover {
+	fill: rgba(255,255,255,0.1);
+}

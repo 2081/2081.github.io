@@ -296,6 +296,12 @@ var Utils = {};
 		}
 		return array;
 	}
+
+	Utils.removeValueFromArray = function( array, value ){
+		for(var i = array.length-1; i >= 0; --i){
+			if( array[i] === value ) array.splice(i,1);
+		}
+	}
 }
 ////
 
@@ -609,11 +615,18 @@ var Geom = {};
 			return v3.x+"_"+v3.y+"_"+v3.z;
 		},
 
+		hashReverse: function( str ){
+			str = str.split('_').map(function(obj){return parseInt(obj,10)});
+			return new Geom.Vector3(str[0],str[1],str[2]);
+		},
+
 		hasCell: function( v3 ){
 			return Utils.defined(this.cells[this.hash(v3)]);
 		},
 
 		get: function( v3 ){
+			if( typeof v3 === 'string') v3 = this.hashReverse(v3);
+			console.log(v3);
 			if( this.constraints(v3)){
 				if(this.hasCell(v3)){
 					return this.cells[this.hash(v3)];
@@ -673,6 +686,65 @@ var Click;
 
 })();
 
+var DisplayFactory;
+(function(){
+
+	var displays = {};
+
+	var voidFunc = function(){};
+
+	var defaultDisplay = function( id ){
+		return {
+			id: id,
+			initialize: voidFunc,
+			refresh: voidFunc,
+			destroy: voidFunc,
+			location: View.Desktop.Slot.ORIGIN
+		}
+	}
+
+	DisplayFactory = function( obj ){
+		var display = defaultDisplay(GUID());
+		assert(obj[location], "Every display should be linked to a location");
+		for( var key in obj ) display[key] = obj[key];
+		displays[display.id] = display;
+		return display.id;
+	}
+
+	DisplayFactory.refresh = function(){
+		for( var key in displays ) displays[key].refresh();
+	}
+
+})();
+
+/*var DISPLAY = {};
+DISPLAY.ITEM0 = DisplayFactory({
+					initialize: function( parent ){
+
+			View.Desktop.Slot.X_GAP = width/(2*Config.playground.layout.zBound-1);
+			View.Desktop.Slot.RADIUS = View.Desktop.Slot.X_GAP/(2*Math.cos(Math.PI/6));
+			View.Desktop.Slot.Z_GAP = 1.5*View.Desktop.Slot.RADIUS*Config.playground.zCoef;
+			View.Desktop.Slot.ORIGIN 
+
+						var chromas = ["corail","purple"];
+						var flower = parent.append("image");
+						var width = View.Desktop.Slot.RADIUS*2*Math.cos(Math.PI/6)*0.9;
+						var height = View.Desktop.Slot.RADIUS*6/2;
+						var c = this.location.center2D();
+						var rand = Math.random();
+						this._imageUrl = "sprites/octoplant/octoplant_"+chromas[Math.floor(rand*chromas.length)]+".png";
+						flower.attr("x",c.x-width/2)
+							.attr("y",c.y-height/1.7)
+							.attr("width",width)
+							.attr("height",height)
+							.attr("overflow","visible")
+							.attr("xlink:href",this._imageUrl)
+							.classed("sprite",true);
+							;
+					}
+				});
+
+*/
 ////
 var ViewManager = new function(){
 	var views = [];
@@ -1340,6 +1412,7 @@ var RESC = {
 };
 
 var Ticks;
+// Ticks
 (function(){
 	var timelapse = 0;
 
@@ -1357,6 +1430,7 @@ var Ticks;
 })();
 
 var ProductionFactory;
+// ProductionFactory
 (function(){
 
 	var ProducerData = function(id){
@@ -1476,40 +1550,10 @@ var ProductionFactory;
 
 })();
 
-/*var prodID = ProductionFactory().addTags("octoplant land")
-								.removeTags("land milk")
-								.resource(RESC.DPS)
-								.attr("level", 56)
-								.attr("total",new Big(500))
-								.attr("priority",5)
-								.id();
-*/
-/* USE CASES
-
-Thinking about saving the game: Data classes to compact information
-
-var productionID = ProductionFactory()/(id)
-								.location( HCell )
-								.resource( RESC.DPS )
-								.priority( 50 )
-								.addTags( "octoplant land" )
-								.total( Big )
-								.pending( Big )
-								.userData( this )
-								.id();
-
-ProductionFactory.destroy(id);
-
-
-ProductionFactory.getProduction( ticks );
-
-
-*/
-
-
-
 var BonusFactory;
 var Bonus;
+// BonusFactory
+// Bonus
 (function(){
 
 	/*
@@ -1667,6 +1711,296 @@ var Bonus;
 	}
 
 })();
+
+var ItemFactory;
+// ItemFactory
+(function(){
+
+	var ItemData = function(id){
+		return {
+			id: id,
+			productions: [],
+			displays: {}
+		}
+	}
+
+	var ItemHandler = new Class({
+		initialize: function( idata ){
+			this.idata = idata;
+		},
+
+		addProd: function( prodID ){
+			this.idata.productions.push(prodID);
+			return this;
+		},
+
+		removeProd: function( prodID ){
+			Utils.removeValueFromArray(this.idata.productions, prodID);
+			return this;
+		},
+
+		addDisplay: function( disp ){
+			disp.split(" ").map(function(obj){this.idata.displays[obj] = true}.bind(this));
+			return this;
+		},
+
+		removeDisplay: function( disp ){
+			disp.split(" ").map(function(obj){delete this.idata.displays[obj]}.bind(this));
+			return this;
+		},
+
+		attr: function( attr, value ){
+			if( arguments.length == 1 ) return this.idata[attr];
+			this.idata[attr] = value;
+			return this;
+		},
+
+		id: function(){ return this.idata.id }
+
+	});
+
+	var items = {};
+
+	ItemFactory = function( id ){
+		var idata;
+		if( typeof id !== 'string' ){
+			id = GUID();
+			idata = new ItemData(id);
+			items[id] = idata;
+		} else {
+			idata = items[id];
+			if( idata == null ) throw new Error("Cannot retrieve item from id : "+id);
+		}
+		return new ItemHandler(idata);
+	}
+
+})();
+
+var Playground;
+(function(){
+
+	Playground = new Class(View).extend({
+		initialize: function( dom){
+			this.dom = dom;
+			this.domInit();
+
+			this.states = {};
+
+			this.viewBox = {};
+			this.viewBox.center = new Geom.Vector2(0,0);
+			this.viewBox.min = new Geom.Vector2(-30,-30);
+			this.viewBox.max = new Geom.Vector2(30,10);
+
+			this._scrolling = {};
+			var dirs = [KEYCODES.UP,KEYCODES.RIGHT,KEYCODES.DOWN,KEYCODES.LEFT];
+			for( var i in dirs) this._scrolling[dirs[i]] = false;
+
+			var width = Config.svg.width*100;
+			var origin = new Geom.Vector2(0,0);
+
+			this.slots = [];
+
+			Playground.SVG = this.svg;
+			Playground.X_GAP = width/(2*Config.playground.layout.zBound-1);
+			Playground.RADIUS = Playground.X_GAP/(2*Math.cos(Math.PI/6));
+			Playground.Z_GAP = 1.5*Playground.RADIUS*Config.playground.zCoef;
+			Playground.ORIGIN = origin;
+
+			this.displayID = DisplayFactory({ refresh: this.refresh.bind(this) });
+
+		},
+
+		domInit: function(){
+			this.svg = this.dom.append("svg").attr("viewBox", [Config.svg.vbx,Config.svg.vby,Config.svg.vbw,Config.svg.vbh].join(" "))
+											 .attr("width","100%")
+											 .attr("height","100%");
+			var defs = this.svg.append("defs");
+			var f1 = defs.append("filter").attr("id","hoverFilter");
+			f1.append("feColorMatrix").attr("values","1.3 0 0 0 0 \
+													  0 1.3 0 0 0 \
+													  0 0 1 0 0 \
+													  0 0 0 1 0");
+			var that = this;
+			d3.select("body").on("keydown",function(){that.onKeyDown(d3.event.keyCode)});
+			d3.select("body").on("keyup",function(){that.onKeyUp(d3.event.keyCode)});
+		},
+
+		onMouseDown: function( pos ){
+			this.states.mouseDown = true;
+		},
+
+		onMouseMove: function( pos ){
+			if( this.states.dragging ){
+				this.states.dragging.to = pos;
+			} else if ( this.states.mouseDown ){
+				this.states.dragging = {};
+				this.states.dragging.from = pos ;
+				this.states.dragging.to = pos ;
+			}
+		},
+
+		onMouseLeave: function(){
+			this.onMouseUp();
+		},
+
+		onMouseUp: function(){
+			console.log("MOUSEUP");
+			if(this.states.dragging) this.states.dragging.end = true;
+			this.states.mouseDown = false;
+		},
+
+		onKeyDown: function( code ){
+			this._scrolling[code] = true;
+		},
+
+		onKeyUp: function( code ){
+			this._scrolling[code] = false;
+		},
+
+		_updateScroll: function( ease, bound ){
+			if(bound)for( var i in {x:null,y:null}) this.viewBox.center[i] = Math.max( this.viewBox.min[i], Math.min( this.viewBox.max[i], this.viewBox.center[i] ));
+			Config.svg.currentVbx = this.viewBox.center.x+Config.svg.vbx;
+			Config.svg.currentVby = this.viewBox.center.y+Config.svg.vby;
+			var a = this.svg;
+			if(ease) a = a.transition().ease('quad-out');
+			a.attr("viewBox",Config.svg.currentVbx+" "+Config.svg.currentVby+" "+[Config.svg.vbw,Config.svg.vbh].join(" "));
+		},
+
+		updateScroll: function(){
+			var s = this._scrolling, scrollDelta = 3;
+
+			if( s[KEYCODES.UP] || s[KEYCODES.RIGHT] || s[KEYCODES.DOWN] || s[KEYCODES.LEFT] ){
+				
+				
+				this.viewBox.center.x = this.viewBox.center.x + (s[KEYCODES.RIGHT]? scrollDelta : 0) - (s[KEYCODES.LEFT]? scrollDelta : 0);
+				this.viewBox.center.y = this.viewBox.center.y + (s[KEYCODES.DOWN]? scrollDelta : 0) - (s[KEYCODES.UP]? scrollDelta : 0);
+			
+				this._updateScroll(true,true);
+			}
+			
+		},
+
+		onMouseWheel: function( direction ){
+			/*if( direction < 0 ){
+				this.xOffset = Math.min(this.xOsMax, this.xOffset+20);
+			} else {
+				this.xOffset = Math.max(this.xOsMin, this.xOffset-20);
+			}
+			Config.svg.currentVbx = this.xOffset+Config.svg.vbx;
+			
+			this.svg.transition().ease('quad-out').attr("viewBox",Config.svg.currentVbx+" "+[Config.svg.vby,Config.svg.vbw,Config.svg.vbh].join(" "))
+			//d3.select("#playground").on("mousemove");*/
+		},
+
+		update: function(){
+			console.log("updating playground",this);
+		},
+
+		refresh: function(){
+			var ex = Grid.extrema();
+			this.viewBox.max.x = 30+(ex.MX2d-2)*Playground.X_GAP;
+			this.viewBox.min.x = -30+(ex.mx2d+2)*Playground.X_GAP;
+			this.viewBox.max.y = 30+(ex.MZ-2)*Playground.Z_GAP;
+			this.viewBox.min.y = -10+(ex.mz+2)*Playground.Z_GAP;
+			this.updateScroll();
+			this.svg.selectAll('g').sort(function(a,b){return a - b;});
+		}
+	});
+
+})();
+
+var Grid;
+var Place;
+(function(){
+
+	var allowPropagation = true;
+
+	var Cell = new Class({
+		initialize: function(){
+
+			this.listeners = {};
+
+			var group = this.group = Playground.SVG.append("g").classed("gridpos", true);
+
+			this.svg 	= Playground.SVG;
+			this.radius = Playground.RADIUS;
+			this.origin = Playground.ORIGIN;
+			this.hexagon = new Geom.Hexagon(this.gridPos.scal(this.radius),this.radius,Config.playground.zCoef).plus2D(this.origin);
+
+			var hash = this.hash;
+			var cell = this;
+
+			this.eventPolygon = group.append("polygon")
+				.attr("points",this.hexagon.getSummits2D().join(" "))
+				.classed("event-handler",true)
+				.on({
+					mouseenter: function(){cell.dispatch("mousenter",event)},
+					mouseout : function(){cell.dispatch("mouseout",event)},
+					mousedown: function(){cell.dispatch("mousedown",event)},
+					mouseup: function(){cell.dispatch("mouseup",event)},
+					click: function(){cell.dispatch("click",event)},
+					contextmenu: function(){event.preventDefault()}
+				})
+				;
+		},
+
+		dispatch: function( name, eventObj ){
+			if( allowPropagation ) {
+				for( var key in this.listeners ){
+					var f = this.listeners[key]["on"+name];
+					if( f ) f( eventObj, this.hash );
+				}
+			}
+		},
+
+		addListener: function( obj ) {
+			var id = GUID();
+			this.listeners[id] = obj;
+			return id;
+		},
+
+		removeListener: function( id ){
+			if( this.listeners[id] ) delete this.listeners[id];
+		}
+	});
+
+	var grid = new Geom.HGrid(Cell);
+
+	var playground = new Playground( d3.select("#playground"));
+
+	function hash( v3 ){ return v3.x+'_'+v3.y+'_'+v3.z; }
+
+	Place = function( hash ){
+		var cell = typeof hash === 'undefined' ? grid.origin() : grid.get(hash);
+		return {
+			bindEvents: function( obj ) {
+				return cell.addListener( obj );
+			},
+			unbindEvents: function( id ) {
+				cell.removeListener(id);
+			}
+		}
+	}
+
+	Grid = {};
+
+	Grid.denyEvents = function(){ allowPropagation = false }
+	Grid.allowEvents = function(){ allowPropagation = true }
+	Grid.extrema = function(){return grid.extrema()}
+
+	Place.hash = hash;
+
+})();
+
+var ORIGIN = "0_0_0";
+
+Place(ORIGIN);
+Place("0_1_-1");
+Place("1_-1_0");
+
+var bindId;
+var obj = {onclick: function(event, hash){console.log("click",hash); Place("0_0_0").unbindEvents( bindId ) }};
+bindId = Place("0_0_0").bindEvents( obj )
 
 
 ////
@@ -1854,7 +2188,7 @@ var Model = new Class({
 		},
 
 		build: function(){
-			this.playground = new Model.Playground(Config.playground);
+			//this.playground = new Model.Playground(Config.playground);
 			this.prod = new Big(0);
 			//this.prodLeftover = new Big(0);
 			this.last = new Date();
@@ -1891,6 +2225,7 @@ Control = new Class({
 			c.lastDate = date;
 			c.game.update();
 			ViewManager.refresh();
+			DisplayFactory.refresh();
 			c.startTimer();
 		}, 33);
 	}
