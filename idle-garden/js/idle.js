@@ -624,6 +624,10 @@ var Geom = {};
 			return Utils.defined(this.cells[this.hash(v3)]);
 		},
 
+		to2D: function( v3 ){
+			return new Geom.Vector2(Math.cos(Math.PI/6)*(v3.x - v3.y),Config.playground.zCoef*(v3.z - 0.5*(v3.x + v3.y)));
+		},
+
 		get: function( v3 ){
 			if( typeof v3 === 'string') v3 = this.hashReverse(v3);
 			console.log(v3);
@@ -703,12 +707,22 @@ var DisplayFactory;
 		}
 	}
 
+	DisplayHandler = new Class({
+		initialize: function( display ){
+			this.display = display;
+		},
+
+		init: function(){ this.display.initialize(); return this; },
+
+		id: function(){return this.display.id}
+	});
+
 	DisplayFactory = function( obj ){
 		var display = defaultDisplay(GUID());
 		assert(obj[location], "Every display should be linked to a location");
 		for( var key in obj ) display[key] = obj[key];
 		displays[display.id] = display;
-		return display.id;
+		return new DisplayHandler(display);
 	}
 
 	DisplayFactory.refresh = function(){
@@ -1930,11 +1944,13 @@ var Place;
 			var hash = this.hash;
 			var cell = this;
 
+			this.group.data([ this.gridPos.z + this.gridPos.x/100]);
+
 			this.eventPolygon = group.append("polygon")
 				.attr("points",this.hexagon.getSummits2D().join(" "))
 				.classed("event-handler",true)
 				.on({
-					mouseenter: function(){cell.dispatch("mousenter",event)},
+					mouseenter: function(){cell.dispatch("mouseenter",event)},
 					mouseout : function(){cell.dispatch("mouseout",event)},
 					mousedown: function(){cell.dispatch("mousedown",event)},
 					mouseup: function(){cell.dispatch("mouseup",event)},
@@ -1947,7 +1963,7 @@ var Place;
 		dispatch: function( name, eventObj ){
 			if( allowPropagation ) {
 				for( var key in this.listeners ){
-					var f = this.listeners[key]["on"+name];
+					var f = this.listeners[key][name];
 					if( f ) f( eventObj, this.hash );
 				}
 			}
@@ -1978,7 +1994,11 @@ var Place;
 			},
 			unbindEvents: function( id ) {
 				cell.removeListener(id);
-			}
+			},
+
+			container: function(){ return cell.group },
+
+			center2D: function(){ return grid.to2D( cell.gridPos )}
 		}
 	}
 
@@ -1998,10 +2018,56 @@ Place(ORIGIN);
 Place("0_1_-1");
 Place("1_-1_0");
 
-var bindId;
-var obj = {onclick: function(event, hash){console.log("click",hash); Place("0_0_0").unbindEvents( bindId ) }};
-bindId = Place("0_0_0").bindEvents( obj )
 
+var SLOT_STATE = Object.freeze({
+	VOID	: 0,
+	GHOST 	: 1,
+	SOLID	: 2
+});
+var Slot;
+(function(){
+
+	var slots = {};
+
+	var SlotData = function( place ){
+		return {
+			place: place,
+			state: SLOT_STATE.VOID,
+			bonusID: null
+		}
+	}
+
+	var SlotHandler = new Class({
+		initialize: function( sdata ){
+			this.sdata = sdata;
+			this.handlerType = "slot";
+		},
+
+		state: function( state ){
+			if( arguments.length == 0 ) return this.sdata.state;
+			this.sdata.state = state;
+			return this;
+		},
+
+		bonusID: function( bonusID ){
+			if( arguments.length == 0 ) return this.sdata.bonusID;
+			this.sdata.bonusID = bonusID;
+			return this;
+		}
+	});
+
+
+	Slot = function( hash ){
+		hash = hash || ORIGIN;
+		var sdata = slots[hash] = slots[hash] || SlotData( hash );
+		return new SlotHandler(sdata);
+	}
+
+})();
+
+Display(Slot(ORIGIN)).init().id();
+
+console.log( Slot(ORIGIN).state(SLOT_STATE.GHOST) ); // YEEEEHAAAA
 
 ////
 var Model = new Class({
@@ -2084,12 +2150,6 @@ var Model = new Class({
 			this.levelHandler.production(prod);*/
 			return prod;
 		}
-	});
-
-	var SLOT_STATE = Object.freeze({
-		VOID	: 0,
-		GHOST 	: 1,
-		SOLID	: 2
 	});
 
 	Model.Slot = new Class(Model).extend({
