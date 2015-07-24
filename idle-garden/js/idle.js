@@ -323,6 +323,12 @@ var Utils = {};
 	    	return b.indexOf(n) != -1
 		});
 	}
+
+	Utils.objToArray = function( obj ){
+		var arr = [];
+		for( var key in obj ) arr.push(obj[key]);
+		return arr;
+	}
 }
 ////
 
@@ -2261,6 +2267,36 @@ select = Place(pair[0]).neighbors(2, true).neighbors(2).except(Place(pair[1]).ne
 Slots(select.hashes()).states(SLOT_STATE.GHOST); //.array().map( function(s){ /*if(s.attr("state") === SLOT_STATE.VOID)*/ s.attr("state",SLOT_STATE.GHOST) });
 //--------------------------------------------------------------------------------------------------------------------------------------------------------
 
+
+var Routine;
+(function(){
+
+	var routines = {};
+
+	var RoutineHandler = new Class(DataHandler).extend({
+		stop: function(){ this.data.stop = true;},
+		start: function(){ this.data.stop = false;},
+		order: function(value){ this.attr("order",value)},
+		id: function(){return this.data.id}
+	});
+
+	Routine = function( fct ){
+		var id = GUID();
+		var r = routines[id] = {
+			id: id,
+			stop: false,
+			order: 100,
+			f: fct
+		};
+		return new RoutineHandler(r);
+	}
+
+	Routine.remove = function( id ){ delete this.routine[id] }
+	Routine.exec = function(){
+		Utils.objToArray(routines).sort(function(a,b){return a.order - b.order;});
+	}
+
+})();
 
 //console.log("select", Slot(ORIGIN).neighbors().attr("state",SLOT_STATE.GHOST) );
 
