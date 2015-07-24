@@ -1,13 +1,40 @@
 
+var UI;
+(function(){
+	UI = {};
+
+	UI.toScreenXY = function( v2 ){
+		var w = parseInt(d3.select("#playground").style("width"));
+		var h = parseInt(d3.select("#playground").style("height"));
+		return    v2.plus(new Geom.Vector2(Config.svg.vbx - Config.svg.currentVbx, Config.svg.vby - Config.svg.currentVby))
+					.scal(new Geom.Vector2(Math.min(h/w,1),1))
+					.plus(new Geom.Vector2(-Config.svg.vbx,-Config.svg.vby));
+	}
+
+	UI.floatingDiv = function( pos, container ){
+		var ctn = container || "#playground";
+		var actPos = UI.toScreenXY(pos);
+		return d3.select(ctn)
+					.append("div")
+						.classed("fui-container",true)
+						.style({
+							"left": actPos.x+"%",
+							"top" : actPos.y+"%",
+							"opacity": 0
+						});
+	}
+})();
+
+
 var Display;
 (function(){
 
 	var funcs = {};
 
-	Display = function( key, handler ){
+	Display = function( key, param ){
 		if( arguments.length == 1 ) return DisplayFactory(key);
 		var f = funcs[key];
-		if( f ) return f(handler);
+		if( f ) return f(param);
 		return null;
 	}
 
@@ -18,7 +45,8 @@ var Display;
 })();
 
 DISPLAY = {
-	SLOT: "slot"
+	SLOT: "slot",
+	TOOLTIP: "tooltip"
 }
 
 Display.new(DISPLAY.SLOT, function( slotHandler ){
@@ -104,4 +132,41 @@ Display.new(DISPLAY.SLOT, function( slotHandler ){
 
 		}
 	});
+});
+
+Display.new(DISPLAY.TOOLTIP, function( hash ){
+	return DisplayFactory({
+		location: hash,
+		pos: Place(hash).center2D(),
+		initialize: function(){
+			this.div = UI.floatingDiv(this.pos.scal(Playground.RADIUS));
+			console.log(this.pos);
+			this.body = this.div.append("div").classed("tooltip-body",true);
+
+			var slot = Slot(this.location);
+			if( slot.state() === SLOT_STATE.GHOST ) {
+				var slotBox = this.body.append("div")
+									   .classed("tooltip-item",true);
+
+				slotBox.append('p').text("Click to create a land here");
+
+				var price = Price(GLOSS.SLOT);
+				slotBox.append('p').classed("price",true).text(price.toString()+" Dust");
+			}
+
+			this.div.transition().delay(150).style("opacity",1).duration(200);
+		},
+
+		refresh: function(){
+
+		},
+
+		destroy: function(){
+			if( this.div ){
+				this.body = null;
+				this.div.transition().style("opacity",0).duration(200).remove();
+				this.div = null;
+			}
+		}
+	})
 });

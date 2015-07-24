@@ -198,7 +198,13 @@ img {
 
 .tooltip-item > p {
 	-webkit-margin-before: 0.5em;
+	line-height: 0.5em;
 }
+
+.tooltip-item > .price {
+	color: yellow;
+}
+
 
 #slot-menu-container {
 

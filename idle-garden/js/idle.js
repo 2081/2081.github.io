@@ -91,11 +91,7 @@ var Lang = {
 */
 
 var Data = {
-	items: [
-		{
-			name: Lang.get("item-0")
-		}
-	]
+	slots_bought: 1
 };
 
 function Leveling(start, every){
@@ -169,7 +165,8 @@ var Config = {
 		bg: 'sprites/grass.png',
 		bg_ghost: 'sprites/grass_ghost.png',
 		bgFactor : 1.4,
-		bgRatio: 440/380
+		bgRatio: 440/380,
+		price_formula: function(n){ return new Big( 100 ).times( new Big(1.15).pow(n) ).ceil()}
 	},
 
 	items: [
@@ -673,6 +670,41 @@ var Geom = {};
 	});
 }
 
+
+var DataHandler = new Class({
+	initialize: function( data ){
+		this.data = data;
+	},
+
+	attr: function( name, value ){
+		if( typeof value === 'undefined' ) return this.data[name] || null;
+		this.data[name] = value;
+		return this;
+	},
+});
+
+var DataSelectionHandler = new Class({
+	initialize: function( selection){
+		this.selection = selection || [];
+		this.length = this.selection.length;
+	},
+
+	attr: function( name, value ){
+		if( typeof value === 'undefined' ) return this.selection.map(function(o){ return o[name] });
+		for( var i in this.selection ){
+			this.selection[i][name] = value;
+		}
+		return this;
+	},
+
+	_handlerClass: DataHandler,
+
+	array: function(){
+		var handler = this._handlerClass;
+		return this.selection.map( function( data ){ return new handler(data) });
+	}
+});
+
 var Wallet;
 (function(){
 	Wallet = {};
@@ -685,11 +717,52 @@ var Wallet;
 	Wallet.withdraw = function( big ){
 		if( Wallet.affordable(big) ) {
 			savings = savings.minus(big);
+			console.log("withdrew "+big.toString()+". New balance : "+savings.toString() );
 			return true;
 		}
 		return false;
 	}
-	Wallet.get = function( big ){ return savings.plus(0) }
+	Wallet.get = function( ){ return savings.plus(0) }
+
+})();
+
+var GLOSS = {
+	SLOT: "slot",
+	ITEM: "item",
+	ITEMS: {
+		A: "itemA",
+		B: "itemB"
+	}
+}
+
+var Price;
+(function(){
+	Price = function( glossEntry ){
+		switch(glossEntry){
+			case GLOSS.SLOT:
+				return Config.slot.price_formula(Data.slots_bought);
+		}
+	}
+})();
+
+var Buy;
+(function(){
+
+	Buy = function( glossEntry, param ){
+		switch(glossEntry){
+		case GLOSS.SLOT:
+			var price = Price(glossEntry);
+			if( Wallet.affordable( price ) ){
+				Wallet.withdraw(price);
+				Data.slots_bought++;
+				return true;
+			}
+			break;
+		default:
+			assert(false, "Buy: entry "+glossEntry+" not found.");
+		}
+		return false;
+	}
 
 })();
 
@@ -740,6 +813,8 @@ var DisplayFactory;
 
 		init: function(){ this.display.initialize(); return this; },
 
+		destroy: function(){ this.display.destroy(); return this; },
+
 		id: function(){return this.display.id}
 	});
 
@@ -786,6 +861,7 @@ DISPLAY.ITEM0 = DisplayFactory({
 				});
 
 */
+
 ////
 var ViewManager = new function(){
 	var views = [];
@@ -827,18 +903,14 @@ var View = new Class({
 	});
 
 	View.Desktop.UI = {};
-	{
+	(function(){
 		var UI = View.Desktop.UI;
 
 		var FloatingUI = new Class(View.Desktop).extend({
 			initialize: function(){this.parent()},
 
 			toScreenXY: function( pos ){
-				var w = parseInt(d3.select("#playground").style("width"));
-				var h = parseInt(d3.select("#playground").style("height"));
-				return   pos.plus(new Geom.Vector2(Config.svg.vbx - Config.svg.currentVbx, Config.svg.vby - Config.svg.currentVby))
-							.scal(new Geom.Vector2(Math.min(h/w,1),1))
-							.plus(new Geom.Vector2(-Config.svg.vbx,-Config.svg.vby));
+				
 			},
 
 			fdiv: function( pos, container ){
@@ -1012,7 +1084,7 @@ var View = new Class({
 		//-------
 		View.Desktop.UI.SlotToolTip = function(pos, slot){return new SlotTT(pos,slot);};
 		View.Desktop.UI.SlotMenu = function(pos, slot){return new SlotMenu(pos,slot);};
-	}
+	})();
 
 	View.Desktop.Item = new Class(View.Desktop).extend({
 		initialize: function( item, dom, hexagon ){
@@ -1818,6 +1890,7 @@ var ItemFactory;
 })();
 
 var Playground;
+// Payground
 (function(){
 
 	Playground = new Class(View).extend({
@@ -1953,9 +2026,12 @@ var Playground;
 var Grid;
 var Place;
 var Places;
+// Grid, Place, Places
 (function(){
 
 	var allowPropagation = true;
+
+	var allPlacesListeners = {};
 
 	var Cell = new Class({
 		initialize: function(){
@@ -1991,7 +2067,11 @@ var Places;
 			if( allowPropagation ) {
 				for( var key in this.listeners ){
 					var f = this.listeners[key][name];
-					if( f ) f( eventObj, this.hash );
+					if( f ) f.bind( this.listeners[key] )( eventObj, this.hash );
+				}
+				for( var key in allPlacesListeners ){
+					var f = allPlacesListeners[key][name];
+					if( f ) f.bind( allPlacesListeners[key] )( eventObj, this.hash );
 				}
 			}
 		},
@@ -2012,6 +2092,7 @@ var Places;
 	var playground = new Playground( d3.select("#playground"));
 
 	function hash( v3 ){ return v3.x+'_'+v3.y+'_'+v3.z; }
+	function unhash( hash ){ var v = hash.split('_').map(function(o){return parseInt(o)}); return new Geom.Vector3(v[0],v[1],v[2]) }
 
 	var PlaceHandler;
 	var PlaceSelection;
@@ -2097,6 +2178,12 @@ var Places;
 
 	}
 
+	Places.listenAll = function( obj ){
+		var id = GUID();
+		allPlacesListeners[id] = obj;
+		return id;
+	}
+
 	Grid = {};
 
 	Grid.denyEvents = function(){ allowPropagation = false }
@@ -2104,43 +2191,8 @@ var Places;
 	Grid.extrema = function(){return grid.extrema()}
 
 	Place.hash = hash;
-
+	Place.unhash = unhash;
 })();
-
-
-var DataHandler = new Class({
-	initialize: function( data ){
-		this.data = data;
-	},
-
-	attr: function( name, value ){
-		if( typeof value === 'undefined' ) return this.data[name] || null;
-		this.data[name] = value;
-		return this;
-	},
-});
-
-var DataSelectionHandler = new Class({
-	initialize: function( selection){
-		this.selection = selection || [];
-		this.length = this.selection.length;
-	},
-
-	attr: function( name, value ){
-		if( typeof value === 'undefined' ) return this.selection.map(function(o){ return o[name] });
-		for( var i in this.selection ){
-			this.selection[i][name] = value;
-		}
-		return this;
-	},
-
-	_handlerClass: DataHandler,
-
-	array: function(){
-		var handler = this._handlerClass;
-		return this.selection.map( function( data ){ return new handler(data) });
-	}
-});
 
 
 
@@ -2188,7 +2240,7 @@ var Slot, Slots;
 		state: function( state ){return this.attr("state", state);},
 		bonusID: function( bonusID ){return this.attr("bonusID", bonusID);},
 		place: function( place ){return this.attr("place", place);},
-		neighbors: function(includeCurrent, range){ return new SlotSelection( selectHashes(this.place())).neighbors(includeCurrent, range) },
+		neighbors: function(includeCurrent, range){ return new SlotSelection( selectHashes([this.place()])).neighbors(includeCurrent, range) },
 		//extend: function( n ){ return new SlotSelection( selectHashes( Place(this.place()).neighborsHash() )) }
 	});
 
@@ -2243,41 +2295,43 @@ var Slot, Slots;
 
 })();
 
-Slot("-1_0_1");Slot("1_0_-1");Slot("-1_1_0");Slot("1_-1_0");Slot("0_-1_1");Slot("0_1_-1");
+//Slot("-1_0_1");Slot("1_0_-1");Slot("-1_1_0");Slot("1_-1_0");Slot("0_-1_1");Slot("0_1_-1");
 
 //console.log( Slot(ORIGIN).state(SLOT_STATE.GHOST) ); // YEEEEHAAAA
 
 //Slots.state(SLOT_STATE.VOID).attr("state",SLOT_STATE.GHOST);
 
+/*
+//        MAGIC SELECTION
+//--------------------------------------------------------------------------------------------------------------------------------------------------------
 var pair = ["-1_0_1","3_-3_0"];
 Slots(pair).attr("state",SLOT_STATE.SOLID);
 
-//        MAGIC SELECTION
-//--------------------------------------------------------------------------------------------------------------------------------------------------------
 var select;
 // Exemple to select cells at range 3 and 4, ranges merge
-select = Places(pair).neighbors(true,2).neighbors(2);
+//select = Places(pair).neighbors(true,2).neighbors(2);
 
 // Exemple to select cells at range 2 and 1, ranges merge
-select = Places(pair).neighbors(3);
+//select = Places(pair).neighbors(3);
 
 // Exemple to select cells with a 'shield' interferring
 select = Place(pair[0]).neighbors(2, true).neighbors(2).except(Place(pair[1]).neighbors(2, true));
 
-Slots(select.hashes()).states(SLOT_STATE.GHOST); //.array().map( function(s){ /*if(s.attr("state") === SLOT_STATE.VOID)*/ s.attr("state",SLOT_STATE.GHOST) });
-//--------------------------------------------------------------------------------------------------------------------------------------------------------
+Slots(select.hashes()).states(SLOT_STATE.GHOST); //.array().map( function(s){ if(s.attr("state") === SLOT_STATE.VOID) s.attr("state",SLOT_STATE.GHOST) });
+//--------------------------------------------------------------------------------------------------------------------------------------------------------*/
 
+var Buy;
 
-var Routine;
+var Routine, Routines;
 (function(){
 
 	var routines = {};
 
 	var RoutineHandler = new Class(DataHandler).extend({
-		stop: function(){ this.data.stop = true;},
-		start: function(){ this.data.stop = false;},
-		order: function(value){ this.attr("order",value)},
-		id: function(){return this.data.id}
+		stop: function(){ this.data.stop = true; return this;},
+		start: function(){ this.data.stop = false; return this;},
+		order: function(value){ this.attr("order",value); return this;},
+		id: function(){ return this.data.id}
 	});
 
 	Routine = function( fct ){
@@ -2291,12 +2345,57 @@ var Routine;
 		return new RoutineHandler(r);
 	}
 
-	Routine.remove = function( id ){ delete this.routine[id] }
-	Routine.exec = function(){
-		Utils.objToArray(routines).sort(function(a,b){return a.order - b.order;});
+	Routines = {};
+	Routines.remove = function( id ){ delete this.routine[id] }
+	Routines.exec = function(){
+		Utils.objToArray(routines).sort(function(a,b){return a.order - b.order;}).map(function(o){ if(!o.stop) o.f()});
 	}
 
 })();
+
+
+// SLOTS
+var updateGhosts = Routine(function(){
+	Slots.state(SLOT_STATE.SOLID).neighbors().attr("state",SLOT_STATE.GHOST).attr("price",Price(GLOSS.SLOT));
+	updateGhosts.stop();
+}).start();
+/*var slotRoutineID = Routine(function(){
+	Slots.state(SLOT_STATE.GHOST).array().map( function(slot){
+		if( s.state() === SLOT_STATE.GHOST ) s.attr("price", Config.slot.price_formula( Data.slots_bought ));
+	})
+}).start().id();*/
+
+var slotsClickID = Places.listenAll({
+	click: function( event, hash ){
+		var slot = Slot(hash);
+		switch(slot.state()){
+			case SLOT_STATE.GHOST:
+				if(Buy(GLOSS.SLOT)) {
+					slot.state(SLOT_STATE.SOLID);
+					updateGhosts.start();
+					//slot.neighbors().array().map(function(s){if(s.state() === SLOT_STATE.VOID)s.state(SLOT_STATE.GHOST)});
+				}
+				break;
+		}
+	}
+});
+
+var slotsTooltipsID = Places.listenAll({
+	tooltips: {},
+	mouseenter: function(event, hash){
+		console.log("mouseenter",this);
+		if( Slot(hash).state() !== SLOT_STATE.VOID ){
+			this.tooltips[hash] = Display(DISPLAY.TOOLTIP, hash).init();
+		}
+	},
+
+	mouseout: function(event, hash){
+		var t = this.tooltips[hash];
+		if( t ) t.destroy();
+	}
+});
+
+Wallet.add(new Big(1000));
 
 //console.log("select", Slot(ORIGIN).neighbors().attr("state",SLOT_STATE.GHOST) );
 
@@ -2495,6 +2594,7 @@ var Model = new Class({
 		update: function(date){
 			BonusFactory.applyBonuses();
 			this.prod = this.prod.plus(ProductionFactory.getProduction());
+			this.prod = Wallet.get();
 			Click.flush();
 			//this.updateProd(date);
 		}
@@ -2508,6 +2608,8 @@ Control = new Class({
 		this.game.build();
 		this.timer = null;
 		this.lastDate = new Date();
+
+		Slot(ORIGIN).state(SLOT_STATE.SOLID);
 	},
 
 	startTimer: function(){
@@ -2517,6 +2619,7 @@ Control = new Class({
 			Ticks.setTimeLapse( new Big(date.getTime()).minus(c.lastDate.getTime()).dividedBy(1000));
 			c.lastDate = date;
 			c.game.update();
+			Routines.exec();
 			ViewManager.refresh();
 			DisplayFactory.refresh();
 			c.startTimer();
