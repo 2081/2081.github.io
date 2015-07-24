@@ -148,7 +148,7 @@ Display.new(DISPLAY.TOOLTIP, function( hash ){
 				var slotBox = this.body.append("div")
 									   .classed("tooltip-item",true);
 
-				slotBox.append('p').text("Click to create a land here");
+				slotBox.append('p').html("Create a <strong>Mighty Land</strong> here");
 
 				var price = Price(GLOSS.SLOT);
 				slotBox.append('p').classed("price",true).text(price.toString()+" Dust");

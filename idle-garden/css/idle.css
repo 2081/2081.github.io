@@ -176,6 +176,10 @@ img {
 	border: 3px solid rgba(0,0,0,0.2);
 }
 
+strong.tooltip-item {
+	color: #C4E03D;
+}
+
 .tooltip-item > .thumbnail {
 	position: absolute;
 	border-radius: 40%;
