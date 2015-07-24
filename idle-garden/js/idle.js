@@ -166,7 +166,7 @@ var Config = {
 		bg_ghost: 'sprites/grass_ghost.png',
 		bgFactor : 1.4,
 		bgRatio: 440/380,
-		price_formula: function(n){ return new Big( 100 ).times( new Big(1.15).pow(n) ).ceil()}
+		price_formula: function(n){ return new Big( 100 ).times( new Big(1.3).pow(n) ).ceil()}
 	},
 
 	items: [
@@ -326,6 +326,15 @@ var Utils = {};
 		for( var key in obj ) arr.push(obj[key]);
 		return arr;
 	}
+
+	Utils.numberFormat = function( big ){
+			if( big.e < 6 ){
+				return big.toString();
+			} else {
+				var exp = Math.floor((big.e-6)/3);
+				return big.dividedBy("1e"+(6+exp*3)).toFixed(3).toString()+" "+ (Config.figures[exp] || "e"+(6+exp*3));
+			}
+		}
 }
 ////
 
@@ -2376,6 +2385,9 @@ var slotsClickID = Places.listenAll({
 					//slot.neighbors().array().map(function(s){if(s.state() === SLOT_STATE.VOID)s.state(SLOT_STATE.GHOST)});
 				}
 				break;
+			case SLOT_STATE.SOLID:
+				Wallet.add(new Big(1));
+				break;
 		}
 	}
 });
@@ -2395,7 +2407,7 @@ var slotsTooltipsID = Places.listenAll({
 	}
 });
 
-Wallet.add(new Big(1000));
+Wallet.add(new Big(10000000000000000));
 
 //console.log("select", Slot(ORIGIN).neighbors().attr("state",SLOT_STATE.GHOST) );
 

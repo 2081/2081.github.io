@@ -151,7 +151,7 @@ Display.new(DISPLAY.TOOLTIP, function( hash ){
 				slotBox.append('p').html("Create a <strong>Mighty Land</strong> here");
 
 				var price = Price(GLOSS.SLOT);
-				slotBox.append('p').classed("price",true).text(price.toString()+" Dust");
+				slotBox.append('p').classed("price",true).text( Utils.numberFormat(price)+" Dust");
 			}
 
 			this.div.transition().delay(150).style("opacity",1).duration(200);
