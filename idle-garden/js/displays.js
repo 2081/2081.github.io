@@ -4,8 +4,9 @@ var Display;
 
 	var funcs = {};
 
-	Display = function( handler ){
-		var f = funcs[handler.handlerType];
+	Display = function( key, handler ){
+		if( arguments.length == 1 ) return DisplayFactory(key);
+		var f = funcs[key];
 		if( f ) return f(handler);
 		return null;
 	}
@@ -16,17 +17,23 @@ var Display;
 
 })();
 
-Display.new("slot", function( slotHandler ){
+DISPLAY = {
+	SLOT: "slot"
+}
+
+Display.new(DISPLAY.SLOT, function( slotHandler ){
 	return DisplayFactory({
 		handler: slotHandler,
+		location: slotHandler.place(),
 		initialize: function(){
-			var place = Place(this.location);
+			var place = Place(this.handler.place());
 			this.group = place.container();
 
 			//var width = Config.slot.bgFactor*this.hexagon.radius*2*Math.cos(Math.PI/6);
 			var width = Config.slot.bgFactor*Playground.RADIUS*2*Math.cos(Math.PI/6);
 			var height = width*Config.slot.bgRatio;
-			var c = place.center2D();
+			var c = place.center2D().scal(Playground.RADIUS);
+
 
 			this.img = this.group.append("image")
 								.attr("x",c.x-width/2)
@@ -91,6 +98,10 @@ Display.new("slot", function( slotHandler ){
 				img.attr("xlink:href",this.appearence.bg)
 				   .style("opacity",this.appearence.opacity);
 			}
+		},
+
+		destroy: function(){
+
 		}
 	});
 });

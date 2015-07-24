@@ -302,6 +302,27 @@ var Utils = {};
 			if( array[i] === value ) array.splice(i,1);
 		}
 	}
+
+	Utils.removeDuplicates = function (a) {
+	    var seen = {};
+	    return a.filter(function(item) {
+	        return seen.hasOwnProperty(item) ? false : (seen[item] = true);
+	    });
+	}
+
+	Utils.removeValues = function(a, values) {
+		return a.filter(function(item) {
+			for( var i in values )if( values[i] === item ) return false;
+			return true;
+		});
+	}
+
+	Utils.intersect = function (a, b)
+	{
+	  	return a.filter(function(n) {
+	    	return b.indexOf(n) != -1
+		});
+	}
 }
 ////
 
@@ -630,7 +651,6 @@ var Geom = {};
 
 		get: function( v3 ){
 			if( typeof v3 === 'string') v3 = this.hashReverse(v3);
-			console.log(v3);
 			if( this.constraints(v3)){
 				if(this.hasCell(v3)){
 					return this.cells[this.hash(v3)];
@@ -718,8 +738,9 @@ var DisplayFactory;
 	});
 
 	DisplayFactory = function( obj ){
+		if( typeof obj === 'string' ) return new DisplayHandler(displays[obj]);
 		var display = defaultDisplay(GUID());
-		assert(obj[location], "Every display should be linked to a location");
+		assert(typeof obj["location"] !== 'undefined', "Every display should be linked to a location");
 		for( var key in obj ) display[key] = obj[key];
 		displays[display.id] = display;
 		return new DisplayHandler(display);
@@ -1925,13 +1946,13 @@ var Playground;
 
 var Grid;
 var Place;
+var Places;
 (function(){
 
 	var allowPropagation = true;
 
 	var Cell = new Class({
 		initialize: function(){
-
 			this.listeners = {};
 
 			var group = this.group = Playground.SVG.append("g").classed("gridpos", true);
@@ -1986,8 +2007,15 @@ var Place;
 
 	function hash( v3 ){ return v3.x+'_'+v3.y+'_'+v3.z; }
 
-	Place = function( hash ){
-		var cell = typeof hash === 'undefined' ? grid.origin() : grid.get(hash);
+	var PlaceHandler;
+	var PlaceSelection;
+
+	function neighborsHash( cell, includeCell ){
+		var selection = Geom.HGrid.NEIGHBOURHOOD.concat(includeCell?['C']:[]);
+		return cell.select(selection).map(function(o){return o.hash });
+	}
+
+	PlaceHandler = function( cell ){
 		return {
 			bindEvents: function( obj ) {
 				return cell.addListener( obj );
@@ -1996,10 +2024,71 @@ var Place;
 				cell.removeListener(id);
 			},
 
+			hash: function(){return cell.hash},
+
 			container: function(){ return cell.group },
 
-			center2D: function(){ return grid.to2D( cell.gridPos )}
+			center2D: function(){ return grid.to2D( cell.gridPos )},
+
+			toSelection: function(){ return new PlaceSelection([cell]) },
+
+			neighbors: function(includeCurrent, range){ return this.toSelection().neighbors(includeCurrent, range) },
+
+			neighborsHash: function(includeCurrent, range){ return this.toSelection().neighbors(includeCurrent, range).hashes() }
 		}
+	}
+
+	PlaceSelection = function( cells ){
+		return {
+			selection: cells,
+			bindEvents: function( obj ) {
+				return cells.map(function(o){ return o.addListener( obj ) });
+			},
+			unbindEvents: function( ids ) {
+				ids.map( function(id){ cells.map(function(o){ o.removeListener(id) }) });
+			},
+
+			hashes: function(){return cells.map(function(o){return o.hash})},
+
+			neighbors: function( a, b){
+				var range = 1, includeCurrentSelection = false;
+				if( typeof a === 'number' ) range = a;
+				if( typeof b === 'number' ) range = b;
+				if( typeof a === 'boolean' ) includeCurrentSelection = a;
+				if( typeof b === 'boolean' ) includeCurrentSelection = b;
+
+				var hashes = this.hashes();
+				for( var r = 0; r < range; ++r){
+					for( var i in hashes ){
+						hashes = hashes.concat( neighborsHash(grid.get(hashes[i]), true) );
+					}
+				}
+				hashes = Utils.removeDuplicates(hashes);
+				if( ! includeCurrentSelection ) hashes = Utils.removeValues( hashes, this.hashes() );
+				return new PlaceSelection( hashes.map( grid.get, grid) );
+			},
+			join: function( slotSelection ){
+				return new PlaceSelection(this.selection.concat(slotSelection.selection));
+			},
+			cross: function( slotSelection ){
+				return new PlaceSelection( Utils.intersect(this.selection, slotSelection.selection));
+			},
+			except: function( slotSelection ){
+				return new PlaceSelection( Utils.removeValues(this.selection, slotSelection.selection) );
+			}
+		}
+	}
+
+	Place = function( hash ){
+		if( typeof hash === 'object' ) throw new Error("HERE");
+		var cell = typeof hash === 'undefined' ? grid.origin() : grid.get(hash);
+		return PlaceHandler(cell);
+	}
+
+	Places = function( hashes ){
+		if( typeof hashes === 'undefined' ) return null;
+		return PlaceSelection( hashes.map( grid.get, grid) );
+
 	}
 
 	Grid = {};
@@ -2012,62 +2101,170 @@ var Place;
 
 })();
 
-var ORIGIN = "0_0_0";
 
-Place(ORIGIN);
-Place("0_1_-1");
-Place("1_-1_0");
+var DataHandler = new Class({
+	initialize: function( data ){
+		this.data = data;
+	},
+
+	attr: function( name, value ){
+		if( typeof value === 'undefined' ) return this.data[name] || null;
+		this.data[name] = value;
+		return this;
+	},
+});
+
+var DataSelectionHandler = new Class({
+	initialize: function( selection){
+		this.selection = selection || [];
+		this.length = this.selection.length;
+	},
+
+	attr: function( name, value ){
+		if( typeof value === 'undefined' ) return this.selection.map(function(o){ return o[name] });
+		for( var i in this.selection ){
+			this.selection[i][name] = value;
+		}
+		return this;
+	},
+
+	_handlerClass: DataHandler,
+
+	array: function(){
+		var handler = this._handlerClass;
+		return this.selection.map( function( data ){ return new handler(data) });
+	}
+});
+
+
+
+var ORIGIN = "0_0_0";
 
 
 var SLOT_STATE = Object.freeze({
-	VOID	: 0,
-	GHOST 	: 1,
-	SOLID	: 2
+	VOID	: 1,
+	GHOST 	: 2,
+	SOLID	: 3
 });
-var Slot;
+var Slot, Slots;
 (function(){
 
 	var slots = {};
 
+	var SlotHandler;
+	var SlotSelection;
+
 	var SlotData = function( place ){
-		return {
-			place: place,
-			state: SLOT_STATE.VOID,
-			bonusID: null
-		}
+		var data = {
+						place: place,
+						state: SLOT_STATE.VOID,
+						bonusID: null
+					}
+		slots[place] = data;
+		Display("slot", new SlotHandler(data)).init();
+		return data;
 	}
 
-	var SlotHandler = new Class({
-		initialize: function( sdata ){
-			this.sdata = sdata;
-			this.handlerType = "slot";
-		},
+	function selectState( state ){
+		var select = [];
+		for( var key in slots )if( slots[key].state == state ) select.push(slots[key]);
+		return select;
+	}
 
-		state: function( state ){
-			if( arguments.length == 0 ) return this.sdata.state;
-			this.sdata.state = state;
-			return this;
-		},
+	function selectHashes( hashes ){
+		var select = [];
+		for( var i in hashes ) select.push(slots[hashes[i]] || SlotData(hashes[i]) );
+		return select;
+	}
 
-		bonusID: function( bonusID ){
-			if( arguments.length == 0 ) return this.sdata.bonusID;
-			this.sdata.bonusID = bonusID;
-			return this;
+
+	SlotHandler = new Class(DataHandler).extend({
+		state: function( state ){return this.attr("state", state);},
+		bonusID: function( bonusID ){return this.attr("bonusID", bonusID);},
+		place: function( place ){return this.attr("place", place);},
+		neighbors: function(includeCurrent, range){ return new SlotSelection( selectHashes(this.place())).neighbors(includeCurrent, range) },
+		//extend: function( n ){ return new SlotSelection( selectHashes( Place(this.place()).neighborsHash() )) }
+	});
+
+	SlotSelection = new Class(DataSelectionHandler).extend({
+		places: function(){ return this.selection.map(function(o){return o.place})},
+		states: function(state){return this.attr("state", state);},
+		_handlerClass: SlotHandler,
+		neighbors: function( a, b){
+			var range = 1, includeCurrentSelection = false;
+			if( typeof a === 'number' ) range = a;
+			if( typeof b === 'number' ) range = b;
+			if( typeof a === 'boolean' ) includeCurrentSelection = a;
+			if( typeof b === 'boolean' ) includeCurrentSelection = b;
+
+			var hashes = this.places();
+			for( var r = 0; r < range; ++r){
+				for( var i in hashes ){
+					hashes = hashes.concat( Place( hashes[i] ).neighborsHash( true ));
+				}
+			}
+			hashes = Utils.removeDuplicates(hashes);
+			if( ! includeCurrentSelection ) hashes = Utils.removeValues( hashes, this.places() );
+			return new SlotSelection( selectHashes( hashes ));
+		},
+		join: function( slotSelection ){
+			return new SlotSelection(this.selection.concat(slotSelection.selection));
+		},
+		cross: function( slotSelection ){
+			return new SlotSelection( Utils.intersect(this.selection, slotSelection.selection));
+		},
+		except: function( slotSelection ){
+			return new SlotSelection( Utils.removeValues(this.selection, slotSelection.selection) );
 		}
 	});
 
 
 	Slot = function( hash ){
 		hash = hash || ORIGIN;
-		var sdata = slots[hash] = slots[hash] || SlotData( hash );
-		return new SlotHandler(sdata);
+		var sdata = slots[hash] || SlotData( hash );
+		var shandler = new SlotHandler(sdata);
+		
+		return shandler;
+	}
+
+	Slots = function( hashes ){
+		return new SlotSelection( selectHashes(hashes) );
+	}
+
+	Slots.state = function( state ){
+		return new SlotSelection( selectState( state ) );
 	}
 
 })();
 
-Display(Slot(ORIGIN)).init().id();
+Slot("-1_0_1");Slot("1_0_-1");Slot("-1_1_0");Slot("1_-1_0");Slot("0_-1_1");Slot("0_1_-1");
 
-console.log( Slot(ORIGIN).state(SLOT_STATE.GHOST) ); // YEEEEHAAAA
+//console.log( Slot(ORIGIN).state(SLOT_STATE.GHOST) ); // YEEEEHAAAA
+
+//Slots.state(SLOT_STATE.VOID).attr("state",SLOT_STATE.GHOST);
+
+var pair = ["-1_0_1","3_-3_0"];
+Slots(pair).attr("state",SLOT_STATE.SOLID);
+
+//        MAGIC SELECTION
+//--------------------------------------------------------------------------------------------------------------------------------------------------------
+var select;
+// Exemple to select cells at range 3 and 4, ranges merge
+select = Places(pair).neighbors(true,2).neighbors(2);
+
+// Exemple to select cells at range 2 and 1, ranges merge
+select = Places(pair).neighbors(3);
+
+// Exemple to select cells with a 'shield' interferring
+select = Place(pair[0]).neighbors(2, true).neighbors(2).except(Place(pair[1]).neighbors(2, true));
+
+Slots(select.hashes()).states(SLOT_STATE.GHOST); //.array().map( function(s){ /*if(s.attr("state") === SLOT_STATE.VOID)*/ s.attr("state",SLOT_STATE.GHOST) });
+//--------------------------------------------------------------------------------------------------------------------------------------------------------
+
+
+//console.log("select", Slot(ORIGIN).neighbors().attr("state",SLOT_STATE.GHOST) );
+
+//console.log("select", Places( Slot(ORIGIN).neighbors().places() ).bindEvents({ click: function(){console.log("click")}}) );
 
 ////
 var Model = new Class({
