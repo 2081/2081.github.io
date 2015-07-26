@@ -26,28 +26,41 @@ var UI;
 })();
 
 
+DISPLAY = {
+	SLOT: "slot",
+	TOOLTIP: "tooltip"
+}
+
 var Display;
 (function(){
 
 	var funcs = {};
 
+	var cache = {};
+
 	Display = function( key, param ){
 		if( arguments.length == 1 ) return DisplayFactory(key);
+
 		var f = funcs[key];
-		if( f ) return f(param);
+		if( f ) {
+			if( cache[key] ) return  cache[key][param] || (cache[key][param] = f(param));
+			return f(param);
+		};
 		return null;
 	}
 
-	Display.new = function( code, func ){
-		funcs[code] = func;
+	Display.new = function( key, _cache, func ){
+		if( arguments.length == 2 ) func = _cache;
+		if( arguments.length == 3 ) cache[key] = {};
+			
+		funcs[key] = func;
+	}
+
+	Display.destroy = function( entry, key ){
+		delete cache[entry][key];
 	}
 
 })();
-
-DISPLAY = {
-	SLOT: "slot",
-	TOOLTIP: "tooltip"
-}
 
 Display.new(DISPLAY.SLOT, function( slotHandler ){
 	return DisplayFactory({
@@ -76,7 +89,6 @@ Display.new(DISPLAY.SLOT, function( slotHandler ){
 			var group = this.group, display = this;
 			this.eventsID = place.bindEvents({
 				mouseenter: function(){
-					console.log("enter");
 					//eventPolygon.attr("fill","rgba(255, 255, 0, 0.2)");
 					group.selectAll(".sprite"+(display.state == SLOT_STATE.SOLID ? " , image.bg":""))
 							.style("filter","url(#hoverFilter)");
@@ -134,39 +146,105 @@ Display.new(DISPLAY.SLOT, function( slotHandler ){
 	});
 });
 
-Display.new(DISPLAY.TOOLTIP, function( hash ){
-	return DisplayFactory({
-		location: hash,
-		pos: Place(hash).center2D(),
-		initialize: function(){
-			this.div = UI.floatingDiv(this.pos.scal(Playground.RADIUS));
-			console.log(this.pos);
-			this.body = this.div.append("div").classed("tooltip-body",true);
+(function(){
 
-			var slot = Slot(this.location);
-			if( slot.state() === SLOT_STATE.GHOST ) {
-				var slotBox = this.body.append("div")
-									   .classed("tooltip-item",true);
-
-				slotBox.append('p').html("Create a <strong>Mighty Land</strong> here");
-
-				var price = Price(GLOSS.SLOT);
-				slotBox.append('p').classed("price",true).text( Utils.numberFormat(price)+" Dust");
-			}
-
-			this.div.transition().delay(150).style("opacity",1).duration(200);
-		},
-
-		refresh: function(){
-
-		},
-
-		destroy: function(){
-			if( this.div ){
-				this.body = null;
-				this.div.transition().style("opacity",0).duration(200).remove();
-				this.div = null;
-			}
+	function addItem( body, glossEntry, title ){
+		var tburl = Thumbnail(glossEntry);
+		var item =  body.append("div").classed("tooltip-item",true);
+		if( tburl ) {
+			var tb = item.append("div").classed("thumbnail",true);
+			tb.append("img")
+			.classed("thumbnail", true)
+			.attr({
+				src: tburl,
+				alt: "item"
+			});
 		}
-	})
-});
+		item.append("div").classed("name", true).text(title);
+		return item;
+	}
+
+	Display.new(DISPLAY.TOOLTIP, true, function( hash ){
+		return DisplayFactory({
+			isTooltip: true,
+			location: hash,
+			pos: Place(hash).center2D(),
+			initialize: function( transition ){
+				if( !this.div ){
+
+					console.log(this.bonusHeight);
+
+					this.div = UI.floatingDiv(this.pos.scal(Playground.RADIUS));
+					this.bodyProd = this.div.append("div").classed("tooltip-body",true);
+
+					this.bodyBonus =  this.div.append("div").classed("tooltip-bonus-outer",true).append("div").classed("tooltip-bonus-inner",true);
+					this.scrollInfo = this.bodyBonus.append("div").classed("scroll-info",true).html("<p>scroll down to check bonuses</p>");
+
+					this.bonusHeight = this.bonusHeight || 0;
+					this.bonusHeightDefault = parseInt(this.div.select(".tooltip-bonus-outer").style("height"));
+					console.log("outer",this.bonusHeightDefault);
+
+					d3.select('body').on("mousewheel.tooltip", this.onMouseWheel.bind(this));
+
+					//this.slotBox = addItem(this.bodyBonus);
+
+					this.div.transition().delay(150).style("opacity",1).duration(200);
+				}
+			},
+
+			onMouseWheel: function(){
+				var delta = event.deltaY;;
+				var h = Math.min(Math.max(this.bonusHeight+delta,0), parseInt(this.bodyBonus.style("height"))-10);
+
+				console.log(h);
+				this.bonusHeight = h;
+			},
+
+			/// Bonus
+			setSolid: function( slot ){
+				this.scrollInfo.style("visibility", (this.bonusHeight > 10 ? "hidden" : "visible"));
+				var slotBox = addItem( this.bodyBonus, GLOSS.SLOT, "Mighty Land" );
+				slotBox.append('p').text("+"+( slot.attr("number") || 0 )+"% Dust/s");
+
+				var prod = Production(hash);
+				var prodBox = addItem(this.bodyProd, null, "Total");
+				var dps = prod[RESC.DPS].data.perTick, dpc = prod[RESC.DPC].data.perTick;
+				if( dps > 0 ) prodBox.append("p").classed("price",true).html( Utils.numberFormat(dps)+" Dust/sec");
+				if( dpc > 0 ) prodBox.append("p").classed("price",true).html( Utils.numberFormat(dpc)+" Dust/click");
+				if( dps == 0 && dpc == 0 ) prodBox.append("p").html("This piece of land cannot produce any <strong>Mighty Dust</strong>.");
+			},
+
+			setGhost: function( slot ){
+				this.scrollInfo.style("visibility","hidden");
+				var slotBox = this.bodyProd.append("div")
+											   .classed("tooltip-item",true);
+				slotBox.append('p').html("Create a <strong>Mighty Land</strong> here");
+				var price = Price(GLOSS.SLOT);
+				slotBox.append('p').classed("price",true).classed("expensive", !Wallet.affordable(price)).text( Utils.numberFormat(price)+" Dust");
+			},
+
+			refresh: function(){
+				if( this.div ){
+					this.div.select(".tooltip-bonus-outer").style("height", this.bonusHeightDefault+this.bonusHeight+'px');
+					this.div.selectAll('.tooltip-item').remove();
+					var slot = Slot(hash);
+					if( slot.state() === SLOT_STATE.GHOST ) {
+						this.setGhost( slot );
+					} else if ( slot.state() === SLOT_STATE.SOLID ){
+						this.setSolid( slot );
+
+					}
+				}
+			},
+
+			destroy: function(){
+				if( this.div ){
+					this.div.transition().style("opacity",0).duration(200).remove();
+					//delete this.body;
+					delete this.div;
+					delete this.bonusHeight;
+				}
+			}
+		});
+	});
+})();

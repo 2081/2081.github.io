@@ -41,6 +41,17 @@ var GUID;
 	// Generates xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx ids
 })();
 
+
+
+var GLOSS = {
+	SLOT: "slot",
+	ITEM: "item",
+	ITEMS: {
+		A: "itemA",
+		B: "itemB"
+	}
+}
+
 ////
 var Lang = {
 	all: ["en"],
@@ -60,6 +71,23 @@ var Lang = {
 					}
 	}
 };
+
+var Thumbnail;
+(function(){
+	var hash = {};
+
+	Thumbnail = function( key, url ){
+		if( url ){
+			hash[key] = url;
+		} else {
+			return hash[key] || "";
+		}
+	}
+})();
+
+Thumbnail( GLOSS.SLOT, "sprites/grass_tbn.png" );
+
+
 ////
 /*
 |--item
@@ -91,7 +119,7 @@ var Lang = {
 */
 
 var Data = {
-	slots_bought: 1
+	slots_bought: 0
 };
 
 function Leveling(start, every){
@@ -686,7 +714,7 @@ var DataHandler = new Class({
 	},
 
 	attr: function( name, value ){
-		if( typeof value === 'undefined' ) return this.data[name] || null;
+		if( typeof value === 'undefined' ) return this.data[name];
 		this.data[name] = value;
 		return this;
 	},
@@ -734,15 +762,6 @@ var Wallet;
 	Wallet.get = function( ){ return savings.plus(0) }
 
 })();
-
-var GLOSS = {
-	SLOT: "slot",
-	ITEM: "item",
-	ITEMS: {
-		A: "itemA",
-		B: "itemB"
-	}
-}
 
 var Price;
 (function(){
@@ -822,18 +841,31 @@ var DisplayFactory;
 
 		init: function(){ this.display.initialize(); return this; },
 
+		show: function(){ this.init() },
+
 		destroy: function(){ this.display.destroy(); return this; },
 
 		id: function(){return this.display.id}
 	});
 
 	DisplayFactory = function( obj ){
-		if( typeof obj === 'string' ) return new DisplayHandler(displays[obj]);
-		var display = defaultDisplay(GUID());
-		assert(typeof obj["location"] !== 'undefined', "Every display should be linked to a location");
-		for( var key in obj ) display[key] = obj[key];
-		displays[display.id] = display;
-		return new DisplayHandler(display);
+		switch( typeof obj ){
+			case 'string': // id
+				return new DisplayHandler(displays[obj]);
+			case 'function': // filter
+				for( var key in displays ){
+					if( obj( displays[key] ) ) return displays[key];
+				}
+				break;
+			case 'object':
+				var display = defaultDisplay(GUID());
+				assert(typeof obj["location"] !== 'undefined', "Every display should be linked to a location");
+				for( var key in obj ) display[key] = obj[key];
+				displays[display.id] = display;
+				return new DisplayHandler(display);
+		}
+		return null;
+		
 	}
 
 	DisplayFactory.refresh = function(){
@@ -1551,12 +1583,14 @@ var Ticks;
 	Ticks.setTimeLapse = function( tl ){ timelapse = tl }
 })();
 
-var ProductionFactory;
+var ProductionFactory, Production;
 // ProductionFactory
 (function(){
 
+	var pDatas = {};
+
 	var ProducerData = function(id){
-		return {
+		var data = {
 			id 			: id,
 			total 		: new Big(0),
 			pending 	: new Big(0),
@@ -1571,21 +1605,14 @@ var ProductionFactory;
 			priority 	: 100,
 			tags 		: {}
 		}
+		pDatas[id] = data;
+		return data;
 	};
 
-	var ProducerHandler = new Class({
+	var ProducerHandler = new Class(DataHandler).extend({
 		initialize: function( pdata ){
+			this.parent(pdata);
 			this.pdata = pdata;
-		},
-
-		id: function(){
-			return this.pdata.id;
-		},
-
-		attr: function( attr, value ){
-			if( arguments.length == 1 ) return this.pdata[attr];
-			this.pdata[attr] = value;
-			return this;
 		},
 
 		resource: function( resc ){
@@ -1605,15 +1632,12 @@ var ProductionFactory;
 		}
 	});
 
-	var pDatas = {};
-
 
 	ProductionFactory = function( id ){
 		var pdata;
 		if( typeof id !== 'string' ){
 			id = GUID();
 			pdata = new ProducerData(id);
-			pDatas[id] = pdata;
 			console.log("created new pdata", pdata);
 		} else {
 			pdata = pDatas[id];
@@ -1668,6 +1692,28 @@ var ProductionFactory;
 			pdata.priority = parseInt(pdata.priority);
 		} 
 		console.log(pDatas);
+	}
+
+	Production = function( hash ){
+		var obj = {
+			hash:hash,
+			attr: function( attr, value ){
+				for( var key in RESC ) this[RESC[key]].attr(attr,value);
+				return this;
+			},
+			addTags: function(tags){
+				for( var key in RESC ) this[RESC[key]].addTags(tags);
+				return this;
+			},
+			removeTags: function( tags ){
+				for( var key in RESC ) this[RESC[key]].removeTags(tags);
+				return this;
+			}
+		};
+		for( var key in RESC ) {
+			obj[RESC[key]] = new ProducerHandler(pDatas[hash+key] || ProducerData( hash+key )).resource(RESC[key]).attr("location", hash).addTags("all");
+		}
+		return obj;
 	}
 
 })();
@@ -2347,7 +2393,7 @@ var Routine, Routines;
 		var id = GUID();
 		var r = routines[id] = {
 			id: id,
-			stop: false,
+			stop: true,
 			order: 100,
 			f: fct
 		};
@@ -2368,6 +2414,11 @@ var updateGhosts = Routine(function(){
 	Slots.state(SLOT_STATE.SOLID).neighbors().attr("state",SLOT_STATE.GHOST).attr("price",Price(GLOSS.SLOT));
 	updateGhosts.stop();
 }).start();
+
+var openSlotMenu = Routine(function(){
+	console.log("opening menu", openSlotMenu.attr("hash"));
+	openSlotMenu.stop();
+});
 /*var slotRoutineID = Routine(function(){
 	Slots.state(SLOT_STATE.GHOST).array().map( function(slot){
 		if( s.state() === SLOT_STATE.GHOST ) s.attr("price", Config.slot.price_formula( Data.slots_bought ));
@@ -2375,39 +2426,68 @@ var updateGhosts = Routine(function(){
 }).start().id();*/
 
 var slotsClickID = Places.listenAll({
+	mousedown: function(event, hash){
+		var that = this;
+		this.timeout = setTimeout(function(){
+				that.late = hash;
+			},450);
+	},
 	click: function( event, hash ){
-		var slot = Slot(hash);
-		switch(slot.state()){
-			case SLOT_STATE.GHOST:
-				if(Buy(GLOSS.SLOT)) {
-					slot.state(SLOT_STATE.SOLID);
-					updateGhosts.start();
-					//slot.neighbors().array().map(function(s){if(s.state() === SLOT_STATE.VOID)s.state(SLOT_STATE.GHOST)});
-				}
-				break;
-			case SLOT_STATE.SOLID:
-				Wallet.add(new Big(1));
-				break;
+		if( this.late ){
+			delete this.late;
+		} else {
+			clearTimeout(this.timeout);
+
+			console.log("click",hash);
+			var slot = Slot(hash);
+			switch(slot.state()){
+				case SLOT_STATE.GHOST:
+					if(Buy(GLOSS.SLOT)) {
+						console.log(Data.slots_bought);
+						slot.state(SLOT_STATE.SOLID).attr("number",Data.slots_bought-1);
+						Production(hash);
+						updateGhosts.start();
+					}
+					break;
+				case SLOT_STATE.SOLID:
+					Click(hash);
+					break;
+			}
 		}
+		
 	}
 });
 
 var slotsTooltipsID = Places.listenAll({
 	tooltips: {},
 	mouseenter: function(event, hash){
-		console.log("mouseenter",this);
 		if( Slot(hash).state() !== SLOT_STATE.VOID ){
-			this.tooltips[hash] = Display(DISPLAY.TOOLTIP, hash).init();
+			Display(DISPLAY.TOOLTIP, hash).show();
 		}
 	},
 
 	mouseout: function(event, hash){
-		var t = this.tooltips[hash];
-		if( t ) t.destroy();
+		Display(DISPLAY.TOOLTIP, hash).destroy();
 	}
 });
 
-Wallet.add(new Big(10000000000000000));
+var slotMenuEventID = Places.listenAll({
+	timeout : null,
+	mousedown: function(event, hash){
+		if( this.timeout ) clearTimeout(this.timeout);
+		if( Slot(hash).state() === SLOT_STATE.SOLID ){
+			this.timeout = setTimeout(function(){
+				openSlotMenu.attr("hash",hash).start();
+			},500);
+		}
+	},
+
+	mouseup: function(event, hash){
+		if( this.timeout ) clearTimeout(this.timeout);
+	}
+});
+
+Wallet.add(new Big(10000));
 
 //console.log("select", Slot(ORIGIN).neighbors().attr("state",SLOT_STATE.GHOST) );
 
@@ -2605,7 +2685,7 @@ var Model = new Class({
 
 		update: function(date){
 			BonusFactory.applyBonuses();
-			this.prod = this.prod.plus(ProductionFactory.getProduction());
+			Wallet.add(ProductionFactory.getProduction());
 			this.prod = Wallet.get();
 			Click.flush();
 			//this.updateProd(date);
@@ -2621,7 +2701,7 @@ Control = new Class({
 		this.timer = null;
 		this.lastDate = new Date();
 
-		Slot(ORIGIN).state(SLOT_STATE.SOLID);
+		Slot(ORIGIN).state(SLOT_STATE.GHOST);
 	},
 
 	startTimer: function(){
@@ -2639,8 +2719,19 @@ Control = new Class({
 	}
 });
 
-BonusFactory().addTags("octoplant").addResources(RESC.DPC).fixed(2);
-BonusFactory().addTags("octoplant").addResources(RESC.DPS).fixed(8.65);
+/*
+BonusGroupInfo().thumbnail("")
+				.name("")
+				.description()
+				.addBonus( BonusFactory().addTags("octoplant").addResources(RESC.DPC).fixed(2) )
+				.addBonus( BonusFactory().addTags("octoplant").addResources(RESC.DPS).fixed(8.65)
+				;
+*/  
+
+
+BonusFactory().addTags("all").addResources(RESC.DPS).fixed(10);
+BonusFactory().addTags("all").addResources(RESC.DPC).fixed(100);
+BonusFactory().addTags("all").addResources(RESC.DPS).formula(function( o ){ return [0, Slot(o.location).attr("number")/100]});
 
 var C = new Control();
 C.startTimer();
