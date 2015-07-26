@@ -185,6 +185,8 @@ Display.new(DISPLAY.SLOT, function( slotHandler ){
 					console.log("outer",this.bonusHeightDefault);
 
 					d3.select('body').on("mousewheel.tooltip", this.onMouseWheel.bind(this));
+					d3.select('body').on("DOMMouseScroll.tooltip", this.onMouseWheel.bind(this));
+					//d3.select('body').on("mousewheel.tooltip", this.onMouseWheel.bind(this));
 
 					//this.slotBox = addItem(this.bodyBonus);
 
@@ -193,7 +195,7 @@ Display.new(DISPLAY.SLOT, function( slotHandler ){
 			},
 
 			onMouseWheel: function(){
-				var delta = event.deltaY;;
+				var delta = d3.event.deltaY;;
 				var h = Math.min(Math.max(this.bonusHeight+delta,0), parseInt(this.bodyBonus.style("height"))-10);
 
 				console.log(h);

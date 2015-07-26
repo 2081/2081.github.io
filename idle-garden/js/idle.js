@@ -2108,12 +2108,12 @@ var Places;
 				.attr("points",this.hexagon.getSummits2D().join(" "))
 				.classed("event-handler",true)
 				.on({
-					mouseenter: function(){cell.dispatch("mouseenter",event)},
-					mouseout : function(){cell.dispatch("mouseout",event)},
-					mousedown: function(){cell.dispatch("mousedown",event)},
-					mouseup: function(){cell.dispatch("mouseup",event)},
-					click: function(){cell.dispatch("click",event)},
-					contextmenu: function(){event.preventDefault()}
+					mouseenter: function(){cell.dispatch("mouseenter",d3.event)},
+					mouseout : function(){cell.dispatch("mouseout",d3.event)},
+					mousedown: function(){cell.dispatch("mousedown",d3.event)},
+					mouseup: function(){cell.dispatch("mouseup",d3.event)},
+					click: function(){cell.dispatch("click",d3.event)},
+					contextmenu: function(){d3.event.preventDefault()}
 				})
 				;
 		},
