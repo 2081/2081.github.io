@@ -158,6 +158,10 @@ img {
 
 }
 
+.tooltip-body .name{
+	margin-bottom: 15px;
+}
+
 .tooltip-bonus-outer {
 	position: absolute;
 	/*background: rgba(0,0,255,0.5);*/
@@ -223,22 +227,37 @@ strong.tooltip-item {
 	color: white;
 	font-size: 1.2em;
 	background: rgba(200,255,50,0.2);
-	margin-bottom: 15px;
 	/* border-bottom: 1px solid white; */
 }
 
-.tooltip-item > p {
+.tooltip-item p {
 	-webkit-margin-before: 0.5em;
 	line-height: 0.5em;
 }
+
 .tooltip-item > p:first-child {
 	margin-top: 15px;
 }
 
-.tooltip-item > .price {
+.tooltip-item .price, .tooltip-item .tooltip-bonus {
 	color: yellow;
 }
-.tooltip-item > .price.expensive {
+
+.tooltip-item .tooltip-description {
+	font-style: italic;
+	line-height: 100%;
+	color: #ddd;
+}
+
+.tooltip-bonus, .tooltip-description {	
+	font-size: 13px;
+}
+
+.tooltip-bonus .percentage {
+	color: lightgreen;
+}
+
+.tooltip-item .price.expensive {
 	color: red;
 }
 

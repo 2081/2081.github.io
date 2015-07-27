@@ -148,8 +148,7 @@ Display.new(DISPLAY.SLOT, function( slotHandler ){
 
 (function(){
 
-	function addItem( body, glossEntry, title ){
-		var tburl = Thumbnail(glossEntry);
+	function addItem( body, tburl, title ){
 		var item =  body.append("div").classed("tooltip-item",true);
 		if( tburl ) {
 			var tb = item.append("div").classed("thumbnail",true);
@@ -185,7 +184,9 @@ Display.new(DISPLAY.SLOT, function( slotHandler ){
 					console.log("outer",this.bonusHeightDefault);
 
 					d3.select('body').on("mousewheel.tooltip", this.onMouseWheel.bind(this));
-					d3.select('body').on("DOMMouseScroll.tooltip", this.onMouseWheel.bind(this));
+					d3.select('body').on("wheel.tooltip", this.onMouseWheel.bind(this));
+					//d3.select('body').on("onmousewheel.tooltip", this.onMouseWheel(1).bind(this));
+					//d3.select('body').on("DOMMouseScroll.tooltip", this.onMouseWheel(1).bind(this));
 					//d3.select('body').on("mousewheel.tooltip", this.onMouseWheel.bind(this));
 
 					//this.slotBox = addItem(this.bodyBonus);
@@ -194,8 +195,11 @@ Display.new(DISPLAY.SLOT, function( slotHandler ){
 				}
 			},
 
-			onMouseWheel: function(){
-				var delta = d3.event.deltaY;;
+			onMouseWheel: function( ){
+				console.log("Event",d3.event, d3.event.deltaY);
+				var delta = d3.event.deltaY || null;
+				if( delta == 3 || delta == -3 ) delta *=10;
+				if( delta === null ) return;
 				var h = Math.min(Math.max(this.bonusHeight+delta,0), parseInt(this.bodyBonus.style("height"))-10);
 
 				console.log(h);
@@ -205,8 +209,35 @@ Display.new(DISPLAY.SLOT, function( slotHandler ){
 			/// Bonus
 			setSolid: function( slot ){
 				this.scrollInfo.style("visibility", (this.bonusHeight > 10 ? "hidden" : "visible"));
-				var slotBox = addItem( this.bodyBonus, GLOSS.SLOT, "Mighty Land" );
-				slotBox.append('p').text("+"+( slot.attr("number") || 0 )+"% Dust/s");
+				/*var slotBox = addItem( this.bodyBonus, GLOSS.SLOT, "Mighty Land" );
+				slotBox.append('p').text("+"+( slot.attr("number") || 0 )+"% Dust/s");*/
+
+				var bonuses = BonusGroup(hash);
+				//console.log("bonus", bonuses);
+				for( var key in bonuses ){
+					var group = bonuses[key];
+					
+					//console.log("group", group);
+					var dps_flat = group[RESC.DPS][0];
+					var dps_mult = group[RESC.DPS][1];
+					var dpc_flat = group[RESC.DPC][0];
+					var dpc_mult = group[RESC.DPC][1];
+
+					if( !dps_flat.eq(0) || !dps_mult.eq(0) || !dpc_flat.eq(0) || !dpc_mult.eq(0) ){
+						var bonusDiv = addItem( this.bodyBonus, group.thumbnail, group.name );
+						bonusDiv.append('p').classed("tooltip-description",true).text(group.description);
+						
+						if( !dps_flat.eq(0) || !dps_mult.eq(0) ) bonusDiv.append('p').classed("tooltip-bonus",true)
+								.html((dps_flat.eq(0)?"":(dps_flat.gt(0)?"+":"-")+Utils.numberFormat(dps_flat)+(dps_mult.eq(0)?"":" "))+(dps_mult.eq(0)?"":"<span class='percentage'>"+(dps_mult.gt(0)?"+":"-")+Utils.numberFormat(dps_mult.times(100))+"%")+"</span> Dust/s");
+
+						if( !dpc_flat.eq(0) || !dpc_mult.eq(0) ) bonusDiv.append('p').classed("tooltip-bonus",true)
+								.html((dpc_flat.eq(0)?"":(dpc_flat.gt(0)?"+":"-")+Utils.numberFormat(dpc_flat)+(dpc_mult.eq(0)?"":" "))+(dpc_mult.eq(0)?"":"<span class='percentage'>"+(dpc_mult.gt(0)?"+":"-")+Utils.numberFormat(dpc_mult.times(100))+"%")+"</span> Dust/click");
+					}
+
+					
+					
+				}
+
 
 				var prod = Production(hash);
 				var prodBox = addItem(this.bodyProd, null, "Total");
