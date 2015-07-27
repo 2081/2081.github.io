@@ -1089,8 +1089,13 @@ var View = new Class({
 		});
 
 		var SlotMenu = new Class(FloatingUI).extend({
-			initialize: function(pos){
+			initialize: function(){
 				this.parent();
+			},
+
+			setHash: function( hash ){
+				this.hash = hash;
+				return this;
 			},
 
 			addCancel: function(){
@@ -1139,7 +1144,7 @@ var View = new Class({
 
 		//-------
 		View.Desktop.UI.SlotToolTip = function(pos, slot){return new SlotTT(pos,slot);};
-		View.Desktop.UI.SlotMenu = function(pos, slot){return new SlotMenu(pos,slot);};
+		View.Desktop.UI.SlotMenu = function(hash){return new SlotMenu(hash);};
 	})();
 
 	View.Desktop.Item = new Class(View.Desktop).extend({
@@ -1574,6 +1579,8 @@ var View = new Class({
 	});
 }
 
+var SLOT_MENU = View.Desktop.UI.SlotMenu();
+
 
 var RESC = {
 	DPS: "dps",
@@ -1830,6 +1837,7 @@ var Bonus, Bonuses, BonusGroup;
 		},
 
 		addResources: function( resc ){
+			if( arguments.length !== 0 ) resc = Array.prototype.slice.call(arguments).join(" ");
 			resc.split(" ").map(function(obj){this.bonusData.resources[obj] = true}.bind(this));
 			return this;
 		},
@@ -2534,6 +2542,7 @@ var updateGhosts = Routine(function(){
 
 var openSlotMenu = Routine(function(){
 	console.log("opening menu", openSlotMenu.attr("hash"));
+	SLOT_MENU.setHash(openSlotMenu.attr("hash")).open();
 	openSlotMenu.stop();
 });
 
@@ -2832,26 +2841,16 @@ Control = new Class({
 	}
 });
 
-/*
-BonusGroupInfo().thumbnail("")
-				.name("")
-				.description()
-				.addBonus( BonusFactory().addTags("octoplant").addResources(RESC.DPC).fixed(2) )
-				.addBonus( BonusFactory().addTags("octoplant").addResources(RESC.DPS).fixed(8.65)
-				;
-*/  
-
-
-var dpsLand = BonusFactory().addTags("all").addResources(RESC.DPS).fixed(10,0).id();
-var dpcLand = BonusFactory().addTags("all").addResources(RESC.DPC).fixed(100,0.05).id();
-var bonusLand = BonusFactory().addTags("all").addResources(RESC.DPS)
+//var dpsLand = BonusFactory().addTags("all").addResources(RESC.DPS).fixed(10,0.05).id();
+//var dpcLand = BonusFactory().addTags("all").addResources(RESC.DPC).fixed(100,200).id();
+var bonusLand = BonusFactory().addTags("all").addResources(RESC.DPS, RESC.DPC)
 							  .formula(function( o ){ return [0, ((Slot(o.location).attr("number")/100)||0)]})
 							  .id();
 
-BonusGroup().attr("name","Base production")
+/*BonusGroup().attr("name","Base production")
 			.attr("description","Nice description")
 			.addBonus(dpsLand)
-			.addBonus(dpcLand);
+			.addBonus(dpcLand);*/
 
 BonusGroup().attr("name","Mighty Knowledge")
 			.attr("description","The more you create lands, the better they get.")

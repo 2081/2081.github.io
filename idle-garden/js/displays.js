@@ -196,14 +196,16 @@ Display.new(DISPLAY.SLOT, function( slotHandler ){
 			},
 
 			onMouseWheel: function( ){
-				console.log("Event",d3.event, d3.event.deltaY);
-				var delta = d3.event.deltaY || null;
-				if( delta == 3 || delta == -3 ) delta *=10;
-				if( delta === null ) return;
-				var h = Math.min(Math.max(this.bonusHeight+delta,0), parseInt(this.bodyBonus.style("height"))-10);
+				if( Slot(this.location).state() === SLOT_STATE.SOLID ) {
+					//console.log("Event",d3.event, d3.event.deltaY);
+					var delta = d3.event.deltaY || null;
+					if( delta == 3 || delta == -3 ) delta *=10;
+					if( delta === null ) return;
+					var h = Math.min(Math.max(this.bonusHeight+delta,0), parseInt(this.bodyBonus.style("height"))-10);
 
-				console.log(h);
-				this.bonusHeight = h;
+					console.log(h);
+					this.bonusHeight = h;
+				}
 			},
 
 			/// Bonus
@@ -226,12 +228,24 @@ Display.new(DISPLAY.SLOT, function( slotHandler ){
 					if( !dps_flat.eq(0) || !dps_mult.eq(0) || !dpc_flat.eq(0) || !dpc_mult.eq(0) ){
 						var bonusDiv = addItem( this.bodyBonus, group.thumbnail, group.name );
 						bonusDiv.append('p').classed("tooltip-description",true).text(group.description);
-						
-						if( !dps_flat.eq(0) || !dps_mult.eq(0) ) bonusDiv.append('p').classed("tooltip-bonus",true)
-								.html((dps_flat.eq(0)?"":(dps_flat.gt(0)?"+":"-")+Utils.numberFormat(dps_flat)+(dps_mult.eq(0)?"":" "))+(dps_mult.eq(0)?"":"<span class='percentage'>"+(dps_mult.gt(0)?"+":"-")+Utils.numberFormat(dps_mult.times(100))+"%")+"</span> Dust/s");
 
-						if( !dpc_flat.eq(0) || !dpc_mult.eq(0) ) bonusDiv.append('p').classed("tooltip-bonus",true)
-								.html((dpc_flat.eq(0)?"":(dpc_flat.gt(0)?"+":"-")+Utils.numberFormat(dpc_flat)+(dpc_mult.eq(0)?"":" "))+(dpc_mult.eq(0)?"":"<span class='percentage'>"+(dpc_mult.gt(0)?"+":"-")+Utils.numberFormat(dpc_mult.times(100))+"%")+"</span> Dust/click");
+						if( dps_mult.eq(dpc_mult) && !dps_mult.eq(0) ){
+							bonusDiv.append('p').classed("tooltip-bonus",true).classed("all",true)
+									.html("<span class='percentage'>"+(dps_mult.gt(0)?"+":"-")+Utils.numberFormat(dps_mult.times(100))+"%<small>(All)</small></span> ");
+							dps_mult = dpc_mult = new Big(0);
+						}
+
+						/*if( dps_flat.eq(dpc_flat) && !dps_flat.eq(0) ){
+							bonusDiv.append('p').classed("tooltip-bonus",true)
+									.html((dps_flat.gt(0)?"+":"-")+Utils.numberFormat(dps_flat)+"% (All)");
+							dps_flat = dpc_flat = new Big(0);
+						}*/
+						
+						if( !dps_flat.eq(0) || !dps_mult.eq(0) ) bonusDiv.append('p').classed("tooltip-bonus",true).classed("dps",true)
+								.html((dps_flat.eq(0)?"":(dps_flat.gt(0)?"+":"-")+Utils.numberFormat(dps_flat)+(dps_mult.eq(0)?"":"<span class='separator'>/</span>"))+(dps_mult.eq(0)?"":"<span class='percentage'>"+(dps_mult.gt(0)?"+":"-")+Utils.numberFormat(dps_mult.times(100))+"%")+"</span> <small>Dust/s</small>");
+
+						if( !dpc_flat.eq(0) || !dpc_mult.eq(0) ) bonusDiv.append('p').classed("tooltip-bonus",true).classed("dpc",true)
+								.html((dpc_flat.eq(0)?"":(dpc_flat.gt(0)?"+":"-")+Utils.numberFormat(dpc_flat)+(dpc_mult.eq(0)?"":"<span class='separator'>/</span>"))+(dpc_mult.eq(0)?"":"<span class='percentage'>"+(dpc_mult.gt(0)?"+":"-")+Utils.numberFormat(dpc_mult.times(100))+"%")+"</span> <small>Dust/click</small>");
 					}
 
 					
@@ -243,8 +257,8 @@ Display.new(DISPLAY.SLOT, function( slotHandler ){
 				var prodBox = addItem(this.bodyProd, null, "Total");
 				var dps = prod[RESC.DPS].data.perTick, dpc = prod[RESC.DPC].data.perTick;
 				if( dps > 0 ) prodBox.append("p").classed("price",true).html( Utils.numberFormat(dps)+" Dust/sec");
-				if( dpc > 0 ) prodBox.append("p").classed("price",true).html( Utils.numberFormat(dpc)+" Dust/click");
-				if( dps == 0 && dpc == 0 ) prodBox.append("p").html("This piece of land cannot produce any <strong>Mighty Dust</strong>.");
+				if( dpc > 0 ) prodBox.append("p").classed("price",true).classed("dpc",true).html( Utils.numberFormat(dpc)+" Dust/click");
+				if( dps == 0 && dpc == 0 ) prodBox.append("p").classed("tooltip-description",true).html("This piece of land cannot produce any <strong>Mighty Dust</strong>.");
 			},
 
 			setGhost: function( slot ){

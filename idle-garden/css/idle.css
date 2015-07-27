@@ -189,6 +189,7 @@ img {
 	color: #9DBE00;
 
 	margin-top: 5px;
+	margin-bottom: 15px;
 	width: 100%;
 	min-height: 40px;
 
@@ -225,7 +226,8 @@ strong.tooltip-item {
 
 .tooltip-item > .name {
 	color: white;
-	font-size: 1.2em;
+	padding: 0 10%;
+	font-size: 16px;
 	background: rgba(200,255,50,0.2);
 	/* border-bottom: 1px solid white; */
 }
@@ -252,9 +254,21 @@ strong.tooltip-item {
 .tooltip-bonus, .tooltip-description {	
 	font-size: 13px;
 }
+.tooltip-body .tooltip-description {
+	font-size: 15px;
+	line-height: 120%;
+}
 
 .tooltip-bonus .percentage {
+}
+.tooltip-item .all {
 	color: lightgreen;
+}
+.tooltip-item .dpc {
+	color: #DD84E0;
+}
+.tooltip-item .separator {
+	color: #ddd;
 }
 
 .tooltip-item .price.expensive {
