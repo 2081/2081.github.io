@@ -2855,6 +2855,7 @@ BonusGroup().attr("name","Base production")
 
 BonusGroup().attr("name","Mighty Knowledge")
 			.attr("description","The more you create lands, the better they get.")
+			.attr("thumbnail","sprites/grass_tbn.png")
 			.addBonus(bonusLand);
 
 console.log(BonusGroup.debug());
