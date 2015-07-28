@@ -5,6 +5,7 @@ html,body {
 	margin: 0;
 	padding: 0;
 	height: 100%;
+	overflow: hidden;
 }
 
 @keyframes animatedBackground {
@@ -373,4 +374,106 @@ svg > g.gridpos > .event-handler {
 	fill: transparent;
 	stroke: transparent;
 	stroke-width: 0;
+}
+
+
+/* MODES */
+#mode-ctn {
+	z-index: 90;
+	position: absolute;
+
+	width: 0px;
+
+	overflow: visible;
+
+	left: 50%;
+	bottom: 75px;
+}
+
+#mode-ctn .mode-button {
+
+	pointer-events: all;
+
+	position: absolute;
+	background-color: #2252c6;
+	border-radius: 50%;
+
+	height: 50px;
+	width: 50px;
+
+	left: -25px;
+	top: -25px;
+
+	text-align: center;
+	vertical-align: middle;
+
+	transition: all 0.3s;
+
+	opacity: 0.3;
+	overflow: hidden;
+	cursor: pointer;
+}
+
+#mode-ctn .mode-button:hover {
+	height: 50px;
+	width: 250px;
+
+	border-radius: 25px;
+	border: 3px solid white;
+
+	/*background-color: #d01d50;*/
+	/*background: yellow;*/
+	opacity: 0.8;
+
+	left: -125px;
+	top: -25px;
+}
+
+.mode-button .item {
+	position: absolute;
+
+	padding-top: 10px;
+
+	width: 50%;
+	height: 100%;
+	visibility: hidden;
+	color: white;
+}
+.mode-button .item.left {
+	left: 0;
+}
+.mode-button .item.right {
+	right: 0;
+}
+
+.mode-button:hover .item {
+	visibility: visible;
+}
+.mode-button:hover .item:hover {
+	background-color: rgba(0,0,0,0.3);
+	color: black;
+}
+
+/*
+#mode-ctn:hover ::before {
+	position: absolute;
+	z-index: 91;
+	height: 200%;
+	width: 200%;
+
+	left: -50%;
+	top: -50%;
+
+	border-radius: 50%;
+
+	background-color: black;
+	opacity: 0.2;
+	content: "";
+
+	transition: all 0s;
+}
+*/
+#mode {
+	/*background: url('../sprites/click-icon.png') no-repeat 10px 10px;
+	background-size: 40px 40px;*/
 }

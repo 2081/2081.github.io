@@ -717,6 +717,14 @@ var Geom = {};
 }
 
 
+var Mode;
+(function(){
+
+	
+	
+})();
+
+
 var DataHandler = new Class({
 	initialize: function( data ){
 		this.data = data;
@@ -972,6 +980,7 @@ var View = new Class({
 			fdiv: function( pos, container ){
 				var ctn = container || "#playground";
 				var actPos = this.toScreenXY(pos);
+				console.log("ActPos", pos, actPos);
 				return d3.select(ctn)
 							.append("div")
 								.classed("fui-container",true)

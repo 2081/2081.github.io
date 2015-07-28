@@ -146,6 +146,7 @@ Display.new(DISPLAY.SLOT, function( slotHandler ){
 	});
 });
 
+// TOOLTIP
 (function(){
 
 	function addItem( body, tburl, title ){
@@ -185,11 +186,6 @@ Display.new(DISPLAY.SLOT, function( slotHandler ){
 
 					d3.select('body').on("mousewheel.tooltip", this.onMouseWheel.bind(this));
 					d3.select('body').on("wheel.tooltip", this.onMouseWheel.bind(this));
-					//d3.select('body').on("onmousewheel.tooltip", this.onMouseWheel(1).bind(this));
-					//d3.select('body').on("DOMMouseScroll.tooltip", this.onMouseWheel(1).bind(this));
-					//d3.select('body').on("mousewheel.tooltip", this.onMouseWheel.bind(this));
-
-					//this.slotBox = addItem(this.bodyBonus);
 
 					this.div.transition().delay(150).style("opacity",1).duration(200);
 				}
@@ -197,9 +193,8 @@ Display.new(DISPLAY.SLOT, function( slotHandler ){
 
 			onMouseWheel: function( ){
 				if( Slot(this.location).state() === SLOT_STATE.SOLID ) {
-					//console.log("Event",d3.event, d3.event.deltaY);
 					var delta = d3.event.deltaY || null;
-					if( delta == 3 || delta == -3 ) delta *=10;
+					if( delta == 3 || delta == -3 ) delta *=10; // Need to find something better
 					if( delta === null ) return;
 					var h = Math.min(Math.max(this.bonusHeight+delta,0), parseInt(this.bodyBonus.style("height"))-10);
 
@@ -211,15 +206,11 @@ Display.new(DISPLAY.SLOT, function( slotHandler ){
 			/// Bonus
 			setSolid: function( slot ){
 				this.scrollInfo.style("visibility", (this.bonusHeight > 10 ? "hidden" : "visible"));
-				/*var slotBox = addItem( this.bodyBonus, GLOSS.SLOT, "Mighty Land" );
-				slotBox.append('p').text("+"+( slot.attr("number") || 0 )+"% Dust/s");*/
 
 				var bonuses = BonusGroup(hash);
-				//console.log("bonus", bonuses);
 				for( var key in bonuses ){
 					var group = bonuses[key];
 					
-					//console.log("group", group);
 					var dps_flat = group[RESC.DPS][0];
 					var dps_mult = group[RESC.DPS][1];
 					var dpc_flat = group[RESC.DPC][0];
@@ -294,4 +285,15 @@ Display.new(DISPLAY.SLOT, function( slotHandler ){
 			}
 		});
 	});
+})();
+
+// SLOTMENU
+(function(){
+
+	Display.new(DISPLAY.SLOTMENU, function( hash ){
+		return DisplayFactory({
+
+		});
+	})
+
 })();
