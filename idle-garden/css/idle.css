@@ -477,3 +477,29 @@ svg > g.gridpos > .event-handler {
 	/*background: url('../sprites/click-icon.png') no-repeat 10px 10px;
 	background-size: 40px 40px;*/
 }
+
+.tt-menu {
+	position: absolute;
+	z-index: 100;
+	width: 40px;
+	height: 40px;
+	top: -20px;
+	left: -20px;
+
+	background: #70572c url("../sprites/plus.png") no-repeat 50% 50%;
+	background-size: 60%;
+
+	text-align: center;
+
+	border-radius: 50%;
+	visibility: hidden;
+
+
+	animation: all 0.3s;
+	pointer-events:all;
+}
+
+.tt-menu {
+	cursor: pointer;
+}
+

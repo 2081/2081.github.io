@@ -160,12 +160,12 @@ Leveling.geomSeries 	= function(n0, a){return function(n){return new Big(n0).tim
 var Config = {
 	svg: {
 		vbx: -50,
-		vby: -60,
+		vby: -50,
 		vbw: 100,
 		vbh: 100,
 		width: 0.8,
 		currentVbx: -50,
-		currentVby: -60
+		currentVby: -50
 	},
 	files: {
 		sprites:{
@@ -2591,16 +2591,20 @@ var slotsClickID = Places.listenAll({
 var slotsTooltipsID = Places.listenAll({
 	tooltips: {},
 	mouseenter: function(event, hash){
-		if( Slot(hash).state() !== SLOT_STATE.VOID ){
+		var state = Slot(hash).state();
+		if( state !== SLOT_STATE.VOID ){
 			Display(DISPLAY.TOOLTIP, hash).show();
+			Display(DISPLAY.SLOTMENU, hash).show();
 		}
 	},
 
 	mouseout: function(event, hash){
 		Display(DISPLAY.TOOLTIP, hash).destroy();
+		Display(DISPLAY.SLOTMENU, hash).destroy();
 	}
 });
 
+/*
 var slotMenuEventID = Places.listenAll({
 	timeout : null,
 	mousedown: function(event, hash){
@@ -2616,6 +2620,7 @@ var slotMenuEventID = Places.listenAll({
 		if( this.timeout ) clearTimeout(this.timeout);
 	}
 });
+*/
 
 Wallet.add(new Big(10000));
 

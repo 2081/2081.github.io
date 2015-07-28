@@ -6,14 +6,16 @@ var UI;
 	UI.toScreenXY = function( v2 ){
 		var w = parseInt(d3.select("#playground").style("width"));
 		var h = parseInt(d3.select("#playground").style("height"));
+		console.log("hw", w, h, h-w);
 		return    v2.plus(new Geom.Vector2(Config.svg.vbx - Config.svg.currentVbx, Config.svg.vby - Config.svg.currentVby))
-					.scal(new Geom.Vector2(Math.min(h/w,1),1))
+					.scal(new Geom.Vector2(Math.min(h/w,1), Math.min(w/h,1)))
 					.plus(new Geom.Vector2(-Config.svg.vbx,-Config.svg.vby));
 	}
 
 	UI.floatingDiv = function( pos, container ){
 		var ctn = container || "#playground";
 		var actPos = UI.toScreenXY(pos);
+		console.log("actPos", pos, actPos);
 		return d3.select(ctn)
 					.append("div")
 						.classed("fui-container",true)
@@ -290,9 +292,46 @@ Display.new(DISPLAY.SLOT, function( slotHandler ){
 // SLOTMENU
 (function(){
 
-	Display.new(DISPLAY.SLOTMENU, function( hash ){
+	Display.new(DISPLAY.SLOTMENU, true, function( hash ){
 		return DisplayFactory({
+			location: hash,
+			pos: Place(hash).center2D(),
+			initialize: function( transition ){
+				if( !this.div ){
+					console.log("init",hash);
 
+
+					this.div = UI.floatingDiv(this.pos.scal(Playground.RADIUS).plus( new Geom.Vector2(Playground.RADIUS/1.8,Playground.RADIUS/4))).style("opacity",1);
+					
+					var w =  Playground.SVG.select("g.gridpos>polygon.event-handler").node().getBBox().width/100*Playground.SVG.node().getBoundingClientRect().width;
+					w = w/8;
+
+					this.container = this.div.append("div").classed("tt-menu",true);/*.style({
+																						width: w+'px',
+																						height: w+'px',
+																						top: -w/2+'px',
+																						left: -w/2+'px',
+																						visibility: "hidden"
+																					});*/
+					var that = this;
+					this.hover = false;
+					this.container.on("mouseenter", function(){ that.hover = true; console.log("ENTER")});
+					this.container.on("mouseleave", function(){ that.hover = false; that.destroy();});
+				}
+			},
+			refresh: function(){
+				if( Slot(this.location).state() === SLOT_STATE.SOLID ){
+					this.container.style("visibility","visible");
+				}
+			},
+
+			destroy: function(){
+				if( this.div && !this.hover ){
+					console.log('DESTROY');
+					this.div.transition().style("opacity",0).duration(200).remove();
+					delete this.div;
+				}
+			}
 		});
 	})
 
