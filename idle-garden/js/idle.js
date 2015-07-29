@@ -2515,7 +2515,7 @@ Slots(select.hashes()).states(SLOT_STATE.GHOST); //.array().map( function(s){ if
 
 var Buy;
 
-var Routine, Routines;
+var Routine, Routines, R = {};
 (function(){
 
 	var routines = {};
@@ -2550,6 +2550,7 @@ var Routine, Routines;
 // SLOTS
 var updateGhosts = Routine(function(){
 	Slots.state(SLOT_STATE.SOLID).neighbors().attr("state",SLOT_STATE.GHOST).attr("price",Price(GLOSS.SLOT));
+	console.log("Ghosts updated.");
 	updateGhosts.stop();
 }).start();
 
@@ -2559,6 +2560,7 @@ var openSlotMenu = Routine(function(){
 	openSlotMenu.stop();
 });
 
+
 var slotsClickID = Places.listenAll({
 	click: function( event, hash ){
 
@@ -2566,12 +2568,6 @@ var slotsClickID = Places.listenAll({
 		var slot = Slot(hash);
 		switch(slot.state()){
 			case SLOT_STATE.GHOST:
-				if(Buy(GLOSS.SLOT)) {
-					console.log(Data.slots_bought);
-					slot.state(SLOT_STATE.SOLID).attr("number",Data.slots_bought-1);
-					Production(hash);
-					updateGhosts.start();
-				}
 				break;
 			case SLOT_STATE.SOLID:
 				Click(hash);
@@ -2616,6 +2612,24 @@ var slotMenuEventID = Places.listenAll({
 	}
 });
 */
+
+var UserAction;
+(function(){
+	UserAction = {};
+
+	UserAction.buyLand = function(hash){
+		var slot = Slot(hash);
+		if( slot.state() === SLOT_STATE.GHOST ){
+			if(Buy(GLOSS.SLOT)) {
+				slot.state(SLOT_STATE.SOLID).attr("number",Data.slots_bought-1);
+				Production(hash);
+				updateGhosts.start();
+			}
+		}
+	}
+
+})();
+
 
 Wallet.add(new Big(10000));
 

@@ -506,6 +506,10 @@ svg.main > g.gridpos > .event-handler {
 .smenu-mini {
 	visibility: hidden;
 	opacity: 0;
+	pointer-events: none;
+}
+.smenu-mini:hover {
+	cursor: pointer;
 }
 .smenu-mini text {
 	fill: white;
@@ -513,6 +517,7 @@ svg.main > g.gridpos > .event-handler {
 	pointer-events: none;
 	font-size: 10%;
 	opacity: 0;
+	visibility: hidden;
 
 	transition: all 0.3s;
 }
@@ -539,9 +544,12 @@ svg.main > g.gridpos > .event-handler {
 .smenu-mini-shape.blue {
 	fill: blue;
 }
+.smenu-mini-shape.green {
+	fill: #8EBF13;
+}
+
 .smenu-mini-shape:hover {
 	opacity: 1;
-	cursor: pointer;
 	stroke: rgba(0,0,0,0.1);
 	stroke-width: 0.5;
 }

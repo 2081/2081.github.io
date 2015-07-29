@@ -22,14 +22,16 @@ d3.selection.prototype.appendExternSVG = function( url, callback ){
 	}
 
 var SVG_BANK = Object.freeze({
-	//COG: "typicons/svg/cog.svg",
-	COG: "typicons/svg/info-large.svg",
-	LEAF: "typicons/svg/leaf.svg"
+	COG: "typicons/svg/cog.svg",
+	INFO: "typicons/svg/info-large.svg",
+	LEAF: "typicons/svg/leaf.svg",
+	LAND: "typicons/svg/arrow-up-thick.svg"
 });
 
 var SVG_TRANSFORM = {};
-//SVG_TRANSFORM[SVG_BANK.COG] = "scale(0.13,0.13)";
 SVG_TRANSFORM[SVG_BANK.COG] = "scale(0.13,0.13)";
+SVG_TRANSFORM[SVG_BANK.INFO] = "scale(0.13,0.13)";
+SVG_TRANSFORM[SVG_BANK.LAND] = "scale(0.13,0.13)";
 SVG_TRANSFORM[SVG_BANK.LEAF] = "translate(0.3,0.3) scale(0.11,0.11)";
 
 var LoadSVG, UseSVG;
@@ -410,7 +412,7 @@ Display.new(DISPLAY.SLOT, function( slotHandler ){
 		return DisplayFactory({
 			location: hash,
 			pos: Place(hash).center2D().scal(Playground.RADIUS),
-			state: SLOTMENU_STATE.MINI,
+			state: SLOTMENU_STATE.VOID,
 			initialize: function( transition ){
 				if( !this.mini ){
 					console.log("init MINI");
@@ -432,33 +434,76 @@ Display.new(DISPLAY.SLOT, function( slotHandler ){
 													colorClass: "",
 													hoverW: 1.2,
 													hoverH: 1.2,
-													icon: SVG_BANK.COG
+													icon: SVG_BANK.INFO
 												})
 											  .on({mouseenter: function(){Display(DISPLAY.TOOLTIP, hash).show();   },
 												   mouseleave: function(){Display(DISPLAY.TOOLTIP, hash).destroy();}});
 
+					this.minighost = this.container.appendRevealButton({ 
+													pos : this.pos.plus(new Geom.Vector2(0,0)),
+													text : "Land",
+													colorClass: "green",
+													hoverW: 1.2,
+													hoverH: 1.2,
+													icon: SVG_BANK.LAND
+												})
+											  .on({mouseenter: function(){Display(DISPLAY.TOOLTIP, hash).show();   },
+												   mouseleave: function(){Display(DISPLAY.TOOLTIP, hash).destroy();},
+												   click: function(){ UserAction.buyLand(hash) }});
 
 					console.log("mini", this.mini);
 					//this.mini.append("title").text("Build");
 
-					this.fadeIn = true;
+					this.fadeIn = this.fadeInGhost = true;
 
 					this.container.moveToFront();
 
 				}
 			},
+			revealMini: function( selection ){
+				selection.transition()
+						 .duration(300)
+						 .style("visibility","visible")
+						 .style("pointer-events","all")
+						 .style("opacity",1);
+			},
+			hideMini: function( selection ){
+				selection.transition()
+						 .duration(300)
+						 .style("opacity",0)
+						 .style("pointer-events","none")
+						 .style("visibility","hidden");
+			},
 			refresh: function(){
-				if( this.mini && Slot(this.location).state() === SLOT_STATE.SOLID ){
+				var sstate = Slot(this.location).state();
+				if( this.mini && this.state !== sstate ){
+					switch( sstate ){
+						case SLOT_STATE.SOLID:
+							Display(DISPLAY.TOOLTIP, hash).destroy();
+							this.revealMini(this.mini);
+							this.revealMini(this.mini2);
+							this.hideMini(this.minighost);
+							break;
+						case SLOT_STATE.GHOST:
+							this.revealMini(this.minighost);
+							break;
+					}
+					/*if( this.mini && Slot(this.location).state() === SLOT_STATE.SOLID ){
 					if( this.fadeIn ){
-						this.container.selectAll(".smenu-mini").transition()
-										.duration(300)
-										.style("visibility","visible")
-										.style("opacity",1);
-						this.fadeIn = false;
-					} 
-				} else {
-					this.fadeIn = true;
-				}
+							this.revealMini(this.mini);
+							this.revealMini(this.mini2);
+							this.fadeIn = false;
+						} 
+					} else if( this.minighost && Slot(this.location).state() === SLOT_STATE.GHOST ){
+						if( this.fadeInGhost ){
+							this.revealMini(this.minighost);
+							this.fadeInGhost = false;
+						} 
+					} else {
+						this.fadeIn = this.fadeInGhost = true;
+					}*/
+					this.state = sstate;
+				}				
 			},
 
 			destroy: function(){
@@ -466,7 +511,9 @@ Display.new(DISPLAY.SLOT, function( slotHandler ){
 					this.container.selectAll(".smenu-mini").transition().duration(300).style("opacity",0).remove();
 					delete this.mini;
 					delete this.mini2;
+					delete minighost;
 					delete this.container;
+					this.state = SLOT_STATE.VOID;
 				}
 				/*if( this.div && !this.hover ){
 					console.log('DESTROY');
