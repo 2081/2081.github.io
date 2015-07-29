@@ -1,3 +1,77 @@
+d3.selection.prototype.moveToFront = function() {
+  return this.each(function(){
+    this.parentNode.appendChild(this);
+  });
+};
+
+d3.selection.prototype.appendExternSVG = function( url, callback ){
+		var selection = this;
+		d3.xml(url, function(error, doc) {
+
+			var elements = doc.getElementsByTagName("svg")[0].getElementsByTagName("*");
+			while( elements.length > 0 ) {
+				selection.append( function(){ return elements[0]} );
+			}
+			/*console.log("Selection", selection.select("path")[0]);
+			var box = selection.select("path").each(function(){
+				console.log(this.getBBox());
+			});
+			console.log("BBox", box);*/
+
+		});
+	}
+
+var SVG_BANK = Object.freeze({
+	//COG: "typicons/svg/cog.svg",
+	COG: "typicons/svg/info-large.svg",
+	LEAF: "typicons/svg/leaf.svg"
+});
+
+var SVG_TRANSFORM = {};
+//SVG_TRANSFORM[SVG_BANK.COG] = "scale(0.13,0.13)";
+SVG_TRANSFORM[SVG_BANK.COG] = "scale(0.13,0.13)";
+SVG_TRANSFORM[SVG_BANK.LEAF] = "translate(0.3,0.3) scale(0.11,0.11)";
+
+var LoadSVG, UseSVG;
+(function(){
+
+	var map = {};
+	var waiting = {};
+
+	LoadSVG  = function( url, g ){
+
+		g.appendExternSVG(url, function(svg){
+			svg.attr({
+				width: null,
+				height: null,
+				viewBox: null
+			})
+		});
+	}
+
+	UseSVG = function( url ){
+		console.log("USESVG",url);
+		var id = map[url];
+		if( ! id ){
+			map[url] = id = "svg"+GUID();
+
+			console.log("d3 select",d3.select("svg.main > defs"));
+			var g = d3.select("svg.main > defs").append('g').attr({
+																id: id,
+																transform: (SVG_TRANSFORM[url] || "")
+															});
+			LoadSVG(url, g);
+		} 
+		return '#'+id;
+	}
+
+	d3.selection.prototype.appendUseSVG = function( url ){
+		return this.append("use").attr({
+									"xlink:href": UseSVG( url )
+								}).classed('icon',true);
+	}
+
+})();
 
 var UI;
 (function(){
@@ -6,7 +80,7 @@ var UI;
 	UI.toScreenXY = function( v2 ){
 		var w = parseInt(d3.select("#playground").style("width"));
 		var h = parseInt(d3.select("#playground").style("height"));
-		console.log("hw", w, h, h-w);
+		//console.log("hw", w, h, h-w);
 		return    v2.plus(new Geom.Vector2(Config.svg.vbx - Config.svg.currentVbx, Config.svg.vby - Config.svg.currentVby))
 					.scal(new Geom.Vector2(Math.min(h/w,1), Math.min(w/h,1)))
 					.plus(new Geom.Vector2(-Config.svg.vbx,-Config.svg.vby));
@@ -15,7 +89,7 @@ var UI;
 	UI.floatingDiv = function( pos, container ){
 		var ctn = container || "#playground";
 		var actPos = UI.toScreenXY(pos);
-		console.log("actPos", pos, actPos);
+		//console.log("actPos", pos, actPos);
 		return d3.select(ctn)
 					.append("div")
 						.classed("fui-container",true)
@@ -91,24 +165,13 @@ Display.new(DISPLAY.SLOT, function( slotHandler ){
 			var group = this.group, display = this;
 			this.eventsID = place.bindEvents({
 				mouseenter: function(){
-					//eventPolygon.attr("fill","rgba(255, 255, 0, 0.2)");
 					group.selectAll(".sprite"+(display.state == SLOT_STATE.SOLID ? " , image.bg":""))
 							.style("filter","url(#hoverFilter)");
 					group.select('.bg').style("opacity",display.appearence.hoverOpactity);
-
-					//if( that.state == SLOT_STATE.SOLID) group.select("image.bg").style("filter")
-
-					//if( display.state != SLOT_STATE.VOID) display.tooltip.show();
 				},
-				mouseout : function(){
-					//eventPolygon.attr("fill","transparent");
+				mouseleave : function(){
 					group.selectAll("*").style("filter","none");
 					group.select('.bg').style("opacity",display.appearence.opacity);
-					//display.tooltip.hide();
-
-					//console.log("mouseout");
-					/*console.log(group.select("feColorMatrix"));
-					group.select("feColorMatrix").remove();*/
 				}
 			});
 				
@@ -292,45 +355,124 @@ Display.new(DISPLAY.SLOT, function( slotHandler ){
 // SLOTMENU
 (function(){
 
-	Display.new(DISPLAY.SLOTMENU, true, function( hash ){
+	SLOTMENU_STATE = Object.freeze({
+		MINI	: 1,
+		OPENED 	: 2
+	});
+
+	d3.selection.prototype.appendRevealButton = function( opt ) {
+	    var group = this.append("g").classed("smenu-mini",true);
+
+	    pos = opt.pos || new Geom.Vector2(0,0);
+	    name = opt.text || '';
+	    color = opt.colorClass || "";
+	    width = opt.hoverW || 1;
+	    height = opt.hoverH || 1;
+	    icon = opt.icon || null;
+
+		var w = Playground.RADIUS/3;
+
+		var style = {
+						width: w,
+						height: w,
+						x: pos.x -w/2,
+						y: pos.y -w/2,
+						ry: w/2
+					};
+		var hoverStyle = {
+							width: width*w,
+							height: height*w,
+							x: pos.x -width*w/2,
+							y: pos.y -height*w/2
+						}
+
+	    var r = group.append("rect")
+					.classed("smenu-mini-shape "+color,true)
+					.attr(style)
+					.on({
+						mouseenter: function(){ r.attr(hoverStyle)},
+						mouseleave: function(){ r.attr(style)}
+					});
+		
+		if(icon){
+			console.log("ICON",group.appendUseSVG(icon).attr({
+									x: pos.x -w/2,
+									y: pos.y -w/2,
+									height: w,
+									width: w
+								}));
+		}
+
+		return group;
+	};
+
+	Display.new(DISPLAY.MINIS, true, function( hash ){
 		return DisplayFactory({
 			location: hash,
-			pos: Place(hash).center2D(),
+			pos: Place(hash).center2D().scal(Playground.RADIUS),
+			state: SLOTMENU_STATE.MINI,
 			initialize: function( transition ){
-				if( !this.div ){
-					console.log("init",hash);
+				if( !this.mini ){
+					console.log("init MINI");
+					this.container = Place(hash).svgEventGroup();
+					this.mini = this.container.appendRevealButton({ 
+													pos : this.pos.plus(new Geom.Vector2(0,Playground.RADIUS/2)),
+													text : "Plant",
+													colorClass: "brown",
+													hoverW: 1.2,
+													hoverH: 1.2,
+													icon: SVG_BANK.LEAF
+												})
+											  .on({mouseenter: function(){Display(DISPLAY.TOOLTIP, hash).show();   },
+												   mouseleave: function(){Display(DISPLAY.TOOLTIP, hash).destroy();}});
+
+					this.mini2 = this.container.appendRevealButton({ 
+													pos : this.pos.plus(new Geom.Vector2(Playground.RADIUS/1.8,Playground.RADIUS/4)),
+													text : "Info",
+													colorClass: "",
+													hoverW: 1.2,
+													hoverH: 1.2,
+													icon: SVG_BANK.COG
+												})
+											  .on({mouseenter: function(){Display(DISPLAY.TOOLTIP, hash).show();   },
+												   mouseleave: function(){Display(DISPLAY.TOOLTIP, hash).destroy();}});
 
 
-					this.div = UI.floatingDiv(this.pos.scal(Playground.RADIUS).plus( new Geom.Vector2(Playground.RADIUS/1.8,Playground.RADIUS/4))).style("opacity",1);
-					
-					var w =  Playground.SVG.select("g.gridpos>polygon.event-handler").node().getBBox().width/100*Playground.SVG.node().getBoundingClientRect().width;
-					w = w/8;
+					console.log("mini", this.mini);
+					//this.mini.append("title").text("Build");
 
-					this.container = this.div.append("div").classed("tt-menu",true);/*.style({
-																						width: w+'px',
-																						height: w+'px',
-																						top: -w/2+'px',
-																						left: -w/2+'px',
-																						visibility: "hidden"
-																					});*/
-					var that = this;
-					this.hover = false;
-					this.container.on("mouseenter", function(){ that.hover = true; console.log("ENTER")});
-					this.container.on("mouseleave", function(){ that.hover = false; that.destroy();});
+					this.fadeIn = true;
+
+					this.container.moveToFront();
+
 				}
 			},
 			refresh: function(){
-				if( Slot(this.location).state() === SLOT_STATE.SOLID ){
-					this.container.style("visibility","visible");
+				if( this.mini && Slot(this.location).state() === SLOT_STATE.SOLID ){
+					if( this.fadeIn ){
+						this.container.selectAll(".smenu-mini").transition()
+										.duration(300)
+										.style("visibility","visible")
+										.style("opacity",1);
+						this.fadeIn = false;
+					} 
+				} else {
+					this.fadeIn = true;
 				}
 			},
 
 			destroy: function(){
-				if( this.div && !this.hover ){
+				if( this.container ){
+					this.container.selectAll(".smenu-mini").transition().duration(300).style("opacity",0).remove();
+					delete this.mini;
+					delete this.mini2;
+					delete this.container;
+				}
+				/*if( this.div && !this.hover ){
 					console.log('DESTROY');
 					this.div.transition().style("opacity",0).duration(200).remove();
 					delete this.div;
-				}
+				}*/
 			}
 		});
 	})

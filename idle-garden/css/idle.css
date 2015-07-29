@@ -103,7 +103,7 @@ img {
 	/*background: #8abcde ;*/
 	/*animation: animatedBackground 90s linear infinite;*/
 }
-#playground > svg {
+#playground > svg.main {
 	display: inline-block;
 	margin: 0;
 	width: 100%;
@@ -366,11 +366,11 @@ strong.tooltip-item {
 
 /* SVG */
 
-svg > g.gridpos {
+svg.main > g.gridpos {
 	pointer-events: none;
 }
 
-svg > g.gridpos > .event-handler {
+svg.main > g.gridpos > .event-handler {
 	fill: transparent;
 	stroke: transparent;
 	stroke-width: 0;
@@ -495,7 +495,7 @@ svg > g.gridpos > .event-handler {
 	visibility: hidden;
 
 
-	animation: all 0.3s;
+	transition: all 0.3s;
 	pointer-events:all;
 }
 
@@ -503,3 +503,45 @@ svg > g.gridpos > .event-handler {
 	cursor: pointer;
 }
 
+.smenu-mini {
+	visibility: hidden;
+	opacity: 0;
+}
+.smenu-mini text {
+	fill: white;
+	text-anchor: middle;
+	pointer-events: none;
+	font-size: 10%;
+	opacity: 0;
+
+	transition: all 0.3s;
+}
+.smenu-mini:hover text{
+	opacity: 1;
+}
+.smenu-mini .icon{
+	fill: white;
+	text-anchor: middle;
+	pointer-events: none;
+	font-size: 10%;
+	transition: all 0.3s;
+}
+
+.smenu-mini-shape {
+	fill: #5E8AF2;
+	opacity: 0.5;
+
+	transition: all 0.5s;
+}
+.smenu-mini-shape.brown {
+	fill: #70572c;
+}
+.smenu-mini-shape.blue {
+	fill: blue;
+}
+.smenu-mini-shape:hover {
+	opacity: 1;
+	cursor: pointer;
+	stroke: rgba(0,0,0,0.1);
+	stroke-width: 0.5;
+}

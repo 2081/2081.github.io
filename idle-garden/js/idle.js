@@ -1249,22 +1249,17 @@ var View = new Class({
 					"stroke-width": 0
 				}).on({
 					mouseenter: function(){
-						//eventPolygon.attr("fill","rgba(255, 255, 0, 0.2)");
 						group.selectAll(".sprite"+(that.state == SLOT_STATE.SOLID ? " , image.bg":""))
 								.style("filter","url(#hoverFilter)");
 						group.select('.bg').style("opacity",that.appearence.hoverOpactity);
 
-						//if( that.state == SLOT_STATE.SOLID) group.select("image.bg").style("filter")
 						if( that.state != SLOT_STATE.VOID) that.tooltip.show();
 					},
 					mouseout : function(){
-						//eventPolygon.attr("fill","transparent");
 						group.selectAll("*").style("filter","none");
 						group.select('.bg').style("opacity",that.appearence.opacity);
 						that.tooltip.hide();
-						//console.log("mouseout");
-						/*console.log(group.select("feColorMatrix"));
-						group.select("feColorMatrix").remove();*/
+
 						that.cancelLongClickTimer();
 					},
 					mousedown: function(){
@@ -1431,6 +1426,7 @@ var View = new Class({
 													  0 1.3 0 0 0 \
 													  0 0 1 0 0 \
 													  0 0 0 1 0");
+
 			var that = this;
 			//d3.select("#playground").on("mousewheel",function(){that.onMouseWheel(event.wheelDelta)});
 			d3.select("body").on("keydown",function(){that.onKeyDown(d3.event.keyCode)});
@@ -2134,7 +2130,8 @@ var Playground;
 		domInit: function(){
 			this.svg = this.dom.append("svg").attr("viewBox", [Config.svg.vbx,Config.svg.vby,Config.svg.vbw,Config.svg.vbh].join(" "))
 											 .attr("width","100%")
-											 .attr("height","100%");
+											 .attr("height","100%")
+											 .classed("main", true);
 			var defs = this.svg.append("defs");
 			var f1 = defs.append("filter").attr("id","hoverFilter");
 			f1.append("feColorMatrix").attr("values","1.3 0 0 0 0 \
@@ -2212,7 +2209,7 @@ var Playground;
 			this.viewBox.max.y = 30+(ex.MZ-2)*Playground.Z_GAP;
 			this.viewBox.min.y = -10+(ex.mz+2)*Playground.Z_GAP;
 			this.updateScroll();
-			this.svg.selectAll('g').sort(function(a,b){return a - b;});
+			this.svg.selectAll('g.gridpos').sort(function(a,b){return a - b;});
 		}
 	});
 
@@ -2244,16 +2241,21 @@ var Places;
 
 			this.group.data([ this.gridPos.z + this.gridPos.x/100]);
 
-			this.eventPolygon = group.append("polygon")
-				.attr("points",this.hexagon.getSummits2D().join(" "))
-				.classed("event-handler",true)
+			this.eventGroup  = group.append("g").classed("event-handler",true)
 				.on({
 					mouseenter: function(){cell.dispatch("mouseenter",d3.event)},
 					mouseout : function(){cell.dispatch("mouseout",d3.event)},
+					mouseleave : function(){cell.dispatch("mouseleave",d3.event)},
 					mousedown: function(){cell.dispatch("mousedown",d3.event)},
 					mouseup: function(){cell.dispatch("mouseup",d3.event)},
-					click: function(){cell.dispatch("click",d3.event)},
 					contextmenu: function(){d3.event.preventDefault()}
+				})
+				;
+			this.eventGroup.append("polygon")
+				.attr("points",this.hexagon.getSummits2D().join(" "))
+				.classed("slot-shape",true)
+				.on({
+					click: function(){cell.dispatch("click",d3.event)}
 				})
 				;
 		},
@@ -2316,7 +2318,9 @@ var Places;
 
 			neighbors: function(includeCurrent, range){ return this.toSelection().neighbors(includeCurrent, range) },
 
-			neighborsHash: function(includeCurrent, range){ return this.toSelection().neighbors(includeCurrent, range).hashes() }
+			neighborsHash: function(includeCurrent, range){ return this.toSelection().neighbors(includeCurrent, range).hashes() },
+		
+			svgEventGroup: function(){ return cell.eventGroup }
 		}
 	}
 
@@ -2556,33 +2560,22 @@ var openSlotMenu = Routine(function(){
 });
 
 var slotsClickID = Places.listenAll({
-	mousedown: function(event, hash){
-		var that = this;
-		this.timeout = setTimeout(function(){
-				that.late = hash;
-			},450);
-	},
 	click: function( event, hash ){
-		if( this.late ){
-			delete this.late;
-		} else {
-			clearTimeout(this.timeout);
 
-			console.log("click",hash);
-			var slot = Slot(hash);
-			switch(slot.state()){
-				case SLOT_STATE.GHOST:
-					if(Buy(GLOSS.SLOT)) {
-						console.log(Data.slots_bought);
-						slot.state(SLOT_STATE.SOLID).attr("number",Data.slots_bought-1);
-						Production(hash);
-						updateGhosts.start();
-					}
-					break;
-				case SLOT_STATE.SOLID:
-					Click(hash);
-					break;
-			}
+		console.log("click",hash);
+		var slot = Slot(hash);
+		switch(slot.state()){
+			case SLOT_STATE.GHOST:
+				if(Buy(GLOSS.SLOT)) {
+					console.log(Data.slots_bought);
+					slot.state(SLOT_STATE.SOLID).attr("number",Data.slots_bought-1);
+					Production(hash);
+					updateGhosts.start();
+				}
+				break;
+			case SLOT_STATE.SOLID:
+				Click(hash);
+				break;
 		}
 		
 	}
@@ -2591,16 +2584,18 @@ var slotsClickID = Places.listenAll({
 var slotsTooltipsID = Places.listenAll({
 	tooltips: {},
 	mouseenter: function(event, hash){
+		console.log("ENTERING", hash);
 		var state = Slot(hash).state();
 		if( state !== SLOT_STATE.VOID ){
-			Display(DISPLAY.TOOLTIP, hash).show();
-			Display(DISPLAY.SLOTMENU, hash).show();
+			//Display(DISPLAY.TOOLTIP, hash).show();
+			Display(DISPLAY.MINIS, hash).show();
 		}
 	},
 
-	mouseout: function(event, hash){
-		Display(DISPLAY.TOOLTIP, hash).destroy();
-		Display(DISPLAY.SLOTMENU, hash).destroy();
+	mouseleave: function(event, hash){
+		console.log("LEAVING",hash);
+		//Display(DISPLAY.TOOLTIP, hash).destroy();
+		Display(DISPLAY.MINIS, hash).destroy();
 	}
 });
 
