@@ -1,58 +1,6 @@
-console = console || {log:function(){},warn:function(){}};
-Big = Decimal;
 
-var NORTH 		= "N" ;
-var NORTH_EAST 	= "NE";
-var EAST 		=  "E";
-var SOUTH_EAST 	= "SE";
-var SOUTH 		= "S" ;
-var SOUTH_WEST 	= "SW";
-var WEST 		=  "W";
-var NORTH_WEST 	= "NW";
 
-KEYCODES = {
-	LEFT: 37,
-	UP: 38,
-	RIGHT: 39,
-	DOWN: 40
-};
-
-var TESTING		= true;
-var assert = function(assertion){
-	if( TESTING && !assertion ){
-		arguments[0] = "ASSERTION FAILED";
-		console.warn.apply(console,arguments);
-	}
-}
-
-var GUID;
-(function(){
-	// No need to save any value
-	// Though keys wont have the same length
-	var d = new Date().getTime().toString(35);
-	var i = 0;
-	
-	GUID = function(){
-		return d+"z"+(i++).toString(35);
-	}
-
-	// for rfc4122 compliance on GUID, see
-	// http://stackoverflow.com/a/2117523
-	// Generates xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx ids
-})();
-
-function isHash( str ){
-	return /^-?[0-9]+_-?[0-9]+_-?[0-9]+$/.test(str);
-}
-
-var GLOSS = {
-	SLOT: "slot",
-	ITEM: "item",
-	ITEMS: {
-		A: "itemA",
-		B: "itemB"
-	}
-}
+GLOSS.SLOT = "slot";
 
 ////
 var Lang = {
@@ -718,55 +666,15 @@ var Geom = {};
 
 
 var Mode;
-(function(){
+(function ModeScope(){
 
 	
 	
 })();
 
 
-var DataHandler = new Class({
-	initialize: function( data ){
-		this.data = data;
-	},
-
-	attr: function( name, value ){
-		if( typeof value === 'undefined' ) return this.data[name];
-		this.data[name] = value;
-		return this;
-	},
-
-	attrKeyValue: function( name, key, value ){
-		if( typeof value === 'undefined' ) return this.data[name][key];
-		this.data[name][key] = value;
-		return this;
-	}
-});
-
-var DataSelectionHandler = new Class({
-	initialize: function( selection){
-		this.selection = selection || [];
-		this.length = this.selection.length;
-	},
-
-	attr: function( name, value ){
-		if( typeof value === 'undefined' ) return this.selection.map(function(o){ return o[name] });
-		for( var i in this.selection ){
-			this.selection[i][name] = value;
-		}
-		return this;
-	},
-
-	_handlerClass: DataHandler,
-
-	array: function(){
-		var handler = this._handlerClass;
-		return this.selection.map( function( data ){ return new handler(data) });
-	}
-});
-
 var Wallet;
-(function(){
+(function WalletScope(){
 	Wallet = {};
 
 	var savings = new Big(0);
@@ -787,7 +695,7 @@ var Wallet;
 })();
 
 var Price;
-(function(){
+(function PriceScope(){
 	Price = function( glossEntry ){
 		switch(glossEntry){
 			case GLOSS.SLOT:
@@ -797,7 +705,7 @@ var Price;
 })();
 
 var Buy;
-(function(){
+(function BuyScope(){
 
 	Buy = function( glossEntry, param ){
 		switch(glossEntry){
@@ -818,7 +726,7 @@ var Buy;
 })();
 
 var Click;
-(function(){
+(function ClickScope(){
 
 	var clicks = {};
 
@@ -841,7 +749,7 @@ var Click;
 })();
 
 var DisplayFactory;
-(function(){
+(function DisplayFactoryScope(){
 
 	var displays = {};
 
@@ -1594,7 +1502,7 @@ var RESC = {
 
 var Ticks;
 // Ticks
-(function(){
+(function TicksScope(){
 	var timelapse = 0;
 
 	Ticks = function( pdata ){
@@ -1612,7 +1520,7 @@ var Ticks;
 
 var ProductionFactory, Production;
 // ProductionFactory
-(function(){
+(function ProductionScope(){
 
 	var pDatas = {};
 
@@ -1765,7 +1673,7 @@ var BonusFactory;
 var Bonus, Bonuses, BonusGroup;
 // BonusFactory
 // Bonus
-(function(){
+(function BonusScope(){
 
 	/*
 		Tags should cover every cases.
@@ -2030,7 +1938,7 @@ var Bonus, Bonuses, BonusGroup;
 
 var ItemFactory;
 // ItemFactory
-(function(){
+(function ItemFactoryScope(){
 
 	var ItemData = function(id){
 		return {
@@ -2094,7 +2002,7 @@ var ItemFactory;
 
 var Playground;
 // Payground
-(function(){
+(function PlaygroundScope(){
 
 	Playground = new Class(View).extend({
 		initialize: function( dom){
@@ -2219,7 +2127,7 @@ var Grid;
 var Place;
 var Places;
 // Grid, Place, Places
-(function(){
+(function PlaceScope(){
 
 	var allowPropagation = true;
 
@@ -2404,7 +2312,7 @@ var SLOT_STATE = Object.freeze({
 	SOLID	: 3
 });
 var Slot, Slots;
-(function(){
+(function SlotScope(){
 
 	var slots = {};
 
@@ -2516,7 +2424,7 @@ Slots(select.hashes()).states(SLOT_STATE.GHOST); //.array().map( function(s){ if
 var Buy;
 
 var Routine, Routines, R = {};
-(function(){
+(function RoutineScope(){
 
 	var routines = {};
 
@@ -2614,7 +2522,7 @@ var slotMenuEventID = Places.listenAll({
 */
 
 var UserAction;
-(function(){
+(function UserActionScope(){
 	UserAction = {};
 
 	UserAction.buyLand = function(hash){
@@ -2960,6 +2868,8 @@ var production = producer.getProduction( timelapse );
 	2) ??
 
  */
+
+ // 
 
  // Buy upgrades to grow the clicking area
 
