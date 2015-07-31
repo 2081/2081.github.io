@@ -1,13 +1,16 @@
 
 GLOSS.ITEM = "item";
-GLOSS.ITEMS = {
-		VOID: "itemVOID",
-		A: "itemA",
-		B: "itemB"
+GLOSS.FAMILY = "family";
+GLOSS.FAMILIES = {
+		A: "AFamily",
+		B: "BFamily"
 	}
+GLOSS.KINGDOM = {
+	SOIL: "SoilKingdom"
+}
 
 var ItemFamily;
-(function ItemFamilyScope(){
+(function ItemFamilyScope(){ /// Actually wonder if this class is useful
 
 	var families = {};
 
@@ -15,21 +18,42 @@ var ItemFamily;
 		if( families[id] ) return families[id];
 		var data = {
 			id 			: id,
-			hash		: null,
-			definition	: I.VOID,
-			level		: new Big(0)
+			kingdom		: "soil",
+			gloss		: GLOSS.DEFAULT
 		}
 		return families[id] = data;
 	}
 
+	function findGlossEntry( gloss ){
+		return families.find( function(o){ return o.gloss === gloss });
+	}
+
+	var FamilyHandler = new Class(DataHandler).extend({
+
+	});
+
+	ItemFamily = function(id){
+		var fdata = families[id];
+		if( !fdata && typeof id === 'string' ){
+			// Retrieving item from glossary entry
+			fdata = findGlossEntry(id);
+		}
+		return new FamilyHandler(fdata);
+	}
+
 })();
+
+Init(function(){
+	L(GLOSS.FAMILIES.A, "Item A")
+	 (GLOSS.FAMILIES.B, "Item B");
+});
 
 
 var Item;
 
 (function ItemScope(){
 
-	var I = GLOSS.ITEMS;
+	var F = GLOSS.FAMILIES;
 
 	var items = {};
 
@@ -38,7 +62,7 @@ var Item;
 		var data = {
 			id 			: id,
 			hash		: null,
-			definition	: I.VOID,
+			family		: null,
 			level		: new Big(0)
 		}
 		return items[id] = data;

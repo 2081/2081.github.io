@@ -22,6 +22,7 @@ KEYCODES = {
 };
 
 var GLOSS = {};
+GLOSS.DEFAULT = "default";
 
 var TESTING		= true;
 var assert = function(assertion){
@@ -70,7 +71,9 @@ var DataHandler = new Class({
 		if( typeof value === 'undefined' ) return this.data[name][key];
 		this.data[name][key] = value;
 		return this;
-	}
+	},
+
+	id: function(){ return this.data.id }
 });
 
 var DataSelectionHandler = new Class({
@@ -94,3 +97,22 @@ var DataSelectionHandler = new Class({
 		return this.selection.map( function( data ){ return new handler(data) });
 	}
 });
+
+
+
+var Init;
+
+(function InitScope(){
+
+	var inits = [];
+
+
+	Init = function(f){
+		if( f ){
+			inits.push(f);
+		} else {
+			inits.each(function(o){o()});
+		}
+	}
+
+})();
