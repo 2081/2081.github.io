@@ -113,7 +113,7 @@ var Item;
 	})
 
 	function findHash( hash ){
-		Utils.find(items, function(o){ return o.hash === hash });
+		return Utils.find(items, function(o){ return o.hash === hash });
 	}
 
 	Item = function( id ){
@@ -138,6 +138,11 @@ var Item;
 		}
 		assert(idata, "Could not retrieve item from : "+id);
 		return new ItemHandler(idata);
+	}
+
+	Item.testHash = function( hash ){
+		var idata = findHash(hash);
+		return idata? new ItemHandler(idata):null;
 	}
 
 })();

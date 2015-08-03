@@ -2546,6 +2546,7 @@ var UserAction;
 	}
 
 	var UAIS_itemHandler = null;
+	var UAIS_listener = null;
 	UserAction.selectItemShop = function( family ){
 
 		//var itemHandler = Item(family);
@@ -2553,18 +2554,24 @@ var UserAction;
 			UAIS_itemHandler.family(family);
 		} else {
 			UAIS_itemHandler = Item(family);
+			console.log('new item ',UAIS_itemHandler);
 		}
 
-		var listenerID = Places.listenAll({
+		UAIS_listener = UAIS_listener || Places.listenAll({
 			mouseenter: function(event, hash){
-				if(UAIS_itemHandler) UAIS_itemHandler.hash( Slot(hash).state() === SLOT_STATE.SOLID ? hash : null );
+				console.log("mouseenter",hash,Slot(hash).state() === SLOT_STATE.SOLID && !Item.testHash(hash));
+				if(UAIS_itemHandler) UAIS_itemHandler.hash( Slot(hash).state() === SLOT_STATE.SOLID && !Item.testHash(hash) ? hash : null );
 			},
 
 			click: function(event, hash){
 				if( UAIS_itemHandler && Slot(hash).state() === SLOT_STATE.SOLID ){
-					UAIS_itemHandler.active(true);
-					UAIS_itemHandler = null;
-					if( event.shiftKey ) UserAction.selectItemShop(family);
+					var i = Item.testHash(hash);
+					if( !i || i.id() === UAIS_itemHandler.id() ){
+						UAIS_itemHandler.active(true);
+						UAIS_itemHandler = null;
+						console.log('shift',event.shiftKey);
+						if( event.shiftKey ) UserAction.selectItemShop(family);
+					}	
 				}
 			}
 		});
@@ -2823,6 +2830,10 @@ var bonusA    = BonusFactory().addTags(GLOSS.FAMILIES.A).addResources(RESC.DPS)
 							  .fixed(1,0)
 							  .id();
 
+var awesomeBonus    = BonusFactory().addTags('all').addResources(RESC.DPS,RESC.DPC)
+							  .fixed(0,100)
+							  .id();
+
 /*BonusGroup().attr("name","Base production")
 			.attr("description","Nice description")
 			.addBonus(dpsLand)
@@ -2835,8 +2846,11 @@ BonusGroup().attr("name","Mighty Knowledge")
 
 BonusGroup().attr("name","Octopusius")
 			.attr("description","Eight legs to slowly produce tones of dust !")
-			.attr("thumbnail","sprites/default_tbn.jpg")
 			.addBonus(bonusA);
+
+BonusGroup().attr("name","Awesome Bonus")
+			.attr("description","It's just awesome.")
+			.addBonus(awesomeBonus);
 
 console.log(BonusGroup.debug());
 

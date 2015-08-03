@@ -159,7 +159,7 @@ Display.new(DISPLAY.ITEM, function( itemHandler ){
 					var place = Place(this.location);
 					this.group = place.container();
 
-					this.img = this.group.append("image");
+					this.img = this.group.insert("image",".event-handler");
 					var width = Playground.RADIUS*2*Math.cos(Math.PI/6);
 					var height = width;
 					var c = place.center2D().scal(Playground.RADIUS);
