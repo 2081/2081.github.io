@@ -105,7 +105,9 @@ var UI;
 
 DISPLAY = {
 	SLOT: "slot",
-	TOOLTIP: "tooltip"
+	TOOLTIP: "tooltip",
+	MINIS: "minis",
+	PLANT_MENU: "plant-menu"
 }
 
 var Display;
@@ -138,6 +140,64 @@ var Display;
 	}
 
 })();
+
+Display.new(DISPLAY.ITEM, function( itemHandler ){
+	return DisplayFactory({
+		location: null,
+		initialize: function(){},
+		destroy: function(){},
+		refresh: function(){
+			if( this.location !== itemHandler.hash() ){
+
+				if( this.location ){
+					this.img.remove();
+				}
+
+				this.location = itemHandler.hash();
+
+				if( this.location ){
+					var place = Place(this.location);
+					this.group = place.container();
+
+					this.img = this.group.append("image");
+					var width = Playground.RADIUS*2*Math.cos(Math.PI/6);
+					var height = width;
+					var c = place.center2D().scal(Playground.RADIUS);
+					var rand = Math.random();
+					//this._imageUrl = "sprites/croom_"+chromas[Math.floor(rand*chromas.length)]+".gif?time="+rand;
+					//this._imageUrl = "sprites/octoplant/octoplant_"+chromas[Math.floor(rand*chromas.length)]+".png";
+
+					var familyHandler = itemHandler.familyHandler();
+					var chromas = familyHandler.chroma().split(' ');
+
+					var sprite = familyHandler.sprite().split(/;[ ]*/);
+
+					console.log('sprite',sprite,sprite[0]);
+
+					var imgUrl = sprite[0].Lformat({chroma:chromas[ Math.floor(Math.random()*chromas.length) ]});
+
+					console.log('imgUrl',imgUrl);
+
+					width 	= parseFloat(sprite[1] || 1)*width;
+					height 	= parseFloat(sprite[2] || 1)*height;
+					var cx  = parseFloat(sprite[3] || -0.5)*width;
+					var cy  = parseFloat(sprite[4] || -0.5)*height;
+
+					this.img.attr("x",c.x+cx)
+						.attr("y",c.y+cy)
+						.attr("width",width)
+						.attr("height",height)
+						.attr("overflow","visible")
+						.attr("xlink:href",imgUrl)
+						//.attr("xlink:href","sprites/waura.gif?time="+rand)
+						//.attr("xlink:href","sprites/flower0.gif?time="+rand)
+						.classed("sprite",true);
+						;
+				}			
+			}
+		}
+	});
+});
 
 Display.new(DISPLAY.SLOT, function( slotHandler ){
 	return DisplayFactory({
@@ -238,8 +298,6 @@ Display.new(DISPLAY.SLOT, function( slotHandler ){
 			initialize: function( transition ){
 				if( !this.div ){
 
-					console.log(this.bonusHeight);
-
 					this.div = UI.floatingDiv(this.pos.scal(Playground.RADIUS));
 					this.bodyProd = this.div.append("div").classed("tooltip-body",true);
 
@@ -248,7 +306,6 @@ Display.new(DISPLAY.SLOT, function( slotHandler ){
 
 					this.bonusHeight = this.bonusHeight || 0;
 					this.bonusHeightDefault = parseInt(this.div.select(".tooltip-bonus-outer").style("height"));
-					console.log("outer",this.bonusHeightDefault);
 
 					d3.select('body').on("mousewheel.tooltip", this.onMouseWheel.bind(this));
 					d3.select('body').on("wheel.tooltip", this.onMouseWheel.bind(this));
@@ -264,7 +321,6 @@ Display.new(DISPLAY.SLOT, function( slotHandler ){
 					if( delta === null ) return;
 					var h = Math.min(Math.max(this.bonusHeight+delta,0), parseInt(this.bodyBonus.style("height"))-10);
 
-					console.log(h);
 					this.bonusHeight = h;
 				}
 			},
@@ -396,12 +452,12 @@ Display.new(DISPLAY.SLOT, function( slotHandler ){
 					});
 		
 		if(icon){
-			console.log("ICON",group.appendUseSVG(icon).attr({
+			group.appendUseSVG(icon).attr({
 									x: pos.x -w/2,
 									y: pos.y -w/2,
 									height: w,
 									width: w
-								}));
+								});
 		}
 
 		return group;
@@ -413,10 +469,9 @@ Display.new(DISPLAY.SLOT, function( slotHandler ){
 			pos: Place(hash).center2D().scal(Playground.RADIUS),
 			state: SLOTMENU_STATE.VOID,
 			initialize: function( transition ){
-				if( !this.mini ){
-					console.log("init MINI");
+				if( !this.mini2 ){
 					this.container = Place(hash).svgEventGroup();
-					this.mini = this.container.appendRevealButton({ 
+					/*this.mini = this.container.appendRevealButton({ 
 													pos : this.pos.plus(new Geom.Vector2(0,Playground.RADIUS/2)),
 													text : "Plant",
 													colorClass: "brown",
@@ -425,7 +480,7 @@ Display.new(DISPLAY.SLOT, function( slotHandler ){
 													icon: SVG_BANK.LEAF
 												})
 											  .on({mouseenter: function(){Display(DISPLAY.TOOLTIP, hash).show();   },
-												   mouseleave: function(){Display(DISPLAY.TOOLTIP, hash).destroy();}});
+												   mouseleave: function(){Display(DISPLAY.TOOLTIP, hash).destroy();}});*/
 
 					this.mini2 = this.container.appendRevealButton({ 
 													pos : this.pos.plus(new Geom.Vector2(Playground.RADIUS/1.8,Playground.RADIUS/4)),
@@ -450,7 +505,6 @@ Display.new(DISPLAY.SLOT, function( slotHandler ){
 												   mouseleave: function(){Display(DISPLAY.TOOLTIP, hash).destroy();},
 												   click: function(){ UserAction.buyLand(hash) }});
 
-					console.log("mini", this.mini);
 					//this.mini.append("title").text("Build");
 
 					this.fadeIn = this.fadeInGhost = true;
@@ -475,11 +529,11 @@ Display.new(DISPLAY.SLOT, function( slotHandler ){
 			},
 			refresh: function(){
 				var sstate = Slot(this.location).state();
-				if( this.mini && this.state !== sstate ){
+				if( this.mini2 && this.state !== sstate ){
 					switch( sstate ){
 						case SLOT_STATE.SOLID:
 							Display(DISPLAY.TOOLTIP, hash).destroy();
-							this.revealMini(this.mini);
+							//this.revealMini(this.mini);
 							this.revealMini(this.mini2);
 							this.hideMini(this.minighost);
 							break;
@@ -508,7 +562,7 @@ Display.new(DISPLAY.SLOT, function( slotHandler ){
 			destroy: function(){
 				if( this.container ){
 					this.container.selectAll(".smenu-mini").transition().duration(300).style("opacity",0).remove();
-					delete this.mini;
+					//delete this.mini;
 					delete this.mini2;
 					delete minighost;
 					delete this.container;
@@ -522,5 +576,49 @@ Display.new(DISPLAY.SLOT, function( slotHandler ){
 			}
 		});
 	})
+
+})();
+
+
+(function(){
+
+	Display.new(DISPLAY.PLANT_MENU, true, function(){
+		return DisplayFactory({
+			location: ORIGIN,
+
+			initialize: function(){
+				if( !this.div ){
+					this.div = d3.select("#plant-ctn .ctn");
+
+					var fs = ItemFamilies();
+					for( var j = 0; j < 6; ++j){
+						for( var i = 0; i < fs.length; ++i){
+							var f = fs[i];
+							var div = this.div.append('div').classed('item',true).attr('data-family',f.gloss()).text(f.name());
+
+							var that = this;
+							div.on('click', function(){ that.onClick(this.getAttribute('data-family'))});
+						}
+					}
+				}
+			},
+
+			refresh: function(){
+
+			},
+
+			destroy: function(){
+				d3.select("#plant-ctn .plant-button").style('pointer-events','none');
+				setTimeout(function(){d3.select("#plant-ctn .plant-button").style('pointer-events','all')},300);
+			},
+
+			onClick: function( family ){
+				console.log("click",family);
+				UserAction.selectItemShop(family);
+				this.destroy();
+			}
+
+		});
+	});
 
 })();

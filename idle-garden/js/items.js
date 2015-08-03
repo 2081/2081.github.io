@@ -9,7 +9,7 @@ GLOSS.KINGDOM = {
 	SOIL: "SoilKingdom"
 }
 
-var ItemFamily;
+var ItemFamily, ItemFamilies;
 (function ItemFamilyScope(){ /// Actually wonder if this class is useful
 
 	var families = {};
@@ -19,7 +19,9 @@ var ItemFamily;
 		var data = {
 			id 			: id,
 			kingdom		: "soil", // tag
-			gloss		: GLOSS.DEFAULT // tag
+			gloss		: GLOSS.DEFAULT, // tag
+			sprite		: null,
+			chroma		: ''
 		}
 		return families[id] = data;
 	}
@@ -30,7 +32,12 @@ var ItemFamily;
 	}
 
 	var FamilyHandler = new Class(DataHandler).extend({
-
+		chroma: function(value){return this.attr('chroma',value)},
+		gloss: function(value){return this.attr('gloss',value)},
+		sprite: function(value){return this.attr('sprite',value)},
+		name: function(){return L(this.data.gloss)},
+		description: function(){ return L(this.data.gloss+":description")},
+		comment: function(){ return L(this.data.gloss+":comment")}
 	});
 
 	ItemFamily = function(id){
@@ -45,15 +52,12 @@ var ItemFamily;
 		return fdata ? new FamilyHandler(fdata) : null;
 	}
 
+	ItemFamilies = function(){
+		return Utils.objToArray(families).map(function(o){return new FamilyHandler(o)});
+	}
+
 })();
 
-Init(function(){
-	L(GLOSS.FAMILIES.A, "Octoplant");
-	ItemFamily().attr("gloss", GLOSS.FAMILIES.A);
-
- 	L(GLOSS.FAMILIES.B, "Octoplant 2.0");
-	ItemFamily().attr("gloss", GLOSS.FAMILIES.B);
-});
 
 var Item;
 
@@ -72,6 +76,7 @@ var Item;
 			family		: null, //gloss
 			level		: new Big(0)
 		}
+		Display(DISPLAY.ITEM, new ItemHandler(data)).init();
 		return items[id] = data;
 	}
 
@@ -98,8 +103,9 @@ var Item;
 			return rep;
 		},
 		active: function(bool){return this.attr('active',bool)},
-		hash: function(hash){return this.attr('hash',hash)},
-		family: function(family){return this.attr('family',family)}
+		hash: function(hash){ return this.attr('hash',hash)},
+		family: function(family){return this.attr('family',family)},
+		familyHandler: function(){ return ItemFamily(this.attr('family'))}
 	});
 
 	var ItemSelection = new Class(DataSelectionHandler).extend({
@@ -135,3 +141,21 @@ var Item;
 	}
 
 })();
+
+
+Init(function(){
+	L(GLOSS.FAMILIES.A, "Octoplant");
+	L(GLOSS.FAMILIES.A+":description", "Produce dust when you click on it.");
+	L(GLOSS.FAMILIES.A+":comment", "Eight times cuter.");
+	ItemFamily().gloss(GLOSS.FAMILIES.A)
+				.sprite('sprites/octoplant/octoplant_{chroma}.png; 0.9;0.9;;-0.65')
+				.chroma('corail purple');
+
+ 	L(GLOSS.FAMILIES.B, "Octoplant 2.0");
+	L(GLOSS.FAMILIES.B+":description", "Produce dust over time.");
+	L(GLOSS.FAMILIES.B+":comment", "Eight times deadlier.");
+	ItemFamily().gloss(GLOSS.FAMILIES.B)
+				.sprite('sprites/item1/item1_{chroma}.png;0.9;0.9;;-0.65')
+				.chroma('blue orange');
+
+});

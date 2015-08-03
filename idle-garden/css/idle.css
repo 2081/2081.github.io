@@ -619,6 +619,7 @@ svg.main > g.gridpos > .event-handler {
 }
 
 .plant-button .item {
+	overflow: hidden;
 	display: inline-block;
 	margin: 5px;
 	width: 100px;

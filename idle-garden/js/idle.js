@@ -2335,7 +2335,7 @@ var Slot, Slots;
 						bonusID: null
 					}
 		slots[place] = data;
-		Display("slot", new SlotHandler(data)).init();
+		Display(DISPLAY.SLOT, new SlotHandler(data)).init();
 		return data;
 	}
 
@@ -2497,7 +2497,7 @@ var slotsClickID = Places.listenAll({
 var slotsTooltipsID = Places.listenAll({
 	tooltips: {},
 	mouseenter: function(event, hash){
-		console.log("ENTERING", hash);
+		//console.log("ENTERING", hash);
 		var state = Slot(hash).state();
 		if( state !== SLOT_STATE.VOID ){
 			//Display(DISPLAY.TOOLTIP, hash).show();
@@ -2506,7 +2506,7 @@ var slotsTooltipsID = Places.listenAll({
 	},
 
 	mouseleave: function(event, hash){
-		console.log("LEAVING",hash);
+		//console.log("LEAVING",hash);
 		//Display(DISPLAY.TOOLTIP, hash).destroy();
 		Display(DISPLAY.MINIS, hash).destroy();
 	}
@@ -2544,6 +2544,36 @@ var UserAction;
 			}
 		}
 	}
+
+	var UAIS_itemHandler = null;
+	UserAction.selectItemShop = function( family ){
+
+		//var itemHandler = Item(family);
+		if ( UAIS_itemHandler ){
+			UAIS_itemHandler.family(family);
+		} else {
+			UAIS_itemHandler = Item(family);
+		}
+
+		var listenerID = Places.listenAll({
+			mouseenter: function(event, hash){
+				if(UAIS_itemHandler) UAIS_itemHandler.hash( Slot(hash).state() === SLOT_STATE.SOLID ? hash : null );
+			},
+
+			click: function(event, hash){
+				if( UAIS_itemHandler && Slot(hash).state() === SLOT_STATE.SOLID ){
+					UAIS_itemHandler.active(true);
+					UAIS_itemHandler = null;
+					if( event.shiftKey ) UserAction.selectItemShop(family);
+				}
+			}
+		});
+	}
+
+	/*UserAction.plantItem = function(){
+		UAIS_itemHandler.active(true);
+		UAIS_itemHandler = null;
+	}*/
 
 })();
 
@@ -2764,6 +2794,8 @@ Control = new Class({
 		this.lastDate = new Date();
 
 		Slot(ORIGIN).state(SLOT_STATE.GHOST);
+
+		Display(DISPLAY.PLANT_MENU, null).show();
 	},
 
 	startTimer: function(){
@@ -2800,6 +2832,11 @@ BonusGroup().attr("name","Mighty Knowledge")
 			.attr("description","The more you create lands, the better they get.")
 			.attr("thumbnail","sprites/grass_tbn.png")
 			.addBonus(bonusLand);
+
+BonusGroup().attr("name","Octopusius")
+			.attr("description","Eight legs to slowly produce tones of dust !")
+			.attr("thumbnail","sprites/default_tbn.jpg")
+			.addBonus(bonusA);
 
 console.log(BonusGroup.debug());
 
