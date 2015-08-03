@@ -111,7 +111,7 @@ var Init;
 		if( f ){
 			inits.push(f);
 		} else {
-			inits.each(function(o){o()});
+			for( var i in inits ) inits[i]();
 		}
 	}
 

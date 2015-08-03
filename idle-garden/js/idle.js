@@ -1,6 +1,8 @@
 
 
 GLOSS.SLOT = "slot";
+var ORIGIN = "0_0_0";
+
 
 ////
 var Lang = {
@@ -2031,7 +2033,7 @@ var Playground;
 			Playground.Z_GAP = 1.5*Playground.RADIUS*Config.playground.zCoef;
 			Playground.ORIGIN = origin;
 
-			this.displayID = DisplayFactory({ refresh: this.refresh.bind(this) });
+			this.displayID = DisplayFactory({ refresh: this.refresh.bind(this), location: ORIGIN });
 
 		},
 
@@ -2302,8 +2304,6 @@ var Places;
 })();
 
 
-
-var ORIGIN = "0_0_0";
 
 
 var SLOT_STATE = Object.freeze({
@@ -2789,6 +2789,9 @@ BonusGroup().attr("name","Mighty Knowledge")
 			.addBonus(bonusLand);
 
 console.log(BonusGroup.debug());
+
+Init();
+console.log(L.keys());
 
 var C = new Control();
 C.startTimer();

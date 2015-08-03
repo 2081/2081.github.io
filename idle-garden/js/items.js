@@ -18,8 +18,8 @@ var ItemFamily;
 		if( families[id] ) return families[id];
 		var data = {
 			id 			: id,
-			kingdom		: "soil",
-			gloss		: GLOSS.DEFAULT
+			kingdom		: "soil", // tag
+			gloss		: GLOSS.DEFAULT // tag
 		}
 		return families[id] = data;
 	}

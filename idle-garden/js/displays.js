@@ -52,7 +52,6 @@ var LoadSVG, UseSVG;
 	}
 
 	UseSVG = function( url ){
-		console.log("USESVG",url);
 		var id = map[url];
 		if( ! id ){
 			map[url] = id = "svg"+GUID();
