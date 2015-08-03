@@ -106,12 +106,16 @@ var Init;
 
 	var inits = [];
 
-
 	Init = function(f){
 		if( f ){
+			console.log("PUSHING INIT",f);
 			inits.push(f);
 		} else {
-			for( var i in inits ) inits[i]();
+			console.log("funcs", inits);
+			for( var i in inits ) {
+				console.log(i);
+				inits[i]();
+			}
 		}
 	}
 

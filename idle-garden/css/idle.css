@@ -553,3 +553,92 @@ svg.main > g.gridpos > .event-handler {
 	stroke: rgba(0,0,0,0.1);
 	stroke-width: 0.5;
 }
+
+/* PLANT */
+/* MODES */
+#plant-ctn {
+	z-index: 90;
+	position: absolute;
+
+	width: 0px;
+	height: 0px;
+
+	overflow: visible;
+
+	left: 50%;
+	bottom: 75px;
+}
+
+#plant-ctn .plant-button {
+
+	pointer-events: all;
+
+	position: absolute;
+	/*background-color: #70A10E;*/
+	background: rgba(0,0,0,0.2) url('../sprites/leaf.png') no-repeat center center;
+	background-size: 80% 80%;
+	border-radius: 50%;
+
+	height: 50px;
+	width: 50px;
+
+	left: -25px;
+	top: -25px;
+
+	text-align: center;
+	vertical-align: middle;
+
+	transition: all 0.3s;
+
+	overflow: hidden;
+	cursor: pointer;
+}
+
+#plant-ctn .plant-button:hover {
+	height: 80vh;
+	width: 90vw;
+
+	border-radius: 25px;
+	border: 3px solid white;
+
+	background: rgba(0,0,0,0.5);
+	/*background-color: #d01d50;*/
+	/*background: yellow;*/
+
+	left: -45vw;
+	top: -75vh;
+}
+
+.plant-button .ctn{
+	height: 0px;
+	width: 100%;
+	overflow: hidden;
+}
+.plant-button:hover .ctn {
+	height: 100%;
+}
+
+.plant-button .item {
+	display: inline-block;
+	margin: 5px;
+	width: 100px;
+	height: 100px;
+	background-color: yellow;
+
+}
+.plant-button h3 {
+	color: white;
+	opacity: 1;
+	font-size: 30px;
+}
+.plant-button .item, .plant-button h3, .plant-button .ctn {
+	visibility: hidden;
+}
+.plant-button:hover .item, .plant-button:hover h3, .plant-button .ctn {
+	visibility: visible;
+}
+
+.plant-button:hover .item:hover {
+	background-color: rgba(0,0,0,0.3);
+	color: black;
+}

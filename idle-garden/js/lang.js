@@ -28,15 +28,16 @@ var L;
 
 	function processString( str, args ){
 		if( args ){
+			console.log(processString, args);
 			var brackets = /[{]([^}{}]*)[}]/g;
-			var id = /^\d+$/g;
+			var id = /^\w+$/g;
 			var idnoreplace = /^\d+[!]$/g;
 			var conditions = /^(\d+)|([><=])/;
 			while(str.match(brackets)){
 				str = str.replace(brackets, function(a, o){
 					var i;
 					if( (i = o.match(id)) ) {
-						return args[parseInt(i)];
+						return args[i] || args[parseInt(i)];
 					} else {
 						var expressions = o.split("|");
 						var identifier;
@@ -92,7 +93,7 @@ var L;
 		} else if ( typeof id !== 'undefined' ){
 			str = words[currentLocale][id] || words[defaultLocale][id];
 		}
-		return wordHandler(str);
+		return str;
 	}
 
 	L.addLanguageSupport = function( code ){
@@ -112,6 +113,7 @@ var L;
 
 	L.addLanguageSupport("en_US");
 
+	String.prototype.Lformat = function(){ return processString(this,arguments.length == 1 && typeof arguments[0] === 'object' ? arguments[0]: arguments) };
 
 
 })();

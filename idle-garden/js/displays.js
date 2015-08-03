@@ -258,7 +258,7 @@ Display.new(DISPLAY.SLOT, function( slotHandler ){
 			},
 
 			onMouseWheel: function( ){
-				if( Slot(this.location).state() === SLOT_STATE.SOLID ) {
+				if( this.div && Slot(this.location).state() === SLOT_STATE.SOLID ) {
 					var delta = d3.event.deltaY || null;
 					if( delta == 3 || delta == -3 ) delta *=10; // Need to find something better
 					if( delta === null ) return;

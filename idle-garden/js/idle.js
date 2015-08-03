@@ -1,4 +1,8 @@
 
+$(window).load(function(){
+    $(".plant-button .ctn").mCustomScrollbar();
+});
+
 
 GLOSS.SLOT = "slot";
 var ORIGIN = "0_0_0";
@@ -321,6 +325,11 @@ var Utils = {};
 		for( var key in a) obj[key] = a[key];
 		for( var key in b) obj[key] = b[key];
 		return obj;
+	}
+
+	Utils.find = function(arrObj, f){
+		for( var i in arrObj) if( f(arrObj[i]) ) return arrObj[i];
+		return null;
 	}
 }
 ////
@@ -2778,6 +2787,10 @@ var bonusLand = BonusFactory().addTags("all").addResources(RESC.DPS, RESC.DPC)
 							  .formula(function( o ){ return [0, ((Slot(o.location).attr("number")/100)||0)]})
 							  .id();
 
+var bonusA    = BonusFactory().addTags(GLOSS.FAMILIES.A).addResources(RESC.DPS)
+							  .fixed(1,0)
+							  .id();
+
 /*BonusGroup().attr("name","Base production")
 			.attr("description","Nice description")
 			.addBonus(dpsLand)
@@ -2795,6 +2808,7 @@ console.log(L.keys());
 
 var C = new Control();
 C.startTimer();
+
 
 // PRODUCTION ? 
 /*
