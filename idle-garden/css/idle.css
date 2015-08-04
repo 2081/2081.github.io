@@ -605,6 +605,8 @@ svg.main > g.gridpos > .event-handler {
 	/*background-color: #d01d50;*/
 	/*background: yellow;*/
 
+	cursor: auto;
+
 	left: -45vw;
 	top: -75vh;
 }
@@ -620,17 +622,50 @@ svg.main > g.gridpos > .event-handler {
 
 .plant-button .item {
 	overflow: hidden;
+	position: relative;
 	display: inline-block;
 	margin: 5px;
-	width: 100px;
-	height: 100px;
-	background-color: yellow;
-
+	width: 223px;
+	height: 310px;
+	border-radius: 5px;
+	background-size: 100% 100%;
+	background-color: green;
+	cursor: pointer;
 }
+
+.plant-button .item .front, .plant-button .item .back {
+	position: absolute;
+	width: 100%;
+	height: 100%;
+	top: 0;
+	left: 0;
+}
+.plant-button .item .back {
+	background: url('../sprites/card-template-back.png') no-repeat;
+	z-index: 0;
+}
+.plant-button .item .front {
+	background: url('../sprites/card-template-front.png') no-repeat;
+	z-index: 100;
+}
+
+.plant-button .item .thumbnail {
+	position: absolute;
+	pointer-events: none;
+	z-index: 5;
+}
+.plant-button .item:hover .thumbnail {
+	/*top: -5%;
+	left: -5%;
+	width: 110%;
+	height: auto;*/
+}
+
 .plant-button h3 {
 	color: white;
 	opacity: 1;
 	font-size: 30px;
+	margin-top: 15px;
 }
 .plant-button .item, .plant-button h3, .plant-button .ctn {
 	visibility: hidden;
@@ -639,7 +674,18 @@ svg.main > g.gridpos > .event-handler {
 	visibility: visible;
 }
 
-.plant-button:hover .item:hover {
-	background-color: rgba(0,0,0,0.3);
-	color: black;
+.plant-button:hover .item:hover::after {
+
+	position: absolute;
+	width: 100%;
+	height: 100%;
+	background: rgba(255,255,255,0.05);
+	left:0;
+	top:0;
+	content: "";
+}
+
+.plant-button h4 {
+	margin-top: 155px;
+	color: white;
 }

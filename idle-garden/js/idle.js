@@ -32,11 +32,13 @@ var Thumbnail;
 (function(){
 	var hash = {};
 
+	var none_tbn = 'sprites/none_tbn.jpg';
+
 	Thumbnail = function( key, url ){
 		if( url ){
 			hash[key] = url;
 		} else {
-			return hash[key] || "";
+			return hash[key] || none_tbn;
 		}
 	}
 })();
@@ -330,6 +332,23 @@ var Utils = {};
 	Utils.find = function(arrObj, f){
 		for( var i in arrObj) if( f(arrObj[i]) ) return arrObj[i];
 		return null;
+	}
+
+	Utils.extractSprite = function( str, chromas, rand ){
+		var sprite = str.split(/;[ ]*/);
+
+		chromas = chromas.split(/ /);
+
+		var obj = {};
+
+		obj.url = sprite[0].Lformat({chroma:chromas[ Math.floor( rand ? Math.random()*chromas.length : 0 ) ]});
+
+		obj.w 	= parseFloat(sprite[1] || 1);
+		obj.h 	= parseFloat(sprite[2] || 1);
+		obj.cx  = parseFloat(sprite[3] || -0.5);
+		obj.cy  = parseFloat(sprite[4] || -0.5);
+
+		return obj;
 	}
 }
 ////
@@ -2568,9 +2587,10 @@ var UserAction;
 					var i = Item.testHash(hash);
 					if( !i || i.id() === UAIS_itemHandler.id() ){
 						UAIS_itemHandler.active(true);
+						var fam = UAIS_itemHandler.family();
 						UAIS_itemHandler = null;
 						console.log('shift',event.shiftKey);
-						if( event.shiftKey ) UserAction.selectItemShop(family);
+						if( event.shiftKey ) UserAction.selectItemShop(fam);
 					}	
 				}
 			}

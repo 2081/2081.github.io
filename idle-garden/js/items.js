@@ -153,14 +153,18 @@ Init(function(){
 	L(GLOSS.FAMILIES.A+":description", "Produce dust when you click on it.");
 	L(GLOSS.FAMILIES.A+":comment", "Eight times cuter.");
 	ItemFamily().gloss(GLOSS.FAMILIES.A)
-				.sprite('sprites/octoplant/octoplant_{chroma}.png; 0.9;0.9;;-0.65')
-				.chroma('corail purple');
+				.sprite('sprites/A/A_{chroma}.png; 0.9;0.9;;-0.65')
+				.chroma('purple corail');
+	Thumbnail(GLOSS.FAMILIES.A,'sprites/A/A_tbn.jpg');
+	Thumbnail(GLOSS.FAMILIES.A+':bw','sprites/A/A_tbn_bw.jpg');
 
  	L(GLOSS.FAMILIES.B, "Octoplant 2.0");
 	L(GLOSS.FAMILIES.B+":description", "Produce dust over time.");
 	L(GLOSS.FAMILIES.B+":comment", "Eight times deadlier.");
 	ItemFamily().gloss(GLOSS.FAMILIES.B)
-				.sprite('sprites/item1/item1_{chroma}.png;0.9;0.9;;-0.65')
+				.sprite('sprites/B/B_{chroma}.png;0.9;0.9;;-0.65')
 				.chroma('blue orange');
+	Thumbnail(GLOSS.FAMILIES.B,'sprites/B/B_tbn.jpg');
+	Thumbnail(GLOSS.FAMILIES.B+':bw','sprites/B/B_tbn_bw.jpg');
 
 });

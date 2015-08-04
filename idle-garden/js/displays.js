@@ -596,6 +596,28 @@ Display.new(DISPLAY.SLOT, function( slotHandler ){
 							var f = fs[i];
 							var div = this.div.append('div').classed('item',true).attr('data-family',f.gloss()).text(f.name());
 
+							var front = div.append('div').classed('front',true);
+
+							front.append('h4').classed('item-name',true).text(f.name());
+
+
+							var back = div.append('div').classed('back',true);
+
+							var sprite = Utils.extractSprite(f.sprite(),f.chroma(),false);
+
+							var size = 160;
+
+							back.append('img').classed('thumbnail',true)
+											 .attr({
+											 	src: sprite.url,
+											 	alt: f.name(),
+											 	width: sprite.w*size+'px',
+											 	height: sprite.h*size+'px'
+											 }).style({
+											 	left: (117 + sprite.cx*size)+'px',
+											 	top: (113 + sprite.cx*size)+'px'
+											 });
+
 							var that = this;
 							div.on('click', function(){ that.onClick(this.getAttribute('data-family'))});
 						}
