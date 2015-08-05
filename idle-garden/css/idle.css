@@ -376,6 +376,12 @@ svg.main > g.gridpos > .event-handler {
 	stroke-width: 0;
 }
 
+svg.main > g.gridpos .level {
+	fill: white;
+	text-anchor: center;
+	font-size: 3px;
+}
+
 
 /* MODES */
 #mode-ctn {
@@ -547,6 +553,15 @@ svg.main > g.gridpos > .event-handler {
 .smenu-mini-shape.green {
 	fill: #8EBF13;
 }
+.smenu-mini-shape.soft-white {
+	fill: white;
+	opacity: 0.1;
+}
+.smenu-mini-shape.soft-white:hover {
+	fill: white;
+	opacity: 0.3;
+}
+
 
 .smenu-mini-shape:hover {
 	opacity: 1;

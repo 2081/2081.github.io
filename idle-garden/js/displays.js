@@ -25,7 +25,8 @@ var SVG_BANK = Object.freeze({
 	COG: "typicons/svg/cog.svg",
 	INFO: "typicons/svg/info-large.svg",
 	LEAF: "typicons/svg/leaf.svg",
-	LAND: "typicons/svg/arrow-up-thick.svg"
+	LAND: "typicons/svg/arrow-up-thick.svg",
+	CLICK_PLANT: "typicons/svg/star-outline.svg"
 });
 
 var SVG_TRANSFORM = {};
@@ -33,6 +34,7 @@ SVG_TRANSFORM[SVG_BANK.COG] = "scale(0.13,0.13)";
 SVG_TRANSFORM[SVG_BANK.INFO] = "scale(0.13,0.13)";
 SVG_TRANSFORM[SVG_BANK.LAND] = "scale(0.13,0.13)";
 SVG_TRANSFORM[SVG_BANK.LEAF] = "translate(0.3,0.3) scale(0.11,0.11)";
+SVG_TRANSFORM[SVG_BANK.CLICK_PLANT] = "translate(0.22,0.22) scale(0.11,0.11)";
 
 var LoadSVG, UseSVG;
 (function(){
@@ -147,6 +149,7 @@ Display.new(DISPLAY.ITEM, function( itemHandler ){
 		initialize: function(){},
 		destroy: function(){},
 		refresh: function(){
+
 			if( this.location !== itemHandler.hash() ){
 
 				if( this.location ){
@@ -164,9 +167,7 @@ Display.new(DISPLAY.ITEM, function( itemHandler ){
 					var height = width;
 					var c = place.center2D().scal(Playground.RADIUS);
 					var rand = Math.random();
-					//this._imageUrl = "sprites/croom_"+chromas[Math.floor(rand*chromas.length)]+".gif?time="+rand;
-					//this._imageUrl = "sprites/octoplant/octoplant_"+chromas[Math.floor(rand*chromas.length)]+".png";
-
+				
 					var familyHandler = itemHandler.familyHandler();
 					var chromas = familyHandler.chroma().split(' ');
 
@@ -189,8 +190,6 @@ Display.new(DISPLAY.ITEM, function( itemHandler ){
 						.attr("height",height)
 						.attr("overflow","visible")
 						.attr("xlink:href",imgUrl)
-						//.attr("xlink:href","sprites/waura.gif?time="+rand)
-						//.attr("xlink:href","sprites/flower0.gif?time="+rand)
 						.classed("sprite",true);
 						;
 				}			
@@ -365,9 +364,15 @@ Display.new(DISPLAY.SLOT, function( slotHandler ){
 					
 				}
 
+				var item = Item.testHash(this.location);
 
 				var prod = Production(hash);
-				var prodBox = addItem(this.bodyProd, null, "Total");
+				var prodBox = addItem(this.bodyProd, null, item ? item.familyHandler().name() : "Total");
+				
+				if( item ){
+					prodBox.append('div').classed('expbar',true).text(item.attr('pending')+"/"+Item.collectToLevel(item.level().plus(1)));
+				}
+
 				var dps = prod[RESC.DPS].data.perTick, dpc = prod[RESC.DPC].data.perTick;
 				if( dps > 0 ) prodBox.append("p").classed("price",true).html( Utils.numberFormat(dps)+" Dust/sec");
 				if( dpc > 0 ) prodBox.append("p").classed("price",true).classed("dpc",true).html( Utils.numberFormat(dpc)+" Dust/click");
@@ -427,7 +432,11 @@ Display.new(DISPLAY.SLOT, function( slotHandler ){
 	    height = opt.hoverH || 1;
 	    icon = opt.icon || null;
 
-		var w = Playground.RADIUS/3;
+	    opt.size = opt.size || 1;
+
+		var W = Playground.RADIUS/3;
+
+		var w = opt.size ? W*opt.size : W;
 
 		var style = {
 						width: w,
@@ -453,10 +462,9 @@ Display.new(DISPLAY.SLOT, function( slotHandler ){
 		
 		if(icon){
 			group.appendUseSVG(icon).attr({
-									x: pos.x -w/2,
-									y: pos.y -w/2,
-									height: w,
-									width: w
+									x: pos.x/opt.size -W/2,
+									y: pos.y/opt.size -W/2,
+									style: "transform: scale("+(opt.size||1)+","+(opt.size||1)+")"
 								});
 		}
 
@@ -489,6 +497,18 @@ Display.new(DISPLAY.SLOT, function( slotHandler ){
 													hoverW: 1.2,
 													hoverH: 1.2,
 													icon: SVG_BANK.INFO
+												})
+											  .on({mouseenter: function(){Display(DISPLAY.TOOLTIP, hash).show();   },
+												   mouseleave: function(){Display(DISPLAY.TOOLTIP, hash).destroy();}});
+
+					this.miniclick = this.container.appendRevealButton({ 
+													pos : this.pos.plus(new Geom.Vector2(0,0)),
+													text : "Info",
+													colorClass: "soft-white",
+													hoverW: 1,
+													hoverH: 1,
+													icon: SVG_BANK.CLICK_PLANT,
+													size: 2
 												})
 											  .on({mouseenter: function(){Display(DISPLAY.TOOLTIP, hash).show();   },
 												   mouseleave: function(){Display(DISPLAY.TOOLTIP, hash).destroy();}});
@@ -529,6 +549,8 @@ Display.new(DISPLAY.SLOT, function( slotHandler ){
 			},
 			refresh: function(){
 				var sstate = Slot(this.location).state();
+				var hasItem = Item.testHash(this.location);
+				hasItem = hasItem ? ( hasItem.active() ):false;
 				if( this.mini2 && this.state !== sstate ){
 					switch( sstate ){
 						case SLOT_STATE.SOLID:
@@ -556,6 +578,15 @@ Display.new(DISPLAY.SLOT, function( slotHandler ){
 						this.fadeIn = this.fadeInGhost = true;
 					}*/
 					this.state = sstate;
+				}
+				if( this.mini2 && this.hasItem !== hasItem ){
+					switch( sstate ){
+						case SLOT_STATE.SOLID:
+							Display(DISPLAY.TOOLTIP, hash).destroy();
+							this.revealMini(this.miniclick);
+							break;
+					}
+					this.hasItem = hasItem;
 				}				
 			},
 
@@ -567,6 +598,7 @@ Display.new(DISPLAY.SLOT, function( slotHandler ){
 					delete minighost;
 					delete this.container;
 					this.state = SLOT_STATE.VOID;
+					this.hasItem = false;
 				}
 				/*if( this.div && !this.hover ){
 					console.log('DESTROY');

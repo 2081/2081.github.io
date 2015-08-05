@@ -28,7 +28,7 @@ var L;
 
 	function processString( str, args ){
 		if( args ){
-			console.log(processString, args);
+			//console.log(processString, args);
 			var brackets = /[{]([^}{}]*)[}]/g;
 			var id = /^\w+$/g;
 			var idnoreplace = /^\d+[!]$/g;

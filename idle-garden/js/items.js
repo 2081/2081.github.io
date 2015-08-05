@@ -63,6 +63,10 @@ var Item;
 
 (function ItemScope(){
 
+	function collectedToLevel( collected ){
+		
+	}
+
 	var F = GLOSS.FAMILIES;
 
 	var items = {};
@@ -74,7 +78,9 @@ var Item;
 			active		: false,
 			hash		: null,
 			family		: null, //gloss
-			level		: new Big(0)
+			collected	: "0",
+			pending		: "0",
+			level 		: "0"
 		}
 		Display(DISPLAY.ITEM, new ItemHandler(data)).init();
 		return items[id] = data;
@@ -102,6 +108,12 @@ var Item;
 			setProd(this.data);
 			return rep;
 		},
+		attrBig: function(name, value){
+			if(typeof value !== 'undefined' ) return this.attr(name,value.toString());
+			return new Big(this.attr(name, value))
+		},
+		collected: function(value){ return this.attrBig('collected',value)},
+		level: function(value){ return this.attrBig('level',value)},
 		active: function(bool){return this.attr('active',bool)},
 		hash: function(hash){ return this.attr('hash',hash)},
 		family: function(family){return this.attr('family',family)},
@@ -143,6 +155,10 @@ var Item;
 	Item.testHash = function( hash ){
 		var idata = findHash(hash);
 		return idata? new ItemHandler(idata):null;
+	}
+
+	Item.collectToLevel = function( level ){
+		return level.lte(1) ? new Big(0) : new Big(10).times(new Big(1.12465782211982).pow(level.minus(2))); 
 	}
 
 })();
