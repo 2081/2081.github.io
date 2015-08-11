@@ -158,7 +158,7 @@ var Item;
 	}
 
 	Item.collectToLevel = function( level ){
-		return level.lte(1) ? new Big(0) : new Big(10).times(new Big(1.12465782211982).pow(level.minus(2))); 
+		return level.lte(1) ? new Big(0) : new Big(10).times(new Big(1.12465782211982).pow(level.minus(2)).floor()); 
 	}
 
 })();
