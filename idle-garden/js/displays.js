@@ -7,17 +7,8 @@ d3.selection.prototype.moveToFront = function() {
 d3.selection.prototype.appendExternSVG = function( url, callback ){
 		var selection = this;
 		d3.xml(url, function(error, doc) {
-
-			var elements = doc.getElementsByTagName("svg")[0].getElementsByTagName("*");
-			while( elements.length > 0 ) {
-				selection.append( function(){ return elements[0]} );
-			}
-			/*console.log("Selection", selection.select("path")[0]);
-			var box = selection.select("path").each(function(){
-				console.log(this.getBBox());
-			});
-			console.log("BBox", box);*/
-
+			var svg = d3.select(selection.node().appendChild(doc.documentElement));
+			if( callback ) callback( svg );
 		});
 	}
 
