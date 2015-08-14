@@ -1745,7 +1745,7 @@ var Bonus, Bonuses, BonusGroup;
 			};
 		},
 
-		_formula: function(){return [0,0];},
+		//_formula: function(){return [0,0];},
 
 		formula: function( f ){
 			if( arguments.length == 0){
@@ -2857,12 +2857,16 @@ var bonusA    = BonusFactory().addTags(GLOSS.FAMILIES.A).addResources(RESC.DPS)
 							  .fixed(1,0)
 							  .id();
 
-var awesomeBonus    = BonusFactory().addTags('all').addResources(RESC.DPS,RESC.DPC)
+/*var awesomeBonus    = BonusFactory().addTags('all').addResources(RESC.DPS,RESC.DPC)
 							  .fixed(0,100)
-							  .id();
+							  .id();*/
 
 var bonusB    = BonusFactory().addTags(GLOSS.FAMILIES.B).addResources(RESC.DPC)
-							  .fixed(1,0)
+							  .formula(function( p ){
+							  	var ihandler = Item(p.location);
+							  	throw new Error('stop');
+							  	return [1,0];
+							  })
 							  .id();
 
 /*BonusGroup().attr("name","Base production")
@@ -2878,12 +2882,12 @@ BonusGroup().attr("name","Mighty Knowledge")
 BonusGroup().attr("name","Octopusius")
 			.attr("description","Eight legs to slowly produce tones of dust !")
 			.addBonus(bonusA);
-
+/*
 BonusGroup().attr("name","Awesome Bonus")
 			.attr("description","It's just awesome.")
-			.addBonus(awesomeBonus);
+			.addBonus(awesomeBonus);*/
 
-BonusGroup().attr("name","Clickiclick")
+BonusGroup().attr("name","Base")
 			.attr("description","whaaat ?")
 			.addBonus(bonusB);
 
