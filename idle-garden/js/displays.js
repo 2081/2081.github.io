@@ -359,9 +359,11 @@ Display.new(DISPLAY.SLOT, function( slotHandler ){
 
 				var prod = Production(hash);
 				var prodBox = addItem(this.bodyProd, null, item ? item.familyHandler().name() : "Total");
-				
+				prodBox.classed('prodBox', true);
+
 				if( item ){
-					prodBox.append('div').classed('expbar',true).text(item.attr('pending')+"/"+Item.collectToLevel(item.level().plus(1)));
+					prodBox.append('span').classed('level',true).text("Level "+Utils.numberFormat(item.level()));
+					prodBox.append('div').classed('expbar',true).text(Utils.numberFormat(item.pending())+"/"+Utils.numberFormat(Item.levelNeeds(item.level().plus(1))));
 				}
 
 				var dps = prod[RESC.DPS].data.perTick, dpc = prod[RESC.DPC].data.perTick;
@@ -388,7 +390,11 @@ Display.new(DISPLAY.SLOT, function( slotHandler ){
 						this.setGhost( slot );
 					} else if ( slot.state() === SLOT_STATE.SOLID ){
 						this.setSolid( slot );
-
+						var item = Item.testHash(this.location);
+						if( item ){
+							this.div.select('.prodBox .level' ).text("Level "+Utils.numberFormat(item.level()));
+							this.div.select('.prodBox .expbar').text(Utils.numberFormat(item.pending())+"/"+Utils.numberFormat(Item.levelNeeds(item.level().plus(1))));
+						}
 					}
 				}
 			},
@@ -502,7 +508,8 @@ Display.new(DISPLAY.SLOT, function( slotHandler ){
 													size: 2
 												})
 											  .on({mouseenter: function(){Display(DISPLAY.TOOLTIP, hash).show();   },
-												   mouseleave: function(){Display(DISPLAY.TOOLTIP, hash).destroy();}});
+												   mouseleave: function(){Display(DISPLAY.TOOLTIP, hash).destroy();},
+												   click: function(){ UserAction.itemClick(hash) } });
 
 					this.minighost = this.container.appendRevealButton({ 
 													pos : this.pos.plus(new Geom.Vector2(0,0)),

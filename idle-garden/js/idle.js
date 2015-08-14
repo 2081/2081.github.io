@@ -1633,6 +1633,9 @@ var ProductionFactory, Production;
 			prod = prod.plus(fl);
 			pdata.pending = pdata.pending.minus(fl);
 			pdata.total = pdata.total.plus(fl);
+
+			var ihandler = Item.testHash(pdata.location);
+			if( ihandler ) ihandler.incPending(fl);
 		}
 		return prod;
 	}
@@ -2496,7 +2499,7 @@ var openSlotMenu = Routine(function(){
 	openSlotMenu.stop();
 });
 
-
+/*
 var slotsClickID = Places.listenAll({
 	click: function( event, hash ){
 
@@ -2511,7 +2514,7 @@ var slotsClickID = Places.listenAll({
 		}
 		
 	}
-});
+});*/
 
 var slotsTooltipsID = Places.listenAll({
 	tooltips: {},
@@ -2595,6 +2598,10 @@ var UserAction;
 				}
 			}
 		});
+	}
+
+	UserAction.itemClick = function( hash ){
+		Click(hash);
 	}
 
 	/*UserAction.plantItem = function(){
@@ -2854,6 +2861,10 @@ var awesomeBonus    = BonusFactory().addTags('all').addResources(RESC.DPS,RESC.D
 							  .fixed(0,100)
 							  .id();
 
+var bonusB    = BonusFactory().addTags(GLOSS.FAMILIES.B).addResources(RESC.DPC)
+							  .fixed(1,0)
+							  .id();
+
 /*BonusGroup().attr("name","Base production")
 			.attr("description","Nice description")
 			.addBonus(dpsLand)
@@ -2871,6 +2882,10 @@ BonusGroup().attr("name","Octopusius")
 BonusGroup().attr("name","Awesome Bonus")
 			.attr("description","It's just awesome.")
 			.addBonus(awesomeBonus);
+
+BonusGroup().attr("name","Clickiclick")
+			.attr("description","whaaat ?")
+			.addBonus(bonusB);
 
 console.log(BonusGroup.debug());
 

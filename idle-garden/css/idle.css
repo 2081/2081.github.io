@@ -277,6 +277,14 @@ strong.tooltip-item {
 }
 
 
+.tooltip-body .expbar {
+	display: inline-block;
+	background-color: #424242;
+	width: 80%;
+	color: #ddd;
+	font-size: 11px;
+}
+
 #slot-menu-container {
 
 	cursor: url("../sprites/cursor.png"), url("sprites/cursor.ani"), url("../sprites/cursor.gif"), auto;

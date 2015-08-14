@@ -79,8 +79,8 @@ var Item;
 			hash		: null,
 			family		: null, //gloss
 			collected	: "0",
-			pending		: "0",
-			level 		: "0"
+			level 		: "1",
+			pending		: "0"
 		}
 		Display(DISPLAY.ITEM, new ItemHandler(data)).init();
 		return items[id] = data;
@@ -100,6 +100,29 @@ var Item;
 		}
 	}
 
+	function updateLevel( ihandler ){
+		var level = ihandler.level();
+		var pending = ihandler.pending();
+		var collected = ihandler.collected();
+		var need = Item.levelNeeds(level.plus(1));
+
+		var update = false;
+		while( pending.gte(need) ) {
+			update = true;	
+			level = level.plus(1);
+			pending = pending.minus(need);
+			collected = collected.plus(need);
+			need = Item.levelNeeds(level.plus(1));
+		};
+
+		if( update ){
+			ihandler.attrBig('level',level);
+			ihandler.attrBig('pending',pending);
+			ihandler.attrBig('collected',collected);
+		}
+		
+	}
+
 
 	var ItemHandler = new Class(DataHandler).extend({
 		attr: function(name, value){
@@ -112,8 +135,10 @@ var Item;
 			if(typeof value !== 'undefined' ) return this.attr(name,value.toString());
 			return new Big(this.attr(name, value))
 		},
-		collected: function(value){ return this.attrBig('collected',value)},
-		level: function(value){ return this.attrBig('level',value)},
+		collected: function(value){ var c = this.attrBig('collected',value);  if(value)updateLevel(this); return c;},
+		pending: function(value){ var c = this.attrBig('pending',value);  if(value)updateLevel(this); return c;},
+		incPending: function(big){ return this.pending(new Big(this.data.pending).plus(big)); },
+		level: function(){ return this.attrBig('level');},
 		active: function(bool){return this.attr('active',bool)},
 		hash: function(hash){ return this.attr('hash',hash)},
 		family: function(family){return this.attr('family',family)},
@@ -157,9 +182,11 @@ var Item;
 		return idata? new ItemHandler(idata):null;
 	}
 
-	Item.collectToLevel = function( level ){
-		return level.lte(1) ? new Big(0) : new Big(10).times(new Big(1.12465782211982).pow(level.minus(2)).floor()); 
+	Item.levelNeeds = function( level ){
+		return level.lte(1) ? new Big(0) : new Big(10).times(new Big(1.12465782211982).pow(level.minus(2))).floor(); 
 	}
+
+	console.log("LNeeds", Item.levelNeeds(new Big(2)).toString());
 
 })();
 
