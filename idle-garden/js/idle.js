@@ -2046,8 +2046,8 @@ var Playground;
 
 			this.viewBox = {};
 			this.viewBox.center = new Geom.Vector2(0,0);
-			this.viewBox.min = new Geom.Vector2(-30,-30);
-			this.viewBox.max = new Geom.Vector2(30,10);
+			this.viewBox.min = new Geom.Vector2(0,0);
+			this.viewBox.max = new Geom.Vector2(0,0);
 
 			this._scrolling = {};
 			var dirs = [KEYCODES.UP,KEYCODES.RIGHT,KEYCODES.DOWN,KEYCODES.LEFT];
@@ -2065,7 +2065,7 @@ var Playground;
 			Playground.ORIGIN = origin;
 
 			this.displayID = DisplayFactory({ refresh: this.refresh.bind(this), location: ORIGIN });
-
+			this.refresh();
 		},
 
 		domInit: function(){
@@ -2145,10 +2145,10 @@ var Playground;
 
 		refresh: function(){
 			var ex = Grid.extrema();
-			this.viewBox.max.x = 30+(ex.MX2d-2)*Playground.X_GAP;
-			this.viewBox.min.x = -30+(ex.mx2d+2)*Playground.X_GAP;
-			this.viewBox.max.y = 30+(ex.MZ-2)*Playground.Z_GAP;
-			this.viewBox.min.y = -10+(ex.mz+2)*Playground.Z_GAP;
+			this.viewBox.max.x = 20+(ex.MX2d)*Playground.X_GAP;
+			this.viewBox.min.x = -20+(ex.mx2d)*Playground.X_GAP;
+			this.viewBox.max.y = 20+(ex.MZ)*Playground.Z_GAP;
+			this.viewBox.min.y = -20+(ex.mz)*Playground.Z_GAP;
 			this.updateScroll();
 			this.svg.selectAll('g.gridpos').sort(function(a,b){return a - b;});
 		}
@@ -2225,9 +2225,9 @@ var Places;
 		}
 	});
 
-	var grid = new Geom.HGrid(Cell);
+	var grid;
 
-	var playground = new Playground( d3.select("#playground"));
+	var playground;
 
 	function hash( v3 ){ return v3.x+'_'+v3.y+'_'+v3.z; }
 	function unhash( hash ){ var v = hash.split('_').map(function(o){return parseInt(o)}); return new Geom.Vector3(v[0],v[1],v[2]) }
@@ -2332,6 +2332,10 @@ var Places;
 
 	Place.hash = hash;
 	Place.unhash = unhash;
+
+
+	grid = new Geom.HGrid(Cell);
+	playground = new Playground( d3.select("#playground"));
 })();
 
 
@@ -2563,6 +2567,7 @@ var UserAction;
 				slot.state(SLOT_STATE.SOLID).attr("number",Data.slots_bought-1);
 				Production(hash);
 				updateGhosts.start();
+				UserAction.selectItemShop.landBought(hash);
 			}
 		}
 	}
@@ -2570,6 +2575,10 @@ var UserAction;
 	var UAIS_itemHandler = null;
 	var UAIS_listener = null;
 	UserAction.selectItemShop = function( family ){
+
+		UserAction.selectItemShop.landBought = function( hash ){
+			if(UAIS_itemHandler) UAIS_itemHandler.hash( hash );
+		};
 
 		//var itemHandler = Item(family);
 		if ( UAIS_itemHandler ){
@@ -2594,7 +2603,7 @@ var UserAction;
 						UAIS_itemHandler = null;
 						console.log('shift',event.shiftKey);
 						if( event.shiftKey ) UserAction.selectItemShop(fam);
-					}	
+					}
 				}
 			}
 		});
@@ -2612,7 +2621,7 @@ var UserAction;
 })();
 
 
-Wallet.add(new Big(10000));
+Wallet.add(new Big(10000000000000000000000000000000000000));
 
 //console.log("select", Slot(ORIGIN).neighbors().attr("state",SLOT_STATE.GHOST) );
 
@@ -2864,8 +2873,9 @@ var bonusA    = BonusFactory().addTags(GLOSS.FAMILIES.A).addResources(RESC.DPS)
 var bonusB    = BonusFactory().addTags(GLOSS.FAMILIES.B).addResources(RESC.DPC)
 							  .formula(function( p ){
 							  	var ihandler = Item(p.location);
-							  	throw new Error('stop');
-							  	return [1,0];
+							  	var level = ihandler.level();
+
+							  	return [level.minus(1).times(0.1).plus(1).toNumber(),0];
 							  })
 							  .id();
 

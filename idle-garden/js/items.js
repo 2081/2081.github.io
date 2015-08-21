@@ -205,8 +205,11 @@ Init(function(){
 	L(GLOSS.FAMILIES.B+":description", "Produce dust over time.");
 	L(GLOSS.FAMILIES.B+":comment", "Eight times deadlier.");
 	ItemFamily().gloss(GLOSS.FAMILIES.B)
-				.sprite('sprites/B/B_{chroma}.png;0.9;0.9;;-0.65')
-				.chroma('blue orange');
+				//.sprite('sprites/C/c.png;1;1;;-0.6');
+				//.sprite('sprites/C/c.svg;1.1;1.1;;-0.65');
+				.sprite('sprites/C/c.svg;1.1;1.1;;-0.65');
+				//.sprite('sprites/B/B_{chroma}.png;0.9;0.9;;-0.65')
+				//.chroma('blue orange');
 	Thumbnail(GLOSS.FAMILIES.B,'sprites/B/B_tbn.jpg');
 	Thumbnail(GLOSS.FAMILIES.B+':bw','sprites/B/B_tbn_bw.jpg');
 

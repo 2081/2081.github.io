@@ -5,6 +5,15 @@ console.assert = console.assert || function(){};
 
 Big = Decimal; // Late library change
 
+var Global = {
+	cursor: {
+		x: 0,
+		y: 0,
+		xPer: 0,
+		yPer: 0
+	}
+};
+
 var NORTH 		= "N" ;
 var NORTH_EAST 	= "NE";
 var EAST 		=  "E";
@@ -97,8 +106,6 @@ var DataSelectionHandler = new Class({
 		return this.selection.map( function( data ){ return new handler(data) });
 	}
 });
-
-
 
 var Init;
 

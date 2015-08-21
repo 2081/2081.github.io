@@ -74,10 +74,20 @@ var UI;
 	UI.toScreenXY = function( v2 ){
 		var w = parseInt(d3.select("#playground").style("width"));
 		var h = parseInt(d3.select("#playground").style("height"));
-		//console.log("hw", w, h, h-w);
+		console.log("hw", w, h, h-w);
 		return    v2.plus(new Geom.Vector2(Config.svg.vbx - Config.svg.currentVbx, Config.svg.vby - Config.svg.currentVby))
 					.scal(new Geom.Vector2(Math.min(h/w,1), Math.min(w/h,1)))
 					.plus(new Geom.Vector2(-Config.svg.vbx,-Config.svg.vby));
+	}
+
+	UI.toSvgXY = function( v2 ){
+		var w = window.innerWidth,
+			h = window.innerHeight;
+		console.log(w,h);
+		return    v2.scal(new Geom.Vector2(100/w,100/h))
+					.plus(new Geom.Vector2(Config.svg.currentVbx, Config.svg.currentVby))
+					.scal(new Geom.Vector2(Math.max(w/h,1), Math.max(h/w,1)))
+					;
 	}
 
 	UI.floatingDiv = function( pos, container ){
@@ -94,6 +104,27 @@ var UI;
 						});
 	}
 })();
+
+Init(function INITcursorSvgGroup(){
+
+	var g = Playground.SVG.append("g").classed("cursor",true);
+
+	d3.select("body").on("mousemove", function(){
+		var xy = d3.mouse(this);
+		Global.cursor.x = xy[0];
+		Global.cursor.y = xy[1];
+		Global.cursor.xPer = Global.cursor.x/window.innerWidth;
+		Global.cursor.yPer = Global.cursor.y/window.innerHeight;
+
+		//g.attr("transform","translate("+(Global.cursor.xPer*100-50)/0.783+","+(Global.cursor.yPer*100-50)+")")
+		var v2 = UI.toSvgXY(new Geom.Vector2(Global.cursor.x,Global.cursor.y));
+		//console.log(v2,(Global.cursor.xPer*100-50)/0.783,Global.cursor.yPer*100-50);
+		g.attr("transform","translate("+v2.x+","+v2.y+")")
+		g.remove();
+		Playground.SVG.append(function(){ return g.node(); });
+	});
+
+});
 
 
 DISPLAY = {
@@ -136,54 +167,72 @@ var Display;
 
 Display.new(DISPLAY.ITEM, function( itemHandler ){
 	return DisplayFactory({
-		location: null,
+		location: undefined,
 		initialize: function(){},
 		destroy: function(){},
 		refresh: function(){
 
-			if( this.location !== itemHandler.hash() ){
+			var family = itemHandler.family();
+			if( this.location !== itemHandler.hash() || this.family !== family ){
 
-				if( this.location ){
+				if( this.img ){
 					this.img.remove();
 				}
 
 				this.location = itemHandler.hash();
 
+				var width = Playground.RADIUS*2*Math.cos(Math.PI/6);
+				var height = width;
+
+				var c = null;
 				if( this.location ){
 					var place = Place(this.location);
 					this.group = place.container();
+					c = place.center2D().scal(Playground.RADIUS);
+				} else {
+					this.group = Playground.SVG.select("g.cursor");
+					width /= 2;
+					height /= 2;
+					c = new Geom.Vector2(width/2,height/2);
+				}
 
-					this.img = this.group.insert("image",".event-handler");
-					var width = Playground.RADIUS*2*Math.cos(Math.PI/6);
-					var height = width;
-					var c = place.center2D().scal(Playground.RADIUS);
-					var rand = Math.random();
+				this.img = this.group.insert("image",".event-handler");
 				
+
+				var rand = Math.random();
+				
+				
+				if( this.family !== family || !this.imgUrl ){
+					this.family = family;
+
 					var familyHandler = itemHandler.familyHandler();
 					var chromas = familyHandler.chroma().split(' ');
 
-					var sprite = familyHandler.sprite().split(/;[ ]*/);
+					var sprite = this.sprite = familyHandler.sprite().split(/;[ ]*/);
+
 
 					console.log('sprite',sprite,sprite[0]);
 
-					var imgUrl = sprite[0].Lformat({chroma:chromas[ Math.floor(Math.random()*chromas.length) ]});
+					this.imgUrl = sprite[0].Lformat({chroma:chromas[ Math.floor(Math.random()*chromas.length) ]});	
+				}
+				
 
-					console.log('imgUrl',imgUrl);
+				console.log('imgUrl',this.imgUrl);
 
-					width 	= parseFloat(sprite[1] || 1)*width;
-					height 	= parseFloat(sprite[2] || 1)*height;
-					var cx  = parseFloat(sprite[3] || -0.5)*width;
-					var cy  = parseFloat(sprite[4] || -0.5)*height;
+				width 	= parseFloat(this.sprite[1] || 1)*width;
+				height 	= parseFloat(this.sprite[2] || 1)*height;
+				var cx  = parseFloat(this.sprite[3] || -0.5)*width;
+				var cy  = parseFloat(this.sprite[4] || -0.5)*height;
 
-					this.img.attr("x",c.x+cx)
-						.attr("y",c.y+cy)
-						.attr("width",width)
-						.attr("height",height)
-						.attr("overflow","visible")
-						.attr("xlink:href",imgUrl)
-						.classed("sprite",true);
-						;
-				}			
+				this.img.attr("x",c.x+cx)
+					.attr("y",c.y+cy)
+					.attr("width",width)
+					.attr("height",height)
+					.attr("overflow","visible")
+					.attr("xlink:href",this.imgUrl)
+					.classed("sprite",true);
+					;
+				
 			}
 		}
 	});
