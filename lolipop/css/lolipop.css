@@ -1,0 +1,960 @@
+html, body, .particles-js {
+	width: 100%;
+	height: 100%;
+}
+
+body {
+	background:  url('../img/footer_lodyas.png');
+	font-family: 'Merriweather', serif;
+	margin: 0;
+	overflow: hidden;
+	z-index: 10;
+}
+
+#canvas2 {
+    position: absolute;
+    width: 600px;
+    height: 188px;
+    left: -303px;
+    z-index: 1;
+    pointer-events: none;
+}
+
+.particles-js {
+	position: absolute;
+}
+
+#gold-block {
+	font-family: 'Cinzel', serif;
+}
+
+.monster-action .options-holder > div {
+    font-family: 'Cinzel';
+}
+
+.no-select {
+	-webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+}
+
+#top-block {
+	text-align: center;
+	width: 100%;
+	position: absolute;
+	top: 0;
+	z-index: 50;
+}
+
+#mick-block {
+    position: absolute;
+    width: 600px;
+    left: -300px;
+	height: 193px;
+	/*background: #314757;*/
+}
+#mick-block-inner {
+	position: absolute;
+	width: 0;
+	left: 50%;
+	height: 176px;
+	padding-top: 40px;
+}
+
+#click_zone {
+	text-align: center;
+	margin-top: 100px;
+}
+
+#mick {
+	cursor: pointer;
+	position: absolute;
+	left: -48px;
+	width: 96px;
+	height: 96px;
+	background: url('../img/mick96.png?v=2');
+	z-index: 10;
+}
+
+#mick-ground {
+	position: absolute;
+	width: 328px;
+	left: -164px;
+	height: 48px;
+	background: url('../img/mick-ground96.png?v=2');
+	margin-top: 72px;
+	z-index: 1;
+}
+
+#mick:hover {
+	-webkit-filter: brightness(1.1);
+}
+
+#mick:active {
+	-webkit-filter: brightness(1.1);
+	background: url('../img/mick_active96.png?v=2');
+}
+
+.ctm-button {
+	width: 153px;
+	height: 51px;
+	background: url('../img/menus/clicktheminion.png');
+	background-position: 0px 0px;
+	cursor: pointer;
+}
+.ctm-button:hover {
+	background-position: 0px -51px;
+}
+.ctm-button:active {
+	background-position: 0px 51px;
+}
+
+#ctm-button-top {
+	position: absolute;
+    top: 98px;
+    left: -76px;
+}
+
+#ctm-button-top {
+
+}
+
+
+#gold-block, #options-button, #gold-left-button {
+	position: absolute;
+	height: 35px;
+	top: 60px;
+	z-index: 100;
+}
+
+#gold-block {
+	color: #fdeca3;
+	font-size: 24px;
+	line-height: 29px;
+
+    /*text-shadow: -1px 0 #7b3505, 0 1px #7b3505, 1px 0 #7b3505, 0 -1px #7B3505;*//*Too sharp*/
+    text-shadow: -2px 0 rgba(123, 53, 5, 0.5), 0 2px rgba(123, 53, 5, 0.5), 2px 0 rgba(123, 53, 5, 0.5), 0 -2px rgba(123, 53, 5, 0.5);
+
+	width: 648px;
+	left: -324px;
+	background: url('../img/menus/goldbar.png?v=2') repeat-x;
+}
+#goldpersecond-text {
+    position: absolute;
+    right: 7px;
+    top: 4px;
+    font-size: 15px;
+}
+#goldpersecond-text small {
+    font-size: 10px;
+}
+
+#goldpower-text {
+    position: absolute;
+    left: 7px;
+    top: 4px;
+    font-size: 15px;
+}
+
+#gold-text .e29, .e30{
+	font-size: 23px;
+}
+#gold-text .e31{
+	font-size: 22px;
+}
+#gold-text .e32, .e33{
+	font-size: 21px;
+}
+
+#options-button {
+	width: 38px;
+	left: 326px;
+	cursor: pointer;
+	background: url('../img/options.png?v=2') no-repeat;
+}
+#gold-left-button {
+	width: 38px;
+	right: 326px;
+	cursor: pointer;
+	background: url('../img/menus/left-button.gif?v=2') no-repeat;
+}
+
+#gold-sprite, #gold-text {
+	margin-top: 4px;
+	display: inline-block;
+	height: 100%;
+	vertical-align: middle;
+}
+
+#gold-sprite {
+}
+
+#main-block {
+    /* position: absolute; */
+    text-align: center;
+    height: 100%;
+    /* padding-top: 176px; */
+    right: 0;
+    bottom: 0;
+    left: 0;
+    z-index: 10;
+    /* overflow-y: scroll; */
+}
+
+#main-block > .middle-absolute {
+    top: 60px;
+    height: auto;
+    bottom: 0;
+}
+
+#main-inner {
+    position: relative;
+    height: 100%;
+    width: 600px;
+    margin-left: -2304px; /*Can scroll on the whole width*/
+    overflow-y: scroll;
+    padding-right: 2000px;
+    padding-left: 2000px;
+}
+
+#middle-ctn {
+    position: relative;
+    /* display: inline-block; */
+    text-align: left;
+    width: 100%;
+    /* max-width: 622px; */
+    /* padding-right: 49px; */
+    right: 0;
+    bottom: 0;
+    left: 0;
+    background: #06161c;
+    border: solid 1px #2B505F;
+    padding: 8px;
+    padding-top: 40px;
+    /* padding-right: 28px; */
+    margin-bottom: 200px;
+}
+
+.middle-title {
+    text-align: center;
+	    /* Permalink - use to edit and share this gradient: http://colorzilla.com/gradient-editor/#15424c+0,15424c+100&0+0,1+30,1+70,0+100 */
+	background: -moz-linear-gradient(left, rgba(21,66,76,0) 0%, rgba(21,66,76,1) 30%, rgba(21,66,76,1) 70%, rgba(21,66,76,0) 100%); /* FF3.6-15 */
+	background: -webkit-linear-gradient(left, rgba(21,66,76,0) 0%,rgba(21,66,76,1) 30%,rgba(21,66,76,1) 70%,rgba(21,66,76,0) 100%); /* Chrome10-25,Safari5.1-6 */
+	background: linear-gradient(to right, rgba(21,66,76,0) 0%,rgba(21,66,76,1) 30%,rgba(21,66,76,1) 70%,rgba(21,66,76,0) 100%); /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
+	filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#0015424c', endColorstr='#0015424c',GradientType=1 ); /* IE6-9 */
+}
+
+.middle-title {
+	color: #F1D880;
+}
+.middle-title > h3 {
+    font-weight: normal;
+    font-size: 20px;
+    box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    -webkit-box-sizing: border-box;
+    border-bottom: solid 1px rgba(241, 216, 121, 0.09);
+    border-top: solid 1px rgba(241, 216, 121, 0.09);
+}
+
+.tb-ctn {
+	font-size: 0px;
+
+	-webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+}
+
+.champ-tbn {
+	font-size: 14px;
+	color: white;
+	text-align: center;
+	line-height: 100px;
+	text-shadow: -2px 0 black, 0 2px black, 2px 0 black, 0 -2px black;
+
+	cursor: pointer;
+	width: 60px;
+	height: 60px;
+	background-size: 60px 60px !important;
+	display: inline-block;
+	margin: 0;
+	padding: 0;
+	border: 1px double #1a2731;
+}
+
+.grey {
+	-webkit-filter: grayscale(1);
+}
+
+.monster-action:hover .hover-glow, .hover-glow:hover {
+	-webkit-filter: brightness(1.1);
+}
+
+.hover-glow.grey:hover {
+	-webkit-filter: brightness(1.1) grayscale(0.8);
+}
+
+#mobs-ctn {
+	font-size: 0;
+}
+
+.frame {	
+	display: inline-block;
+	width: 48px;
+	height: 48px;
+	background: url('../img/frame.png');
+	background-size: 48px 48px;
+}
+
+.mob-ctn {
+	margin: 6px;
+	width: 36px;
+	height: 36px;
+	cursor: pointer;
+	background-size: 36px 36px !important;
+}
+
+#monsters-ctn {
+	text-align: center;
+    padding-bottom: 5px;
+    padding-top: 5px;
+}
+
+.monster-ctn {
+	display: inline-block;
+	width: 250px;
+	height: 100px;
+	border: solid white 1px;
+}
+
+.sprite-ctn {
+	background: black;
+	display: inline-block;
+	height: 50px;
+	width: 50px;
+	cursor: pointer;
+
+	-webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+}
+
+.monster-action .sprite-ctn {
+	width: 120px;
+	height: 100px;
+	background-size: 120px 120px;
+}
+.monster-action .sprite-ctn.poro {background: url('../img/icons/monster-menu-poro.png');margin-top: -20px;}
+.monster-action .sprite-ctn.wolf {background: url('../img/icons/monster-menu-wolf.png');margin-top: -18px;}
+.monster-action .sprite-ctn.raptor {background: url('../img/icons/monster-menu-raptor.png');margin-top: -20px;}
+.monster-action .sprite-ctn.krug {background: url('../img/icons/monster-menu-krug.png');margin-top: -35px;}
+.monster-action .sprite-ctn.gromp {background: url('../img/icons/monster-menu-gromp.png');margin-top: -15px;}
+.monster-action .sprite-ctn.blue {background: url('../img/icons/monster-menu-blue.png');margin-top: -8px;}
+.monster-action .sprite-ctn.red {background: url('../img/icons/monster-menu-red.png');margin-top: -1px;}
+.monster-action .sprite-ctn.dragon {background: url('../img/icons/monster-menu-dragon.png');margin-top: -15px;}
+.monster-action .sprite-ctn.vilemaw {background: url('../img/icons/monster-menu-vilemaw.png');margin-top: -11px;}
+.monster-action .sprite-ctn.nashor {background: url('../img/icons/monster-menu-nashor.png');margin-top: -17px;}
+
+
+.monster-action.unaffordable .sprite-ctn.poro {background: url('../img/icons/monster-menu-poro-bw.png');}
+.monster-action.unaffordable .sprite-ctn.wolf {background: url('../img/icons/monster-menu-wolf-bw.png');}
+.monster-action.unaffordable .sprite-ctn.raptor {background: url('../img/icons/monster-menu-raptor-bw.png');}
+.monster-action.unaffordable .sprite-ctn.krug {background: url('../img/icons/monster-menu-krug-bw.png');}
+.monster-action.unaffordable .sprite-ctn.gromp {background: url('../img/icons/monster-menu-gromp-bw.png');}
+.monster-action.unaffordable .sprite-ctn.blue {background: url('../img/icons/monster-menu-blue-bw.png');}
+.monster-action.unaffordable .sprite-ctn.red {background: url('../img/icons/monster-menu-red-bw.png');}
+.monster-action.unaffordable .sprite-ctn.dragon {background: url('../img/icons/monster-menu-dragon-bw.png');}
+.monster-action.unaffordable .sprite-ctn.vilemaw {background: url('../img/icons/monster-menu-vilemaw-bw.png');}
+.monster-action.unaffordable .sprite-ctn.nashor {background: url('../img/icons/monster-menu-nashor-bw.png');}
+
+.monster-action:hover .sprite-ctn {margin-top: 0;}
+
+
+#monster-recap .sprite-ctn {
+	width: 40px;
+	height: 40px;
+	/* margin-bottom: -17px; */
+	background-size: 40px 40px;
+}
+#monster-recap .sprite-ctn.poro {	background: url('../img/icons/recap-icon-poro.png');}
+#monster-recap .sprite-ctn.blue {	background: url('../img/icons/recap-icon-blue.png');}
+#monster-recap .sprite-ctn.wolf {	background: url('../img/icons/recap-icon-wolf.png');}
+#monster-recap .sprite-ctn.raptor {	background: url('../img/icons/recap-icon-raptor.png');}
+#monster-recap .sprite-ctn.krug {	background: url('../img/icons/recap-icon-krug.png');}
+#monster-recap .sprite-ctn.red {	background: url('../img/icons/recap-icon-red.png');}
+#monster-recap .sprite-ctn.gromp {	background: url('../img/icons/recap-icon-gromp.png');}
+#monster-recap .sprite-ctn.dragon {	background: url('../img/icons/recap-icon-dragon.png');}
+#monster-recap .sprite-ctn.vilemaw {background: url('../img/icons/recap-icon-vilemaw.png');}
+#monster-recap .sprite-ctn.nashor {	background: url('../img/icons/recap-icon-nashor.png');}
+
+
+.monster-action {
+
+
+	position: relative;
+    height: 45px;
+	width: 100%;
+	text-align: left;
+
+	cursor: pointer;
+
+	line-height: 5px;
+
+	margin-bottom: 9px;
+    z-index: 0;
+}
+
+.monster-action .crop {
+	position: relative;
+	/* Permalink - use to edit and share this gradient: http://colorzilla.com/gradient-editor/#15434d+0,042932+74,041d23+90,041d23+100 */
+	background: #15434d; /* Old browsers */
+	/*background: -moz-linear-gradient(top,  #15434d 0%, #042932 74%, #041d23 90%, #041d23 100%); /* FF3.6-15 */
+	/*background: -webkit-linear-gradient(top,  #15434d 0%,#042932 74%,#041d23 90%,#041d23 100%); /* Chrome10-25,Safari5.1-6 */
+	background: linear-gradient(-30deg,  #15434d 0%,#042932 74%,#041d23 90%,#041d23 100%); /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
+	/*filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#15434d', endColorstr='#041d23',GradientType=0 ); /* IE6-9 */
+
+	width: 100%;
+	height: 100%;
+	border: 2px solid #746744;
+    border-radius: 10px 0px;
+	overflow: hidden;
+    z-index: 0;
+}
+.monster-action.unaffordable .crop{
+	border-color: #6a6760;
+	background: -moz-linear-gradient(top,  #2d3637 0%, #181e20 74%, #121718 90%, #121718 100%); /* FF3.6-15 */
+	background: -webkit-linear-gradient(top,  #2d3637 0%,#181e20 74%,#121718 90%,#121718 100%); /* Chrome10-25,Safari5.1-6 */
+	background: linear-gradient(to bottom,  #2d3637 0%,#181e20 74%,#121718 90%,#121718 100%); /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
+	filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#2d3637', endColorstr='#121718',GradientType=0 ); /* IE6-9 */
+}
+
+.monster-action.unaffordable, .recap-holder .sprite-ctn.unaffordable {
+    /*-webkit-filter: grayscale(0.8);
+    filter: grayscale(0.8);*/
+}
+
+.monster-action:hover {
+	border-color: #B9A14D;
+    height: 100px;
+    margin-bottom: -21px;
+    margin-top: -25px;
+    z-index: 100;
+}
+.monster-action:hover .crop{
+	border-color: #B9A14D;
+    border-radius: 10px 10px 30px 30px;
+}
+.image-holder {
+	width: 20%;
+	height: 100%;
+	text-align: center;
+	position: absolute;
+
+	overflow: hidden;
+
+	left: 0;
+	background: rgba(0,0,0,0.1);
+	border-right: 1px solid #1b2b36;
+}
+
+
+.description-holder {
+	text-align: justify;
+    position: absolute;
+    width: 60%;
+    height: 100%;
+    top: 0px;
+    left: 21%;
+    padding-left: 1%;
+    padding-right: 1%;
+    background: rgba(0,0,0,0.1);
+}
+.monster-action:hover .description-holder {
+	width: 56%;
+	top: -5px;
+	left: 21%;
+    background: none;
+}
+
+.monster-action .action-name {
+    color: #F1D880;
+    font-size: 17px;
+    line-height: 2px;
+    margin-top: 12px;
+    margin-bottom: 12px;
+    display: inline-block;
+
+}.monster-action.unaffordable .action-name{
+	color: #dcd7c6;
+}.monster-action:hover .action-name {
+    font-size: 18px;
+    line-height: 19px;
+    display: inline-block;
+}
+
+.monster-action .action-desc {
+	display: inline;
+	color: #5D8188;
+	font-style: italic;
+	font-size: 12px;
+	line-height: 12px;
+	height: 24px;
+	margin-top: -9px;
+} .monster-action.unaffordable .action-desc {
+	color: #697072;
+} .monster-action:hover .action-desc {
+	display: block;
+	color: #AAA;
+	font-style: italic;
+	font-size: 13px;
+	line-height: 13px;
+	height: 24px;
+	margin-top: -9px;
+}
+
+.monster-action .action-qty {
+    position: absolute;
+    top: -4px;
+    left: 103%;
+    color: #808080;
+    font-size: 14px;
+    text-shadow: -2px 0 rgba(2, 46, 60, 0.5), 0 2px rgba(2, 46, 60, 0.5), 2px 0 rgba(2, 46, 60, 0.5), 0 -2px rgba(2, 46, 60, 0.5);
+    font-family: 'Cinzel';
+    width: 200px;
+}
+.monster-action:hover .action-qty {
+    position: relative;
+    display: inline-block;
+    left: auto;
+    top: auto;
+    width: auto;
+    margin-left: 5px;
+    top: -1px;
+}
+
+.monster-action .action-qty small {
+    color: #54747D;
+}
+.monster-action.unaffordable .action-qty small {
+	color: #676767;
+}
+
+.monster-action .action-price {
+    position: absolute;
+    left: 103%;
+    top: 65px;
+    color: #FFEEB6;
+    font-size: 14px;
+    margin-top: -37px;
+    margin-right: -109px;
+    text-shadow: -2px 0 rgba(2, 46, 60, 0.5), 0 2px rgba(2, 46, 60, 0.5), 2px 0 rgba(2, 46, 60, 0.5), 0 -2px rgba(2, 46, 60, 0.5);
+    font-family: 'Cinzel';
+
+} .monster-action.unaffordable .action-price, .action-price.unaffordable {
+	color: #E05B44;
+} .monster-action:hover .action-price {
+    text-align: right;
+    top: 56px;
+    font-size: 18px;
+    margin-right: auto;
+    right: 1%;
+    left: auto;
+}
+
+.monster-action .action-price.refund {
+	color: #32E081;
+}
+
+.monster-action:hover .action-buy {
+    display: block;
+    color: rgb(116, 103, 68);
+    font-family: 'Cinzel',serif;
+    position: absolute;
+    left: 111px;
+    bottom: -3px;
+    font-weight: 700;
+    font-size: 13px;
+    text-shadow: 0px 0px 1px #3A3726;
+}
+.monster-action .action-buy {
+    display: none;
+}
+
+.monster-action .action-benefit {
+	color: lightgreen;
+	font-size: 18px;
+}
+
+.position-relative {
+	position: relative;
+	top: -50%;
+}
+
+.monster-action .options-holder {
+	position: absolute;
+	width: 20%;
+	height: 100%;
+	right: 0;
+	visibility: hidden;
+    border-left: 1px solid #1b2b36;
+}
+
+.monster-action .options-holder > div {
+    height: 25%;
+    width: 100%;
+    position: relative;
+    background: rgba(0,0,0,0.2);
+    color: #746744;
+    text-align: center;
+    vertical-align: middle;
+    line-height: 25px;
+    font-size: 14px;
+    font-weight: bold;
+    font-family: 'Cinzel';
+}
+.monster-action .options-holder > div:hover {
+	background: rgba(0,0,0,0.3);
+    color: rgb(185, 161, 77);
+}
+
+.monster-action:hover .options-holder {
+	visibility: visible;
+}
+
+.description-holder .opt {
+	display: none;
+}
+
+/* Monster overlay */
+.monster-overlay {
+	pointer-events: none;
+	display:  none;
+	position: absolute;
+	background: #123c45;
+	background: linear-gradient(to right, rgba(14, 48, 56, 0.75) 0%,rgb(14, 48, 56) 30%,rgba(14,48,56,1) 70%,rgba(14,48,56,0.75) 100%);
+
+    border: 1px solid #746744;
+
+	bottom: 110px;
+	width: 300px;
+	left: 150px;
+    border-radius: 200px 200px 50px 50px;
+    padding: 5px;
+
+    z-index: 10;
+
+    text-align: center;
+}
+.monster-overlay:after {
+	content: "";
+	position: absolute;
+	width: 28px;
+	height: 19px;
+    left: 141px;
+    bottom: -16px;
+	background: url('../img/sprites/spriteoverlay-cursor.png');
+}
+
+.monster-action:hover .monster-overlay {
+	display: block;
+}
+.monster-action.unaffordable .monster-overlay {
+	/*display: none;*/
+}
+
+.monster-overlay .title {    
+    color: #C18958;
+    width: 80%;
+    display: inline-block;
+
+    font-size: 16px;
+    border-bottom: 1px solid rgba(153, 191, 176, 0.12);
+    
+    line-height: 18px;
+    padding-bottom: 2px;
+}
+
+.monster-overlay p {
+	color: #808080;
+}
+.monster-overlay p .gold {
+	color: #FFEEB6;
+}
+
+/* UTILS*/
+
+.middle-absolute {
+	position: absolute;
+	height: 100%;
+	width: 0;
+	left: 50%;
+	top: 0;
+}
+
+.middle-relative {
+    position: relative;
+    padding-top: 176px;
+    height: 100%;
+    width: 0;
+    left: 50%;
+}
+
+/* MONSTER RECAP */
+
+.right-panel-title {
+    position: absolute;
+    left: 307px;
+    top: 220px;
+    color: #fdeca3;
+    font-family: 'Cinzel';
+    font-size: 19px;
+    width: 200px;
+}
+
+#monster-recap {
+	position: relative;
+	display: block;
+	font-size: 16px;
+	top: 249px;
+	left: 306px;
+	z-index: 200;
+}
+#monster-recap .sprite-ctn{
+	display: inline-block;
+	position: relative;
+}
+#monster-recap .recap-holder {
+    margin-bottom: -24px;
+    min-height: 36px;
+}
+.recap-holder.odd {
+    margin-left: 17px;
+}
+#monster-recap .recap-holder.odd .sprite-ctn {
+    margin-left: 20px;
+}
+
+#monster-recap .recap-quantity {
+	position: relative;
+	top: -11px;
+	/* left: -35px; */
+	font-size: 16px;
+	color: #EFE4B5;
+	text-shadow: -2px 0 rgba(0, 0, 0, 0.5), 0 2px rgba(0, 0, 0, 0.5), 2px 0 rgba(0, 0, 0, 0.5), 0 -2px rgba(0, 0, 0, 0.5);
+}
+#monster-recap .recap-gps {
+	position: absolute;
+	top: 0px;
+	left: -8px;
+	margin: 0px;
+	color: #6B8496;
+	display: none;
+	font-size: 12px;
+}
+#monster-recap .recap-info-holder {
+	text-align: center;
+	position: absolute;
+	width: 100px;
+	height: 0;
+	top: 50%;
+	left: -30px;
+	/* display: none; */
+}
+#monster-recap .recap-gold {
+	color: #B1A060;
+    font-size: 12px;
+}
+
+#enchants-ctn {
+	text-align: center;
+	min-height: 52px;
+}
+
+#enchants-ctn .enchant-holder {
+    display: inline-block;
+    width: 24px;
+    height: 45px;
+}
+#enchants-ctn .enchant-holder:hover {
+    cursor: pointer;
+    width: 36px;
+    height: 69px;
+    margin-left: -6px;
+    margin-right: -6px;
+    margin-bottom: -12px;
+    margin-top: -12px;
+    position: relative;
+    z-index: 50;
+}
+
+#enchants-ctn .enchant-holder .oval {
+    border: 1px solid #746744;
+	width: 100%;
+	height: 100%;
+    border-radius: 23px;
+    overflow: hidden;
+    position: relative;
+}
+#enchants-ctn .enchant-holder:hover .oval {
+	border-color: #B9A14D;
+	position: absolute;
+	z-index: 5;
+}
+#enchants-ctn .enchant-holder.affordable .oval {
+    border-color: #36B538;
+}
+
+#enchants-ctn .enchant-holder.locked .oval .sprite-bg:before {
+    content: "";
+    position: absolute;
+    background: rgba(0,0,0,0.6);
+    width: 100%;
+    height: 100%;
+    z-index: 20;
+    left: 0;
+    top: 0;
+}
+
+#enchants-ctn .enchant-holder.affordable.locked .oval .sprite-bg:before {
+    background: rgba(0,0,0,0.4);
+    z-index: 12;
+}
+
+#enchants-ctn .enchant-holder.locked .oval .sprite-bg:after {
+    content: "";
+    position: absolute;
+    background: url('../img/sprites/upgrade-lock.png');
+    width: 24px;
+    height: 28px;
+    background-size: 24px 28px;
+    z-index: 15;
+    left: 17%;
+    top: 40%;
+}
+
+#enchants-ctn .enchant-holder .sprite-bg {
+	height: 100%;
+	width: 100%;
+    zoom: 67%;
+    background: linear-gradient(#30204A,#171008);
+    overflow: hidden;
+}
+#enchants-ctn .enchant-holder:hover .sprite-bg {
+    zoom: 100%;
+}
+
+#enchants-ctn .enchant-holder .sprite-overlay {
+	display: none;
+}
+
+#enchants-ctn .enchant-holder:hover .sprite-overlay {
+	display: block;
+	position: absolute;
+	background: #123c45;
+	background: linear-gradient(to right, rgba(14, 48, 56, 0.75) 0%,rgb(14, 48, 56) 30%,rgba(14,48,56,1) 70%,rgba(14,48,56,0.75) 100%);
+
+    border: 1px solid #746744;
+
+	bottom: 81px;
+	width: 300px;
+	left: -137px;
+    border-radius: 5px 5px 80px 80px;
+    padding-top: 18px;
+
+    z-index: 10;
+}
+
+#enchants-ctn .enchant-holder:hover .sprite-overlay:after {
+	content: "";
+	position: absolute;
+	width: 28px;
+	height: 19px;
+    left: 141px;
+    bottom: -16px;
+	background: url('../img/sprites/spriteoverlay-cursor.png');
+}
+
+
+#enchants-ctn .enchant-holder .sprite-overlay .title {    
+    position: absolute;
+    display: block;
+    height: 24px;
+    width: 200px;
+    border-radius: 5px;
+    padding-top: 4px;
+    left: 53px;
+    top: -15px;
+    border: 1px solid #746744;
+    background: #081E23;
+    color: #D5C484;
+    font-size: 16px;
+}
+
+#enchants-ctn .enchant-holder .sprite-overlay .description {
+    color: #88B9A1;
+    margin-top: 5px;
+    font-size: 16px;
+    margin-bottom: 16px;
+}
+#enchants-ctn .enchant-holder.locked .sprite-overlay .description {
+	margin-bottom: 0px;
+}
+
+#enchants-ctn .enchant-holder .sprite-overlay .description strong {
+	color: #C0E8D5;
+}
+
+#enchants-ctn .enchant-holder .sprite-overlay .price {
+    color: #E05B44;
+    font-size: 16px;
+    margin-top: 5px;
+    margin-bottom: 2px;
+}
+#enchants-ctn .enchant-holder.affordable .sprite-overlay .price {
+    color: #E9D880;
+}
+
+#enchants-ctn .enchant-holder .sprite-overlay .tip {
+    color: #A27227;
+    font-size: 12px;
+    margin-top: 7px;
+}
+
+.middle-section {
+
+}
+
+#ctm-section {
+	text-align: center;
+}
+#ctm-section .ctm-button {
+	display: inline-block;
+}
+
+.middle-subtitle {
+	text-align: center;
+	color: #817F3C;
+    font-weight: normal;
+    font-size: 15px;
+    font-style: italic;
+}
+
+.middle-tip {
+    text-align: center;
+	color: #A27227;
+    font-weight: normal;
+    font-size: 12px;
+}
+
+.display-none {
+	display: none;
+}

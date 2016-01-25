@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html><!-- manifest="lolipop.appcache" -->
+
+	<head>
+		<meta name="apple-mobile-web-app-capable" content="yes">
+		<meta name="mobile-web-app-capable" content="yes">
+		<link rel="shortcut icon" sizes="192x192" href="img/mobile/app-icon.png">
+
+		<!--<meta content='width=device-width; initial-scale=1.0; maximum-scale=1.0; user-scalable=no;' name='viewport' />
+		<meta name="viewport" content="width=device-width; minimum-scale=1.0" />-->
+
+		<meta name='viewport' content='minimum-scale=1.0; maximum-scale=1.0; initial-scale=1.0'/>
+
+		<link href='https://fonts.googleapis.com/css?family=Merriweather|Cinzel:400,700' rel='stylesheet' type='text/css'>
+
+		<link rel="shortcut icon" type="image/png" href="img/favicon.png?v=2"/>
+		<title>To Challenger (and beyond) | An idle adventure in Runeterra.</title>
+		<link rel="stylesheet" type="text/css" href="css/lolipop-mobile.css">
+
+	</head>
+
+	<body>
+		<svg version="1.1" height="0" width="0" >
+			<defs>
+				<pattern id="text1" patternUnits="userSpaceOnUse" width="200" height="200">
+					<image xlink:href="img/mobile/text1.jpg" x="0" y="0" width="200" height="200" />
+				</pattern>
+				<g  id="monsters-svg" display="inline" fill="url(#text1)" viewBox="0 0 200 200">
+					<path d="M182.025,35.137l-6.364-5.909c0,0-11.756,16.103-30.638,22.222
+		C133.207,40.485,117.391,33.773,100,33.773c-17.446,0-33.312,6.751-45.141,17.777c-19.065-6.041-30.95-22.323-30.95-22.323
+		l-6.364,5.909c0.859,16.158,16.014,29.45,23.351,34.971c-4.552,8.982-7.124,19.136-7.124,29.893
+		c0,20.428,9.254,38.688,23.792,50.837c-0.118,12.034,14.533,19.06,14.533,19.06l-1.762-10.688c1.539,0.771,3.109,1.486,4.714,2.14
+		c-0.171,15.464,16.262,15.924,16.262,15.924l0.063-11.623c2.825,0.367,5.7,0.577,8.626,0.577c2.971,0,5.889-0.215,8.755-0.594
+		l0.063,11.64c0,0,16.468-0.461,16.261-15.974c1.609-0.659,3.184-1.383,4.727-2.162l-1.773,10.76c0,0,14.742-7.069,14.532-19.171
+		c14.463-12.148,23.663-30.359,23.663-50.726c0-10.851-2.626-21.081-7.251-30.12C166.418,64.228,181.178,51.076,182.025,35.137z
+		 M138.345,75.136c0.455,1.591,15,12.5,3.864,24.864c-11.137,12.363-34.318-5.091-34.318-5.091L138.345,75.136z M57.091,100
+		C45.955,87.636,60.5,76.727,60.955,75.136l30.455,19.773C91.409,94.909,68.227,112.363,57.091,100z M141.577,129.001
+		c-3.973,1.272-12.074,3.755-15.952,4.124c0,0,9.227,0.406,14.584,0.32L138.5,139c0,0-51.5,7.5-67-7.25c-0.906-0.861,69,3,75-18.75
+		L141.577,129.001z"/>
+				</g >
+
+				<g id='enchants-svg' display="inline" fill="url(#text1)" viewBox="0 0 200 200">
+					<path d="M68.379,145.77c7.233-23.396,25.575-39.051,25.575-39.051c3.85,0.551,11,3.575,11,3.575
+		c-2.475,0.55-7.975,3.025-7.975,3.025c21.725,4.95,32.725,24.2,32.725,24.2c-11.55,8.524-18.7,18.699-18.7,18.699
+		c-12.375-16.225-19.525-22-19.525-22l5.5-4.399c8.349,3.154,14.025,6.325,14.025,6.325c-4.949-11-14.025-14.575-14.025-14.575
+		c-9.075,4.125-16.775,12.649-16.775,12.649c18.434,25.72,22,50.601,22,50.601c32.175-28.601,61.325-32.45,61.325-32.45
+		c-15.95-51.7-36.3-70.125-36.3-70.125l-5.775-15.4c-0.825-10.175-5.225-31.35-5.225-31.35c-2.2-2.475-11-8.8-11-8.8
+		c-15.95-0.55-23.375,5.5-23.375,5.5c-1.1-17.05,13.75-27.775,13.75-27.775c-22.55,7.975-30.25,30.25-30.25,30.25
+		c2.2,7.975,10.45,15.125,10.45,15.125c7.15-14.3,23.1-15.125,23.1-15.125c1.925,2.475,5.775,15.675,4.675,30.525
+		c-1.1,14.85-28.325,28.325-28.325,28.325c0-5.225-8.938-11.55-8.938-11.55c-0.138,13.2-35.888,54.45-35.888,54.45
+		c18.425,13.75,25.575,32.175,25.575,32.175c15.15,1.236,27.867,6.212,36.099,10.33C82.682,159.847,68.379,145.77,68.379,145.77z"/>
+	<path d="M50.513,89.125c0,0-17.05-19.8-13.2-34.375c0,0-6.05,18.7,1.65,34.375C38.963,89.125,43.913,91.601,50.513,89.125z"/>
+	<path d="M136.863,27.113c0,0,21.982,23.65,26.666,56.65c0,0,1.658-17.05-3.017-34.65C160.513,49.113,148.688,33.713,136.863,27.113
+		z"/>
+				</g>
+
+				<g id='heroes-svg' display="inline" fill="url(#text1)" viewBox="0 0 200 200">
+		<path d="M45.225,92.968c-1.178-4.167-1.808-8.533-1.808-13.031c0-0.574,0.028-1.141,0.048-1.711l-0.048,0.389L2.483,82.319v8.729
+			l42.736,1.905L45.225,92.968z"/>
+		<path d="M56.976,113.644c-3.279-3.538-6.043-7.472-8.209-11.707l0.021,0.052L7.226,129.327l5.04,7.217l44.667-22.939
+			L56.976,113.644z"/>
+		<path d="M36.575,170.931l6.843,4.232l38.198-45.836v-0.003c-7.521-2.497-12.154-4.3-17.855-9.18L36.575,170.931z"/>
+		<path d="M44.501,69.85c1.683-7.812,4.914-13.145,4.914-13.145l-37.149-8.046l-2.52,7.473l34.765,13.633L44.501,69.85z"/>
+		<path d="M83.963,29.83v-0.005l-8.85-14.105l-6.522,2.057l4.645,16.27C73.236,34.047,77.902,31.581,83.963,29.83z"/>
+		<path d="M55.094,48.367c2.94-3.526,6.365-6.703,10.178-9.463l-0.277,0.193l-23.38-16.559l-5.04,4.484l18.543,21.314L55.094,48.367
+			z"/>
+		<path d="M157.508,78.615l-0.047-0.389c0.02,0.57,0.047,1.137,0.047,1.711c0,4.498-0.629,8.864-1.807,13.031l0.006-0.016
+			l42.735-1.905v-8.729L157.508,78.615z"/>
+		<path d="M152.159,101.937c-2.167,4.235-4.931,8.169-8.21,11.707l0.043-0.039l44.667,22.939l5.04-7.217l-41.561-27.339
+			L152.159,101.937z"/>
+		<path d="M119.311,129.324v0.003l38.197,45.836l6.844-4.232l-27.187-50.786C131.465,125.024,126.831,126.827,119.311,129.324z"/>
+		<path d="M156.424,69.85l-0.01-0.085l34.765-13.633l-2.52-7.473l-37.149,8.046C151.51,56.705,154.741,62.039,156.424,69.85z"/>
+		<path d="M132.334,17.777l-6.521-2.057l-8.85,14.105v0.005c6.061,1.751,10.727,4.217,10.727,4.217L132.334,17.777z"/>
+		<path d="M145.832,48.367l-0.024-0.03l18.544-21.314l-5.041-4.484l-23.379,16.559l-0.277-0.193
+			C139.467,41.664,142.893,44.84,145.832,48.367z"/>
+		<path d="M115.315,75.93c0.388-1.045,0.571-2.432-0.238-3.808c0,0,0.207-2.253-1.248-6.242c0,0,2.453-6.763,3.613-12.074
+			c0.052-0.057,0.104-0.113,0.155-0.17c1.193,1.417,2.046,2.635,2.046,2.635c0.581,4.104,3.925,9.316,3.925,9.316
+			c3.17,9.184,13.402,18.542,14.346,23.043c0.861,4.119,3.679,6.613,4.223,7.453c0.543,0.84,3.127,8.525,3.127,8.525l0.965,0.641
+			l0.527-0.641l-1.959-7.097l0.629-0.284c0.725,0.868,2.576,4.294,3.537,6.098c1.32,2.479,1.863,0.734,1.576,0
+			c-0.428-1.096-3.313-7.233-3.313-7.233l0.611-0.425c1.66,2.508,3.549,5.012,4.578,5.895c0.963,0.825,1.135,0.131,0.813-0.468
+			c-0.666-1.238-4.266-6.581-4.266-6.581l0.221-0.636c2.136,3.095,3.58,4.913,4.295,5.497c0.936,0.763,0.916-0.688,0.916-0.688
+			s-3.332-5.188-5.07-7.454s-0.587-2.579-0.587-2.579c2.011,0.598,1.927,0.273,2.866,0.033c0.941-0.24,0.896-0.996,0.896-0.996
+			c-1.563-0.809-4.661-2.496-4.661-2.496c-2.245-1.627-5.701-2.21-5.701-2.21c-6.594-21.848-10.531-24.212-10.531-24.212
+			c-1.985-7.377-5.385-13.23-5.385-13.23c-0.639-3.024-1.299-4.764-1.866-5.775l0.041-0.009c0,0-0.037-0.032-0.091-0.078
+			c-0.843-1.453-1.465-1.291-1.465-1.291s-0.116-0.025-0.302-0.062c-1.981-1.396-5.378-3.442-9.345-4.374
+			c0,0-4.156-2.927-8.102-4.69c0,0-0.346-1.764-0.632-3.476c0.659-0.813,1.285-1.89,1.755-3.317
+			c0.629-0.787,1.672-2.361,1.492-3.982c-0.12-1.086-0.359-1.115-0.701-0.783c0.015-0.333,0.036-0.657,0.037-1.011
+			c0.02-9.444-4.8-9.785-7.964-10.138c0,0-7.825-0.233-6.639,10.949c0.022,0.212,0.05,0.412,0.077,0.616
+			c-0.341-0.299-0.998-0.758-0.97,0.188c0.034,1.152,1.237,3.588,2.104,4.45c0.337,0.833,0.719,1.53,1.128,2.107
+			c-0.012,1.309-0.069,3.271-0.294,4.397c0,0-3.658,1.576-6.744,4.364c0,0-9.138,1.837-10.707,5.376
+			c-0.1,0.226-0.132,0.456-0.106,0.688c-0.454,1.061-0.942,2.594-1.418,4.85c0,0-3.4,5.854-5.386,13.23
+			c0,0-3.938,2.365-10.53,24.212c0,0-3.457,0.583-5.702,2.21c0,0-3.098,1.688-4.661,2.496c0,0-0.045,0.755,0.895,0.996
+			c0.94,0.24,0.855,0.564,2.867-0.034c0,0,1.152,0.313-0.586,2.58s-5.072,7.454-5.072,7.454s-0.02,1.45,0.917,0.688
+			c0.716-0.583,2.16-2.402,4.296-5.497l0.221,0.635c0,0-3.6,5.343-4.267,6.582c-0.322,0.598-0.15,1.293,0.813,0.468
+			c1.03-0.882,2.918-3.387,4.578-5.895l0.612,0.425c0,0-2.885,6.138-3.313,7.233c-0.287,0.734,0.256,2.479,1.577,0
+			c0.961-1.804,2.812-5.229,3.537-6.098l0.628,0.285l-1.958,7.097l0.527,0.641l0.966-0.641c0,0,2.583-7.686,3.127-8.525
+			s3.36-3.334,4.223-7.453c0.942-4.502,11.175-13.859,14.346-23.043c0,0,3.343-5.212,3.924-9.316c0,0,0.562-0.803,1.409-1.861
+			c0.413,0.5,0.883,0.991,1.412,1.453c0.851,3.269,2.25,7.994,4.046,11.692c0,0-0.469,1.543-1.212,6.488c0,0-1.94,1.869-0.378,4.07
+			c-0.772,1.578-1.848,3.898-2.515,5.867c-1.13,3.337-5.63,10.302,4.819,34.243c0,0-0.454,3.833,0.227,9.31
+			c0,0-4.119,6.187,3.412,34.327c0,0-1.479,4.272-0.163,5.816c0,0-1.735,2.639,0.219,11.204s1.65,13.063,9.813,14.675l1.275-2.07
+			l2.431-0.93c0,0,1.191-16.163-0.093-21.275c0,0,1.142-3.042,0.012-5.994c0,0,7.084-17.039,5.577-32.111
+			c0,0-0.667-4.638,0.646-7.572s8.123-29.799,4.302-42.7L115.315,75.93z M101.336,94.066l-0.806-5.001
+			c0.589,0.104,1.201,0.131,1.832,0.051L101.336,94.066z"/>
+				</g>
+			</defs>
+		</svg>
+
+		<!--<a class='reload' href="/mobile.html?"></a>-->
+
+		<div id='side-buttons' class='no-select'>
+			<div id='left-main-button'></div>
+			<div id='right-main-button'></div>
+		</div>
+
+		<div id='main-container'>
+			<div class='relative-layer' id='windows-insertion' style='style="-webkit-transition-property: -webkit-transform"'>
+				<div class='scroll' style='-webkit-overflow-scrolling: touch;'>
+					<div id='main-menu' class='horizontal-hide'>
+						<div class='item' data-lolipop='view:monster-list' onClick='Lolipop.interact(this);' style='background-image:url("../img/mobile/menu-monsters.png");'>
+							<div class='title'>Monsters</div>
+						</div><div class='item' data-lolipop='view:enchants-list' onClick='Lolipop.interact(this);' style='background-image:url("../img/mobile/menu-enchants.png");'>
+							<div class='title'>Spellbook</div>
+						</div><div class='item' data-lolipop='' onClick='Lolipop.interact(this);' style='background-image:url("../img/mobile/menu-champions.png");'>
+							<div class='title'>Champions</div>
+						</div><div class='item' data-lolipop='view:spells-window' onClick='Lolipop.interact(this);' style='background-image:url("../img/mobile/menu-surrend.png");'>
+							<div class='title'>Surrender</div>
+						</div><div class='item' data-menu-target='monster-window' style='background-image:url("../img/mobile/menu-rank.png");'>
+							<div class='title'>Rank</div>
+						</div><div class='item' data-menu-target='monster-window' style='background-image:url("../img/mobile/menu-achievements.png");'>
+							<div class='title'>Achievements</div>
+						</div><div class='item' data-menu-target='monster-window' style='background-image:url("../img/mobile/menu-stats.png");'>
+							<div class='title'>Statistics</div>
+						</div><div class='item' data-menu-target='monster-window' style='background-image:url("../img/mobile/menu-options.png");'>
+							<div class='title'>Options</div>
+						</div><div class='item' data-menu-target='monster-window' style='background-image:url("../img/mobile/menu-help.png");'>
+							<div class='title'>Help</div>
+						</div><div class='item' data-menu-target='monster-window' style='background-image:url("../img/mobile/menu-about.png");'>
+							<div class='title'>About</div>
+						</div><div id='save-item' class='item' data-menu-target='monster-window'  onClick='Lolipop.save();'>
+							<div class='bg' style='background-image:url("../img/mobile/menu-save.png");'></div> 
+							<div class='title'>Save</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<div class='title'></div>
+		<div class='centered-container'>
+			<div id="main-button" class='no-select'>Click the Minion</div>
+		</div>
+
+		<div id='gold-block' class='metal-border'>
+			<div id='top-bar-bg'>
+				<div class='fancy-bg grey' style='width: 100%'></div><div id='new-exp' class='fancy-bg blue sep' style='width: 70%'></div><div id='previous-exp' class='fancy-bg sep' style='width: 5%'></div><div class='shadow'></div>
+			</div>
+			
+			<span id='global-back-button' class='no-select' onClick="Lolipop.interact(this);" data-lolipop="view:back"></span>
+			<span class='gamedata gold' data-id='game.gold.bank' data-format-function='abbreviatedNumber'>0</span>
+			<span class='gps gamedata gold' data-id='game.gold.gps' data-format-function='abbreviatedNumberPerSecond'>0</span>
+		</div>
+		<div id='notif-bar'><div class='relative-layer'></div></div>
+
+		<div id='rank-info'>
+			<div id='rank-name' class='metal-border no-select'><span>Unranked</span></div>
+			<div id='rank-img' class='metal-border no-select'><span>1</span></div>
+		</div>
+
+		<div id='credits'><h1>Click the Minion</h1> - Robin NICOLET - 2016</span></div>
+
+		<div id='efx'></div>
+
+	</body>
+
+	<script src="js/libs/jquery-1.11.3.min.js"></script>
+	<script src="js/libs/bignumber.min.js"></script>
+	<script src="js/lolipop.js?"></script>
+
+</html>

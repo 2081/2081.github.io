@@ -1,0 +1,13 @@
+CACHE MANIFEST
+# 2016-01-15
+
+# Elements requested to be cached
+CACHE:
+
+
+# Online
+NETWORK:
+*
+
+
+FALLBACK:

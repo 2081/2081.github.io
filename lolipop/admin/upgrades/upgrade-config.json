@@ -1,0 +1,1 @@
+﻿[{"id":"poro.gps.x2","op":"*","value":"2","valueType":"fixed","targets":"constant.monster.poro.gps","unlock":"monster.poro.quantity, 5","price":"100","shop":"yes","name":"Thick Furr","description":"Poros can find gold twice as fast.","img":"0001"}]
