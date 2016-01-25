@@ -1107,7 +1107,11 @@ div#reload-fixed span:after {
         /*max-width: 100vh; */
         width: 60%;
         height: 100%;
+        pointer-events: none;
+    }
 
+    body > div {
+        pointer-events: auto;
     }
 
     #gold-block {
