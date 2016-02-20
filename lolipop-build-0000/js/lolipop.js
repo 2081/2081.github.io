@@ -1,12 +1,10 @@
 var Lolipop = {};
 console.assert = console.assert || function(){};
 
-(function(){
+try {
 
-	var s = document.createElement("script");
-	s.type = "text/javascript";
-	s.src = "http://jsconsole.com/remote.js?09F15DA4-3199-49A0-916D-BF802FDAB1BB";
-	document.head.appendChild(s);
+
+(function(){
 
 	var is_mobile = ((/Mobile|iPhone|iPod|BlackBerry|Windows Phone/i).test(navigator.userAgent || navigator.vendor || window.opera) ? true : false);
 
@@ -3817,3 +3815,8 @@ $(document).ready(function(){
 	On upgrade unlocked, the first time it's buyable, prompt a message asking if player wants to buy it ?
 
 */
+
+
+} catch (e){
+	alert(e);
+}
