@@ -3756,10 +3756,10 @@ console.assert = console.assert || function(){};
 			$('.star1, .star2').addClass('no-animation');
 
 			$('body').addClass('mobile');
-			// var s = document.createElement("script");
-			// s.type = "text/javascript";
-			// s.src = "http://jsconsole.com/remote.js?09F15DA4-3199-49A0-916D-BF802FDAB1BB";
-			// document.head.appendChild(s);
+			var s = document.createElement("script");
+			s.type = "text/javascript";
+			s.src = "http://jsconsole.com/remote.js?09F15DA4-3199-49A0-916D-BF802FDAB1BB";
+			document.head.appendChild(s);
 
 			Time.setInterval(500);
 
