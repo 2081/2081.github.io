@@ -258,7 +258,7 @@ console.assert = console.assert || function(){};
 			if( _N === _M ) return _onAllLoaded();
 		}
 
-		Files.lang = Loader.load("content/lang.JSON");
+		Files.lang = Loader.load("content/lang.json");
 		Files.mrtuto = Loader.load("img/mobile/mr-tuto.png");
 
 		Files.img_poro = Loader.load("img/mobile/monster-poro.jpg");
