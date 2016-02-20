@@ -1,0 +1,42 @@
+{
+	"vars": {
+		"mrTuto": "[person,Aezekior]",
+		"summoner": "[term,summoner]",
+		"Summoner": "[term,Summoner]",
+		"theinstitute": "[person,The Institute]",
+		"challenger": "[term,Challenger]",
+		"foj": "[person,Fields of Justice]",
+		"game": "[term,game]",
+		"gold": "[term,gold]",
+		"exp": "[term,experience]"
+	},
+	"lines": {
+		"0000": {
+			"en": [
+				"Greetings, %Summoner%.\n...\nOh, sorry, it's a habit. Of course you're not a %summoner%. Not yet. Look at you !\nMy apologies.",
+				"My name is %mrTuto%, and I shall be your instructor, for your success in %theinstitute% is now my burden...",
+				"...as long as you succeed.",
+				"The journey to %challenger%, or top ranked %summoner%, is like an open door on the highest mountain. It's easy to begin with, but extremely tedious to reach the summit.",
+				"Fortunately I, %mrTuto%, am the best instructor of %theinstitute%.\nDecades of teaching has made of me the ultimate instructor, with the finest techniques.\nThat's why you're going to start on your own. We're going to launch a training session, called a %game%, in the %foj%. Your goal is to earn a maximum of %gold% during this game. The more %gold% you will collect, the more %exp% you will get. Needless to say that %exp% makes you stronger as a summoner.",
+				"When our conversation is over, you will be able to earn gold by [term,unsummoning] minions (:minion:), by smashing them (or clicking, tapping, whatever you kids say now...).\nWithout further ado, let's see what you've got."
+			]
+		},
+		"0001": {
+			"en": [
+				"What you just did is the most basic way to earn %gold% in the %foj%.\nI think you're now ready for the next step : [term,summonning minions].",
+				"In this window, I will soon be explaining how minions can be summonned and that they help you fetching gold. (aka. minion are buildings, passive gold. Blue buttons = buy. Red = sell. There's no sell penalty as of now)."
+			]
+		},
+		"0002": {
+			"en": [
+				"This is a tutorial about the spellbook (aka. you unlock a spell --> two choices, can't have both activated at the same time, doesn't cost anything, can be changed later in the spellbook menu)."
+			]
+		},
+		"0003": {
+			"en": [
+				"Greetings, apprentice.\nI was just passing by to check on you. I can see you're [term,smashing] those minions with dedication ! That's good.\nAlthough, you might want to know that you can Smash the Minion by pressing the **S** and *K* keys of your keyboard. Keep it up, you're on the right track."
+			]
+		}
+	}
+	
+}

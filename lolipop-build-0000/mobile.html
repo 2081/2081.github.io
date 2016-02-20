@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html><!-- manifest="lolipop.appcache" -->
+
+	<head>
+		<meta name="apple-mobile-web-app-capable" content="yes">
+		<meta name="mobile-web-app-capable" content="yes">
+		<link rel="shortcut icon" sizes="192x192" href="img/mobile/app-icon.png">
+
+		<!--<meta content='width=device-width; initial-scale=1.0; maximum-scale=1.0; user-scalable=no;' name='viewport' />
+		<meta name="viewport" content="width=device-width; minimum-scale=1.0" />-->
+
+		<meta name='viewport' content='minimum-scale=1.0, maximum-scale=1.0, initial-scale=1.0'/>
+
+		<link href='https://fonts.googleapis.com/css?family=Merriweather|Cinzel:400,700' rel='stylesheet' type='text/css'>
+
+		<link rel="shortcut icon" type="image/png" href="img/favicon.png?v=2"/>
+		<title>Smash the Minion | An incremental adventure in Runeterra.</title>
+		<link rel="stylesheet" type="text/css" href="css/lolipop-mobile.css">
+
+		<style type="text/css">
+			/*Loader CSS*/
+			.spinner {
+			  margin: 10px auto 20px;
+			  width: 70px;
+			  text-align: center;
+			}
+
+			.spinner > div {
+			  width: 18px;
+			  height: 18px;
+			  background-color: #C72D58;
+
+			  border-radius: 100%;
+			  display: inline-block;
+			  -webkit-animation: sk-bouncedelay 1.4s infinite ease-in-out both;
+			  animation: sk-bouncedelay 1.4s infinite ease-in-out both;
+			}
+
+			.spinner .bounce1 {
+			  -webkit-animation-delay: -0.32s;
+			  animation-delay: -0.32s;
+			}
+
+			.spinner .bounce2 {
+			  -webkit-animation-delay: -0.16s;
+			  animation-delay: -0.16s;
+			}
+
+			@-webkit-keyframes sk-bouncedelay {
+			  0%, 80%, 100% { -webkit-transform: scale(0) }
+			  40% { -webkit-transform: scale(1.0) }
+			}
+
+			@keyframes sk-bouncedelay {
+			  0%, 80%, 100% { 
+			    -webkit-transform: scale(0);
+			    transform: scale(0);
+			  } 40% { 
+			    -webkit-transform: scale(1.0);
+			    transform: scale(1.0);
+			  }
+			}
+
+			#loading-screen {
+			    position: fixed;
+			    width: 100%;
+			    height: 100%;
+			    left: 0;
+			    top: 0;
+			    background: linear-gradient(#5B0A20,#0D0521);
+			    z-index: 1000;
+
+			    padding-top: 45vh;
+
+			    color: #C72D58;
+			    font-family: sans-serif;
+			}
+			#loading-screen > div {
+			    display: inline-block;
+			}
+		</style>
+
+	</head>
+
+	<body>
+
+		<!--<a class='reload' href="/mobile.html?"></a>-->
+
+		<div id='side-buttons' class='no-select'>
+			<div id='left-main-button' class='minion-holder disabled'>
+				<div class='star1'></div>
+				<div class='star2'></div>
+			</div>
+			
+			<div id='right-main-button' class='minion-holder disabled'>
+				<div class='star1'></div>
+				<div class='star2'></div>
+			</div>
+			
+		</div>
+
+		<div id='main-container'>
+			<div class='relative-layer' id='windows-insertion' style='style="-webkit-transition-property: -webkit-transform"'>
+				<div class='scroll' style='-webkit-overflow-scrolling: touch;'>
+					<div id='main-menu' class='horizontal-hide'>
+						<div id='main-menu-monsters' class='item disabled' data-lolipop-manual='view:monster-list'>
+							<div class='bg' data-style='background-image:url("img/mobile/menu-monsters.png");'></div> 
+							<div class='title'>Monsters</div>
+						</div><div id='main-menu-spellbook' class='item disabled' data-lolipop-manual='view:spellbook'>
+							<div class='bg' data-style='background-image:url("img/mobile/menu-enchants.png");'></div> 
+							<div class='title'>Spellbook</div>
+						</div><div id='main-menu-champions' class='item disabled' data-lolipop-manual=''>
+							<div class='bg' data-style='background-image:url("img/mobile/menu-champions.png");'></div> 
+							<div class='title'>Champions</div>
+						</div><div id='main-menu-surrender' class='item disabled' data-lolipop-manual='action:action.surrender'>
+							<div class='bg' data-style='background-image:url("img/mobile/menu-surrend.png");'></div> 
+							<div class='title'>Surrender</div>
+							<div class='overlay timer display-none'><span>19:59</span></div>
+						</div><div id='main-menu-rank' class='item disabled' data-menu-target='monster-window'>
+							<div class='bg' data-style='background-image:url("img/mobile/menu-rank.png");'></div> 
+							<div class='title'>Rank</div>
+						</div><div id='main-menu-achievements' class='item disabled' data-menu-target='monster-window'>
+							<div class='bg' data-style='background-image:url("img/mobile/menu-achievements.png");'></div> 
+							<div class='title'>Achievements</div>
+						</div><div id='main-menu-statistics' class='item disabled' data-menu-target='monster-window'>
+							<div class='bg' data-style='background-image:url("img/mobile/menu-stats.png");'></div> 
+							<div class='title'>Statistics</div>
+						</div><div id='main-menu-options' class='item disabled' data-menu-target='monster-window'>
+							<div class='bg' data-style='background-image:url("img/mobile/menu-options.png");'></div> 
+							<div class='title'>Options</div>
+						</div><div id='main-menu-help' class='item disabled' data-menu-target='monster-window'>
+							<div class='bg' data-style='background-image:url("img/mobile/menu-help.png");'></div> 
+							<div class='title'>Help</div>
+						</div><div id='main-menu-about' class='item disabled' data-menu-target='monster-window'>
+							<div class='bg' data-style='background-image:url("img/mobile/menu-about.png");'></div> 
+							<div class='title'>About</div>
+						</div><div id='save-item' class='item' onClick='Lolipop.save();'>
+							<div class='rotation'><div class='bg' data-style='background-image:url("img/mobile/menu-save.png");'></div></div>
+							<div class='title'>Save</div>
+						</div><div class='item' data-lolipop='view:dev' onClick='Lolipop.interact(this);'>
+							<div class='bg' data-style='background-image:url("img/mobile/menu-dev.png");'></div> 
+							<div class='title'>Dev</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<div class='title'></div>
+		<div class='centered-container minion-holder disabled'>
+			<div id="main-button" class='no-select'>Click the Minion</div>
+			<div class='star1'></div>
+			<div class='star2'></div>
+		</div>
+
+		<div id='gold-block' class='metal-border'>
+			<div id='top-bar-bg'>
+				<div class='' style='width: 100%; background: #1D1D1D;'></div><div id='new-exp' class='sep' style='width: 40%; left: 0%;'></div><div id='previous-exp' class='sep' style='width: 100%; left: -100%;'></div><div class='shadow'></div>
+			</div>
+			<span class='gamedata gold' data-id='game.gold.bank' data-format-function='abbreviatedNumber'>0</span>
+			<span class='gps gamedata gold' data-id='game.gold.gps' data-format-function='abbreviatedNumberPerSecond'>0</span>
+		</div>
+		<div id='notif-bar'><div class='relative-layer'></div></div>
+		<span id='global-back-button' class='no-select' onClick="Lolipop.interact(this);" data-lolipop="view:back"></span>
+
+		<div id='rank-info'>
+			<div id='rank-name' class='metal-border no-select'><span class='gamedata' data-id='rank.current' data-format-function='rankName'>Loading</span></div>
+			<div id='rank-img' class='metal-border no-select'><span class='gamedata' data-id='rank.current' data-format-function='plusOne'>X</span><span id='potential-bonus-rank'>X</span></div>
+		</div>
+
+		<div id='credits'><h1>Smash the Minion</h1> - Robin NICOLET - 2016</span></div>
+
+		<div id='efx'></div>
+
+		<div id='go-fs-button' data-lolipop='go-fullscreen' onClick='Lolipop.interact(this);'></div>
+		<div id='exit-fs-button' class='display-none' data-lolipop='exit-fullscreen' onClick='Lolipop.interact(this);'></div>
+
+		<div id='loading-screen' class='acenter'>
+			<!-- http://tobiasahlin.com/spinkit/ -->
+			<div class="spinner">
+				<div class="bounce1"></div>
+				<div class="bounce2"></div>
+				<div class="bounce3"></div>
+			</div><br/>
+			<div class='text'>Loading (0/32)</div>
+		</div>
+
+	</body>
+
+	<script src="js/libs/jquery-1.11.3.min.js"></script>
+	<script src="js/libs/perfect-scrollbar.jquery.min.js"></script>
+	<script src="js/libs/arrive.min.js"></script>
+	<script src="js/libs/bignumber.min.js"></script>
+	<script src="js/libs/typed.js"></script>
+	<script src="js/lolipop.js?"></script>
+
+</html>

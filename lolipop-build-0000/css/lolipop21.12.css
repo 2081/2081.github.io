@@ -1,0 +1,604 @@
+html, body {
+	width: 100%;
+}
+
+body {
+	background:  url('../img/footer_lodyas.png');
+	font-family: 'Merriweather', serif;
+	margin: 0;
+	overflow: hidden;
+}
+#gold-block {
+	font-family: 'Cinzel', serif;
+}
+
+.monster-action .options-holder > div {
+    font-family: 'Cinzel';
+}
+
+.no-select {
+	-webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+}
+
+#top-block {
+	text-align: center;
+	width: 100%;
+	position: absolute;
+	top: 0;
+	z-index: 50;
+}
+
+#mick-block {
+    position: absolute;
+    width: 600px;
+    left: -300px;
+	height: 193px;
+	/*background: #314757;*/
+}
+#mick-block-inner {
+	position: absolute;
+	width: 0;
+	left: 50%;
+	height: 176px;
+	padding-top: 40px;
+}
+
+#click_zone {
+	text-align: center;
+	margin-top: 100px;
+}
+
+#mick {
+	cursor: pointer;
+	position: absolute;
+	left: -48px;
+	width: 96px;
+	height: 96px;
+	background: url('../img/mick96.png?v=2');
+	z-index: 10;
+}
+
+#mick-ground {
+	position: absolute;
+	width: 328px;
+	left: -164px;
+	height: 48px;
+	background: url('../img/mick-ground96.png?v=2');
+	margin-top: 72px;
+	z-index: 1;
+}
+
+#mick:hover {
+	-webkit-filter: brightness(1.1);
+}
+
+#mick:active {
+	-webkit-filter: brightness(1.1);
+	background: url('../img/mick_active96.png?v=2');
+}
+
+
+#gold-block, #options-button, #gold-left-button {
+	position: absolute;
+	height: 35px;
+	top: 176px;
+	z-index: 100;
+}
+
+#gold-block {
+	padding-top: 4px;
+	color: #fdeca3;
+	font-size: 24px;
+	line-height: 29px;
+
+    /*text-shadow: -1px 0 #7b3505, 0 1px #7b3505, 1px 0 #7b3505, 0 -1px #7B3505;*//*Too sharp*/
+    text-shadow: -2px 0 rgba(123, 53, 5, 0.5), 0 2px rgba(123, 53, 5, 0.5), 2px 0 rgba(123, 53, 5, 0.5), 0 -2px rgba(123, 53, 5, 0.5);
+
+	width: 648px;
+	left: -324px;
+	background: url('../img/menus/goldbar.png?v=2') repeat-x;
+}
+#options-button {
+	width: 38px;
+	left: 326px;
+	cursor: pointer;
+	background: url('../img/options.png?v=2') no-repeat;
+}
+#gold-left-button {
+	width: 38px;
+	right: 326px;
+	cursor: pointer;
+	background: url('../img/menus/left-button.gif?v=2') no-repeat;
+}
+
+#gold-sprite, #gold-text {
+	display: inline-block;
+	height: 100%;
+	vertical-align: middle;
+}
+
+#gold-sprite {
+}
+
+#main-block {
+    /* position: absolute; */
+    text-align: center;
+    height: 100%;
+    /* padding-top: 176px; */
+    right: 0;
+    bottom: 0;
+    left: 0;
+    z-index: 10;
+    /* overflow-y: scroll; */
+}
+
+#main-block > .middle-absolute {
+    top: 176px;
+    height: auto;
+    bottom: 0;
+}
+
+#main-inner {
+    position: relative;
+    height: 100%;
+    width: 600px;
+    margin-left: -2304px; /*Can scroll on the whole width*/
+    overflow-y: scroll;
+    padding-right: 2000px;
+    padding-left: 2000px;
+}
+
+#middle-ctn {
+    position: relative;
+    /* display: inline-block; */
+    text-align: left;
+    width: 100%;
+    /* max-width: 622px; */
+    /* padding-right: 49px; */
+    right: 0;
+    bottom: 0;
+    left: 0;
+    background: #06161c;
+    border: solid 1px #2B505F;
+    padding: 8px;
+    padding-top: 40px;
+    /* padding-right: 28px; */
+}
+
+.middle-title {
+    text-align: center;
+	    /* Permalink - use to edit and share this gradient: http://colorzilla.com/gradient-editor/#15424c+0,15424c+100&0+0,1+30,1+70,0+100 */
+	background: -moz-linear-gradient(left, rgba(21,66,76,0) 0%, rgba(21,66,76,1) 30%, rgba(21,66,76,1) 70%, rgba(21,66,76,0) 100%); /* FF3.6-15 */
+	background: -webkit-linear-gradient(left, rgba(21,66,76,0) 0%,rgba(21,66,76,1) 30%,rgba(21,66,76,1) 70%,rgba(21,66,76,0) 100%); /* Chrome10-25,Safari5.1-6 */
+	background: linear-gradient(to right, rgba(21,66,76,0) 0%,rgba(21,66,76,1) 30%,rgba(21,66,76,1) 70%,rgba(21,66,76,0) 100%); /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
+	filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#0015424c', endColorstr='#0015424c',GradientType=1 ); /* IE6-9 */
+}
+
+.middle-title {
+	color: #F1D880;
+}
+.middle-title > h3 {
+    font-weight: normal;
+    font-size: 20px;
+    box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    -webkit-box-sizing: border-box;
+    border-bottom: solid 1px rgba(241, 216, 121, 0.09);
+    border-top: solid 1px rgba(241, 216, 121, 0.09);
+}
+
+.tb-ctn {
+	font-size: 0px;
+
+	-webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+}
+
+.champ-tbn {
+	font-size: 14px;
+	color: white;
+	text-align: center;
+	line-height: 100px;
+	text-shadow: -2px 0 black, 0 2px black, 2px 0 black, 0 -2px black;
+
+	cursor: pointer;
+	width: 60px;
+	height: 60px;
+	background-size: 60px 60px !important;
+	display: inline-block;
+	margin: 0;
+	padding: 0;
+	border: 1px double #1a2731;
+}
+
+.grey {
+	-webkit-filter: grayscale(1);
+}
+
+.monster-action:hover .hover-glow, .hover-glow:hover {
+	-webkit-filter: brightness(1.1);
+}
+
+.hover-glow.grey:hover {
+	-webkit-filter: brightness(1.1) grayscale(0.8);
+}
+
+#mobs-ctn {
+	font-size: 0;
+}
+
+.frame {	
+	display: inline-block;
+	width: 48px;
+	height: 48px;
+	background: url('../img/frame.png');
+	background-size: 48px 48px;
+}
+
+.mob-ctn {
+	margin: 6px;
+	width: 36px;
+	height: 36px;
+	cursor: pointer;
+	background-size: 36px 36px !important;
+}
+
+#monsters-ctn {
+	text-align: center;
+    padding-bottom: 5px;
+    padding-top: 5px;
+}
+
+.monster-ctn {
+	display: inline-block;
+	width: 250px;
+	height: 100px;
+	border: solid white 1px;
+}
+
+.sprite-ctn {
+	background: black;
+	display: inline-block;
+	height: 50px;
+	width: 50px;
+	cursor: pointer;
+
+	-webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+}
+
+.monster-action .sprite-ctn {
+	width: 120px;
+	height: 100px;
+	background-size: 120px 120px;
+}
+.monster-action .sprite-ctn.poro {
+	background: url('../img/icons/monster-menu-poro.png');
+	margin-top: -20px;
+}
+.monster-action .sprite-ctn.wolf {
+	background: url('../img/icons/monster-menu-wolf.png');
+	margin-top: -18px;
+}
+.monster-action .sprite-ctn.raptor {
+	background: url('../img/icons/monster-menu-raptor.png');
+	margin-top: -20px;
+}
+.monster-action .sprite-ctn.krug {
+	background: url('../img/icons/monster-menu-krug.png');
+	margin-top: -35px;
+}
+.monster-action .sprite-ctn.gromp {
+	background: url('../img/icons/monster-menu-gromp.png');
+	margin-top: -15px;
+}
+.monster-action .sprite-ctn.blue {
+	background: url('../img/icons/monster-menu-blue.png');
+	margin-top: -8px;
+}
+.monster-action .sprite-ctn.red {
+	background: url('../img/icons/monster-menu-red.png');
+	margin-top: -1px;
+}
+.monster-action .sprite-ctn.dragon {
+	background: url('../img/icons/monster-menu-dragon.png');
+	margin-top: -15px;
+}
+.monster-action .sprite-ctn.vilemaw {
+	background: url('../img/icons/monster-menu-vilemaw.png');
+	margin-top: -11px;
+}
+.monster-action .sprite-ctn.nashor {
+	background: url('../img/icons/monster-menu-nashor.png');
+	margin-top: -17px;
+}
+.monster-action:hover .sprite-ctn {
+	margin-top: 0;
+}
+
+
+#monster-recap .sprite-ctn {
+	width: 40px;
+	height: 40px;
+	background-size: 40px 40px;
+}
+#monster-recap .sprite-ctn.poro {
+	background: url('../img/icons/recap-icon-poro.png');
+}
+#monster-recap .sprite-ctn.blue {
+	background: url('../img/icons/recap-icon-blue.png');
+}
+#monster-recap .sprite-ctn.wolf {
+	background: url('../img/icons/recap-icon-wolf.png');
+}
+#monster-recap .sprite-ctn.raptor {
+	background: url('../img/icons/recap-icon-raptor.png');
+}
+#monster-recap .sprite-ctn.krug {
+	background: url('../img/icons/recap-icon-krug.png');
+}
+#monster-recap .sprite-ctn.red {
+	background: url('../img/icons/recap-icon-red.png');
+}
+#monster-recap .sprite-ctn.gromp {
+	background: url('../img/icons/recap-icon-gromp.png');
+}
+#monster-recap .sprite-ctn.dragon {
+	background: url('../img/icons/recap-icon-dragon.png');
+}
+#monster-recap .sprite-ctn.vilemaw {
+	background: url('../img/icons/recap-icon-vilemaw.png');
+}
+#monster-recap .sprite-ctn.nashor {
+	background: url('../img/icons/recap-icon-nashor.png');
+}
+
+
+.monster-action {
+	/* Permalink - use to edit and share this gradient: http://colorzilla.com/gradient-editor/#15434d+0,042932+74,041d23+90,041d23+100 */
+	background: #15434d; /* Old browsers */
+	background: -moz-linear-gradient(top,  #15434d 0%, #042932 74%, #041d23 90%, #041d23 100%); /* FF3.6-15 */
+	background: -webkit-linear-gradient(top,  #15434d 0%,#042932 74%,#041d23 90%,#041d23 100%); /* Chrome10-25,Safari5.1-6 */
+	background: linear-gradient(to bottom,  #15434d 0%,#042932 74%,#041d23 90%,#041d23 100%); /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
+	filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#15434d', endColorstr='#041d23',GradientType=0 ); /* IE6-9 */
+
+
+	position: relative;
+    height: 45px;
+	width: 100%;
+	text-align: left;
+
+	cursor: pointer;
+    border-radius: 50px;
+	overflow: hidden;
+
+	line-height: 5px;
+	border: 2px solid #746744;
+
+	margin-bottom: 5px;
+}
+
+.monster-action.cant-afford {
+    -webkit-filter: grayscale(0.8);
+    filter: grayscale(0.8);
+}
+
+.monster-action:hover {
+	border-color: #B9A14D;
+    border-radius: 50px 0 0 50px;
+    height: 100px;
+    margin-bottom: -15px;
+    margin-top: -20px;
+    z-index: 100;
+}
+
+.image-holder {
+	width: 20%;
+	height: 100%;
+	text-align: center;
+	position: absolute;
+
+	overflow: hidden;
+
+	left: 0;
+	background: rgba(0,0,0,0.1);
+	border-right: 1px solid #1b2b36;
+}
+
+
+.description-holder {
+	text-align: justify;
+    position: absolute;
+    width: 60%;
+    height: 100%;
+    top: 0px;
+    left: 21%;
+    padding-left: 1%;
+    padding-right: 1%;
+    background: rgba(0,0,0,0.1);
+}
+.monster-action:hover .description-holder {
+	width: 56%;
+	top: -5px;
+	left: 21%;
+    background: none;
+}
+
+.monster-action .action-name {
+    color: #F1D880;
+    font-size: 17px;
+    line-height: 2px;
+    margin-top: 12px;
+    margin-bottom: 12px;
+    display: inline-block;
+
+}.monster-action:hover .action-name {
+    font-size: 18px;
+    line-height: 19px;
+    display: inline-block;
+}
+
+.monster-action .action-desc {
+	display: inline;
+	color: #5D8188;
+	font-style: italic;
+	font-size: 12px;
+	line-height: 12px;
+	height: 24px;
+	margin-top: -9px;
+} .monster-action:hover .action-desc {
+	display: block;
+	color: #AAA;
+	font-style: italic;
+	font-size: 13px;
+	line-height: 13px;
+	height: 24px;
+	margin-top: -9px;
+}
+
+.monster-action .action-price {
+    position: absolute;
+    right: 27px;
+    left: 103%;
+    top: 56px;
+    color: #FFEEB6;
+    font-size: 14px;
+    margin-top: -37px;
+    margin-right: -109px;
+    text-shadow: -2px 0 rgba(2, 46, 60, 0.5), 0 2px rgba(2, 46, 60, 0.5), 2px 0 rgba(2, 46, 60, 0.5), 0 -2px rgba(2, 46, 60, 0.5);
+    font-family: 'Cinzel';
+
+}.monster-action:hover .action-price {
+    text-align: right;
+    font-size: 18px;
+    margin-right: auto;
+    right: 1%;
+    left: auto;
+}
+
+.monster-action .action-benefit {
+	color: lightgreen;
+	font-size: 18px;
+}
+
+.position-relative {
+	position: relative;
+	top: -50%;
+}
+
+.monster-action .options-holder {
+	position: absolute;
+	width: 20%;
+	height: 100%;
+	right: 0;
+	visibility: hidden;
+    border-left: 1px solid #1b2b36;
+}
+
+.monster-action .options-holder > div {
+    height: 25%;
+    width: 100%;
+    position: relative;
+    background: rgba(0,0,0,0.2);
+    color: #746744;
+    text-align: center;
+    vertical-align: middle;
+    line-height: 25px;
+    font-size: 14px;
+    font-weight: bold;
+    font-family: 'Cinzel';
+}
+.monster-action .options-holder > div:hover {
+	background: rgba(0,0,0,0.3);
+    color: rgb(185, 161, 77);
+}
+
+.monster-action:hover .options-holder {
+	visibility: visible;
+}
+
+.description-holder .opt {
+	display: none;
+}
+/* UTILS*/
+
+.middle-absolute {
+	position: absolute;
+	height: 100%;
+	width: 0;
+	left: 50%;
+	top: 0;
+}
+
+.middle-relative {
+    position: relative;
+    padding-top: 176px;
+    height: 100%;
+    width: 0;
+    left: 50%;
+}
+
+/* MONSTER RECAP */
+
+#monster-recap {
+	position: relative;
+	display: block;
+
+	width: 400px;
+
+	font-size: 16px;
+
+    top: 215px;
+    left: 306px;
+	z-index: 200;
+}
+#monster-recap .sprite-ctn{
+	display: inline-block;
+	position: relative;
+}
+#monster-recap .recap-holder {
+    margin-bottom: -6px;
+	min-height: 36px;
+}
+#monster-recap .recap-holder.odd .sprite-ctn {
+    margin-left: 20px;
+}
+
+#monster-recap .recap-quantity {
+	position: relative;
+    top: -19px;
+    left: -8px;
+	color: #C5C5C5;
+}
+#monster-recap .recap-gps {
+	position: absolute;
+	top: 0px;
+    left: -8px;
+	margin: 0px;
+	color: #6B8496;
+	font-size: 12px;
+}
+#monster-recap .recap-info-holder {
+	position: absolute;
+	width: 400px;
+	height: 0;
+	top: 50%;
+	left: 50px;
+}
+#monster-recap .recap-gold {
+	color: #B1A060;
+    font-size: 12px;
+}

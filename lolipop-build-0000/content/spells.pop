@@ -1,0 +1,19 @@
+#SPELLS - V0
+
+# > ID
+#	Name of the Spell
+#	
+
+> 000
+	Fierce & Fluffy
+		>
+			:poro,Poros: gain +:val,%:% production for each :wolf,Wolf: you own.
+		>
+			:wolf,Wolves: gain +:val,%:% production for each :poro,Poro: you own.
+
+> 001
+	Arcanic Policy
+		>
+			
+		>
+			Summoned minions (ex::poro,Poro:) reduce the cost of the next higher ranked summoning (ex::wolf,Wolf:) by *2%*.
