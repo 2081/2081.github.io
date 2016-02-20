@@ -3818,5 +3818,5 @@ $(document).ready(function(){
 
 
 } catch (e){
-	alert(e);
+	alert(e,(new Error).lineNumber);
 }
