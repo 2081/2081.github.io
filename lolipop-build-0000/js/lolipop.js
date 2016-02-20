@@ -190,7 +190,7 @@ console.assert = console.assert || function(){};
 		Loader = {};
 
 		Files = {
-			lang: '../content/lang.json'
+			lang: 'content/lang.json'
 		}
 
 		var _N = 0; // Loading
@@ -258,44 +258,44 @@ console.assert = console.assert || function(){};
 			if( _N === _M ) return _onAllLoaded();
 		}
 
-		Files.lang = Loader.load("../content/lang.JSON");
-		Files.mrtuto = Loader.load("../img/mobile/mr-tuto.png");
+		Files.lang = Loader.load("content/lang.JSON");
+		Files.mrtuto = Loader.load("img/mobile/mr-tuto.png");
 
-		Files.img_poro = Loader.load("../img/mobile/monster-poro.jpg");
-		Files.img_wolf = Loader.load("../img/mobile/monster-wolf.jpg");
-		Files.img_raptor = Loader.load("../img/mobile/monster-raptor.jpg");
-		Files.img_krug = Loader.load("../img/mobile/monster-krug.jpg");
-		Files.img_red = Loader.load("../img/mobile/monster-red.jpg");
-		Files.img_blue = Loader.load("../img/mobile/monster-blue.jpg");
-		Files.img_gromp = Loader.load("../img/mobile/monster-gromp.jpg");
-		Files.img_dragon = Loader.load("../img/mobile/monster-dragon.jpg");
-		Files.img_nashor = Loader.load("../img/mobile/monster-nashor.jpg");
-		Files.img_vilemaw = Loader.load("../img/mobile/monster-vilemaw.jpg");
+		Files.img_poro = Loader.load("img/mobile/monster-poro.jpg");
+		Files.img_wolf = Loader.load("img/mobile/monster-wolf.jpg");
+		Files.img_raptor = Loader.load("img/mobile/monster-raptor.jpg");
+		Files.img_krug = Loader.load("img/mobile/monster-krug.jpg");
+		Files.img_red = Loader.load("img/mobile/monster-red.jpg");
+		Files.img_blue = Loader.load("img/mobile/monster-blue.jpg");
+		Files.img_gromp = Loader.load("img/mobile/monster-gromp.jpg");
+		Files.img_dragon = Loader.load("img/mobile/monster-dragon.jpg");
+		Files.img_nashor = Loader.load("img/mobile/monster-nashor.jpg");
+		Files.img_vilemaw = Loader.load("img/mobile/monster-vilemaw.jpg");
 
-		Files.img_menu_monsters = Loader.load("../img/mobile/menu-monsters.png");
-		Files.img_menu_about = Loader.load("../img/mobile/menu-about.png");
-		Files.img_menu_achievements = Loader.load("../img/mobile/menu-achievements.png");
-		Files.img_menu_champions = Loader.load("../img/mobile/menu-champions.png");
-		Files.img_menu_dev = Loader.load("../img/mobile/menu-dev.png");
-		Files.img_menu_enchants = Loader.load("../img/mobile/menu-enchants.png");
-		Files.img_menu_help = Loader.load("../img/mobile/menu-help.png");
-		Files.img_menu_options = Loader.load("../img/mobile/menu-options.png");
-		Files.img_menu_rank = Loader.load("../img/mobile/menu-rank.png");
-		Files.img_menu_save = Loader.load("../img/mobile/menu-save.png");
-		Files.img_menu_stats = Loader.load("../img/mobile/menu-stats.png");
-		Files.img_menu_surrend = Loader.load("../img/mobile/menu-surrend.png");
-
-
-		Files.img_button_red = Loader.load("../img/mobile/button.svg");
-		Files.img_button_blue = Loader.load("../img/mobile/button_blue.svg");
-		Files.img_bg = Loader.load("../img/mobile/bg_repeat.svg");
-		Files.img_star = Loader.load("../img/mobile/star.svg");
-		Files.img_minion = Loader.load("../img/mobile/minion.svg");
+		Files.img_menu_monsters = Loader.load("img/mobile/menu-monsters.png");
+		Files.img_menu_about = Loader.load("img/mobile/menu-about.png");
+		Files.img_menu_achievements = Loader.load("img/mobile/menu-achievements.png");
+		Files.img_menu_champions = Loader.load("img/mobile/menu-champions.png");
+		Files.img_menu_dev = Loader.load("img/mobile/menu-dev.png");
+		Files.img_menu_enchants = Loader.load("img/mobile/menu-enchants.png");
+		Files.img_menu_help = Loader.load("img/mobile/menu-help.png");
+		Files.img_menu_options = Loader.load("img/mobile/menu-options.png");
+		Files.img_menu_rank = Loader.load("img/mobile/menu-rank.png");
+		Files.img_menu_save = Loader.load("img/mobile/menu-save.png");
+		Files.img_menu_stats = Loader.load("img/mobile/menu-stats.png");
+		Files.img_menu_surrend = Loader.load("img/mobile/menu-surrend.png");
 
 
-		Files.img_enterFS = Loader.load("../img/mobile/fs.png");
-		Files.img_leaveFS = Loader.load("../img/mobile/fs2.png");
-		Files.img_back = Loader.load("../img/mobile/back.png");
+		Files.img_button_red = Loader.load("img/mobile/button.svg");
+		Files.img_button_blue = Loader.load("img/mobile/button_blue.svg");
+		Files.img_bg = Loader.load("img/mobile/bg_repeat.svg");
+		Files.img_star = Loader.load("img/mobile/star.svg");
+		Files.img_minion = Loader.load("img/mobile/minion.svg");
+
+
+		Files.img_enterFS = Loader.load("img/mobile/fs.png");
+		Files.img_leaveFS = Loader.load("img/mobile/fs2.png");
+		Files.img_back = Loader.load("img/mobile/back.png");
 
 		Events.addListener('filesLoaded', function(){
 			console.log('All files loaded', Files);
@@ -311,7 +311,7 @@ console.assert = console.assert || function(){};
 		var _locale = 'en';
 
 		//console.log('LANG');
-		$.getJSON("../content/lang.json", function(json){
+		$.getJSON("content/lang.json", function(json){
 			_json = json;
 			_json.vars = _json.vars || {};
 			_json.lines = _json.lines || {};
