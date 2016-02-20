@@ -390,7 +390,7 @@ try {
 		}
 
 		Features.load = function( str ){
-			str.split('|').map(function( o ){
+			(str || "").split('|').map(function( o ){
 				var arr = o.split(',');
 				var id = arr[0], n = arr[1] || 0;
 				if( n & _S.UNLOCKED ) Features.unlock( id, true );
@@ -470,7 +470,7 @@ try {
 		}
 
 		Dialogue.load = function( str ){
-			str.split('|').map(function( id ){
+			(str || "").split('|').map(function( id ){
 				( Dialogue.all[id] || _new_data(id)).past = true;
 				console.log('%cLOADED DIALOGUE', "background: black; color: lightblue;", id, Dialogue.all);
 			});
@@ -2232,7 +2232,7 @@ try {
 	Sprite.Utils.txtMapToJSON = function( id, txt ){
 
 		var entry = Sprite.Sheet[id].sprites = {};
-		txt.split('\n').map( function( line ){
+		(txt || "").split('\n').map( function( line ){
 			var m = line.match(/(\w+) = (\d+) (\d+) (\d+) (\d+)/);
 			if( m ){
 				var data = entry[m[1]] = {};
