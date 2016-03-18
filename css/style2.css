@@ -1,0 +1,29 @@
+body, html {
+	width: 100%;
+	height: 100%;
+	margin: 0;
+	padding: 0;
+}
+
+
+#front-photo-container {
+	width: 100%;
+	height: 800px;
+	background-image: linear-gradient(#010F36,#001951,#010E3A);
+}
+
+
+#front-photo {
+	width: 100%;
+	height: 100%;
+	background: url('../images/photo-me.jpg') no-repeat;
+	background-size: auto 100%;
+	background-position: 50%;
+}
+
+
+@media screen and (max-width: 500px) {
+	#front-photo-container {
+	height: 150vmin;
+}
+}
