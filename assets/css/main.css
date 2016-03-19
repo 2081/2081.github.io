@@ -529,11 +529,26 @@
 					border-radius: 100%;
 					border: solid 1px #c8cccf;
 					line-height: 3.75em;
-					overflow: hidden;
+					/*overflow: hidden;*/
 					text-align: center;
 					text-indent: 3.75em;
 					white-space: nowrap;
 				}
+
+					ul.icons li a span {
+					    position: absolute;
+					    display: inline-block;
+					    left: 0;
+					    top: 80%;
+					    transform: translate(-50%, 0);
+					    font-size: 100%;
+					    color: #00598D;
+					    opacity: 0;
+					}
+
+					ul.icons li:hover a span {
+					    opacity: 1;
+					}
 
 					ul.icons li a:before {
 						-moz-osx-font-smoothing: grayscale;
