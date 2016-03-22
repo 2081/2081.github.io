@@ -520,7 +520,7 @@
 				padding: 0.675em 0.5em;
 			}
 
-				ul.icons li a {
+				ul.icons li a, ul.icons li .a {
 					text-decoration: none;
 					position: relative;
 					display: block;
@@ -535,7 +535,7 @@
 					white-space: nowrap;
 				}
 
-					ul.icons li a span {
+					ul.icons li a span, ul.icons li .a span {
 					    position: absolute;
 					    display: inline-block;
 					    left: 0;
@@ -546,11 +546,11 @@
 					    opacity: 0;
 					}
 
-					ul.icons li:hover a span {
+					ul.icons li:hover a span, ul.icons li:hover .a span {
 					    opacity: 1;
 					}
 
-					ul.icons li a:before {
+					ul.icons li a:before, ul.icons li .a:before {
 						-moz-osx-font-smoothing: grayscale;
 						-webkit-font-smoothing: antialiased;
 						font-family: FontAwesome;
@@ -559,16 +559,16 @@
 						text-transform: none !important;
 					}
 
-					ul.icons li a:before {
+					ul.icons li a:before, ul.icons li .a:before {
 						color: #ffffff;
 						text-shadow: 1.25px 0px 0px #c8cccf, -1.25px 0px 0px #c8cccf, 0px 1.25px 0px #c8cccf, 0px -1.25px 0px #c8cccf;
 					}
 
-					ul.icons li a:hover:before {
+					ul.icons li a:hover:before, ul.icons li .a:hover:before {
 						text-shadow: 1.25px 0px 0px #ff7496, -1.25px 0px 0px #ff7496, 0px 1.25px 0px #ff7496, 0px -1.25px 0px #ff7496;
 					}
 
-					ul.icons li a:before {
+					ul.icons li a:before, ul.icons li .a:before {
 						position: absolute;
 						top: 0;
 						left: 0;
@@ -580,7 +580,7 @@
 						text-indent: 0;
 					}
 
-					ul.icons li a:hover {
+					ul.icons li a:hover, ul.icons li .a:hover {
 						border-color: #ff7496;
 					}
 
