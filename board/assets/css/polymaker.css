@@ -1,0 +1,108 @@
+html {
+	background: #6392FF;
+}
+
+html, body {
+	width: 100%; height: 100%;
+	margin: 0;
+	padding: 0;
+}
+
+[draggable] {
+    -moz-user-select: none;
+    -khtml-user-select: none;
+    -webkit-user-select: none;
+    user-select: none;
+}
+
+.workbench {
+	position: absolute;
+	left: 50%;
+	top: 50%;
+	width: 90vmin;
+	height: 90vmin;
+}
+
+
+.poly-selector {
+	position: absolute;
+	left: 12%;
+	top: 50%;
+	width: 20vw;
+	height: 90vh;
+}
+
+.workbench, .poly-selector {
+	border: 1px solid white;
+    border-style: dashed;
+    border-width: 0.5vmin;
+    border-radius: 2%;
+
+	transform: translate(-50%, -50%);
+}
+
+
+.workbench .wrapper, .workbench .polys, .workbench .handles {
+	position: absolute;
+	width: 100%;
+	height: 100%;
+	left: 0;
+	top: 0;
+
+	cursor: pointer;
+}
+
+.handles {
+	pointer-events: none;
+}
+.handles .handle {
+	pointer-events: all;
+	position: absolute;
+
+	transform: translate(-50%, -50%);
+	width: 2vmin;
+	height: 2vmin;
+	background: white;
+	opacity: 0.5;
+
+	left: 0; top: 0;
+
+	border-radius: 50%;
+}
+.handles .handle[data-handle='move']{
+	border-radius: 10%;
+}
+
+.handles .handle:hover {
+	width: 2.5vmin;
+	height: 2.5vmin;
+	opacity: 1;
+}
+.handles .handle:active {
+	opacity: 0;
+	cursor: none;
+}
+
+.handle.dragged {
+	opacity: 0;
+}
+
+.workbench .holder {
+	position: relative;
+	width: 100%;
+	height: 100%;
+}
+.workbench .holder.downlight, .workbench.oversomething:hover:not(.somethingselected) .holder {
+	opacity: 0.5;
+}
+.workbench .holder.highlight, .workbench.oversomething:hover .holder.highlight {
+	opacity: 1;
+}
+
+.workbench .holder.selected {
+	/*background: orange !important;*/
+	/*opacity: 0.8;
+	z-index: 100;*/
+}
+
+/* wired */

@@ -1,0 +1,177 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<Graphic version="2.0" viewHeight="400" viewWidth="400" ATE:version="1.0.0" flm:version="1.0.0" d:using="" pd:backgroundColor="16297134" xmlns="http://ns.adobe.com/fxg/2008" xmlns:ATE="http://ns.adobe.com/ate/2009" xmlns:d="http://ns.adobe.com/fxg/2008/dt" xmlns:flm="http://ns.adobe.com/flame/2008" xmlns:pd="http://ns.adobe.com/xfl/2008/pd">
+  <Library/>
+  <Group d:type="layer" d:userLabel="tail bot left">
+    <Path data="M181.75 298.95 206.5 357.05 153.3 322.575 181.75 298.95">
+      <fill>
+        <SolidColor color="#FFEEE3"/>
+      </fill>
+    </Path>
+    <Path data="M154.15 277.65 181.75 298.95 153.3 322.575 154.15 277.65">
+      <fill>
+        <SolidColor color="#FFDBC4"/>
+      </fill>
+    </Path>
+    <Path data="M183.75 276.4 181.75 298.95 154.15 277.65 183.75 276.4">
+      <fill>
+        <SolidColor color="#FFCEAD"/>
+      </fill>
+    </Path>
+    <Path data="M183.75 276.4 154.15 277.65 186.7 202.1 183.75 276.4">
+      <fill>
+        <SolidColor color="#FFC097"/>
+      </fill>
+    </Path>
+    <Path data="M154.15 277.65 153.3 322.575 181.75 298.95 154.15 277.65M183.75 276.4 186.7 202.1 154.15 277.65 183.75 276.4M153.3 322.575 206.5 357.05 181.75 298.95 183.75 276.4">
+      <stroke>
+        <SolidColorStroke weight="1" color="#FF66FF" alpha="0"/>
+      </stroke>
+    </Path>
+  </Group>
+  <Group d:type="layer" d:userLabel="tail bot right">
+    <Path data="M242.5 296.8 213.45 345.3 203.9 289.3 242.5 296.8">
+      <fill>
+        <SolidColor color="#FFE3D2"/>
+      </fill>
+    </Path>
+    <Path data="M242.5 296.8 203.9 289.3 229.7 259.9 242.5 296.8">
+      <fill>
+        <SolidColor color="#FFD9C1"/>
+      </fill>
+    </Path>
+    <Path data="M203.9 289.3 196.55 272.45 229.7 259.9 203.9 289.3">
+      <fill>
+        <SolidColor color="#FFC29A"/>
+      </fill>
+    </Path>
+    <Path data="M229.7 259.9 196.55 272.45 186.55 205.65 229.7 259.9">
+      <fill>
+        <SolidColor color="#FFB98B"/>
+      </fill>
+    </Path>
+    <Path data="M242.5 296.8 229.7 259.9 203.9 289.3 242.5 296.8M229.7 259.9 186.55 205.65 196.55 272.45 229.7 259.9M196.55 272.45 203.9 289.3 213.45 345.3 242.5 296.8">
+      <stroke>
+        <SolidColorStroke weight="1" color="#FF66FF" alpha="0"/>
+      </stroke>
+    </Path>
+  </Group>
+  <Group d:type="layer" d:userLabel="wings">
+    <Path data="M157.85 128.35 171.25 152.75 119.75 168.6 157.85 128.35">
+      <fill>
+        <SolidColor color="#FFE0C9"/>
+      </fill>
+    </Path>
+    <Path data="M171.25 152.75 157.85 128.35 216.9 111.65 171.25 152.75">
+      <fill>
+        <SolidColor color="#FFCFB0"/>
+      </fill>
+    </Path>
+    <Path data="M238.55 193.9 265.2 189 256.9 245.85 238.55 193.9">
+      <fill>
+        <SolidColor color="#FFDBC1"/>
+      </fill>
+    </Path>
+    <Path data="M265.2 189 238.55 193.9 244.95 117.85 265.2 189">
+      <fill>
+        <SolidColor color="#FFCAA8"/>
+      </fill>
+    </Path>
+    <Path data="M157.85 128.35 216.9 111.65 171.25 152.75 119.75 168.6 157.85 128.35M238.55 193.9 244.95 117.85 265.2 189 256.9 245.85 238.55 193.9 265.2 189M171.25 152.75 157.85 128.35">
+      <stroke>
+        <SolidColorStroke weight="1" color="#FF66FF" alpha="0"/>
+      </stroke>
+    </Path>
+  </Group>
+  <Group d:type="layer" d:userLabel="taillettes">
+    <Path data="M201.7 118.5 171.2 136.75 184.35 121.85 201.7 118.5M186.25 206.8 181.75 243.05 167.75 272.1 186.25 206.8">
+      <fill>
+        <SolidColor color="#D40055"/>
+      </fill>
+    </Path>
+    <Path data="M171.2 136.75 201.7 118.5 191.15 132.1 171.2 136.75M196.2 239.2 186.25 206.8 213.6 253.8 196.2 239.2">
+      <fill>
+        <SolidColor color="#AA0044"/>
+      </fill>
+    </Path>
+    <Path data="M249.25 182.2 248.5 142.6 254.9 160.35 249.25 182.2">
+      <fill>
+        <SolidColor color="#A02C5A"/>
+      </fill>
+    </Path>
+    <Path data="M248.5 142.6 249.25 182.2 242.85 161.9 248.5 142.6">
+      <fill>
+        <SolidColor color="#800033"/>
+      </fill>
+    </Path>
+    <Path data="M171.2 136.75 184.35 121.85 201.7 118.5 191.15 132.1 171.2 136.75 201.7 118.5M248.5 142.6 254.9 160.35 249.25 182.2 242.85 161.9 248.5 142.6M249.25 182.2 248.5 142.6M196.2 239.2 213.6 253.8 186.25 206.8 196.2 239.2M186.25 206.8 167.75 272.1
+ 181.75 243.05 186.25 206.8">
+      <stroke>
+        <SolidColorStroke weight="1" color="#FF66FF" alpha="0"/>
+      </stroke>
+    </Path>
+  </Group>
+  <Group d:type="layer" d:userLabel="body">
+    <Path data="M280.9 90.7 262.45 133.55 262.1 96.9 280.9 90.7M262.45 133.55 185.1 210.2 224.35 132.1 262.45 133.55">
+      <fill>
+        <SolidColor color="#800033"/>
+      </fill>
+    </Path>
+    <Path data="M224.35 132.1 185.1 210.2 200.1 99.3 224.35 132.1">
+      <fill>
+        <SolidColor color="#C0004D"/>
+      </fill>
+    </Path>
+    <Path data="M229.95 82.7 224.35 132.1 200.1 99.3 229.95 82.7">
+      <fill>
+        <SolidColor color="#CB0052"/>
+      </fill>
+    </Path>
+    <Path data="M229.95 82.7 200.1 99.3 226.65 63.1 229.95 82.7">
+      <fill>
+        <SolidColor color="#E7005D"/>
+      </fill>
+    </Path>
+    <Path data="M226.65 63.1 258.15 70.4 229.95 82.7 226.65 63.1">
+      <fill>
+        <SolidColor color="#DF0059"/>
+      </fill>
+    </Path>
+    <Path data="M229.95 82.7 258.15 70.4 224.35 132.1 229.95 82.7">
+      <fill>
+        <SolidColor color="#B70049"/>
+      </fill>
+    </Path>
+    <Path data="M258.15 70.4 226.65 63.1 264.55 58.35 258.15 70.4">
+      <fill>
+        <SolidColor color="#D40055"/>
+      </fill>
+    </Path>
+    <Path data="M280.9 90.7 258.15 70.4 264.55 58.35 280.9 90.7">
+      <fill>
+        <SolidColor color="#A10040"/>
+      </fill>
+    </Path>
+    <Path data="M280.9 90.7 262.1 96.9 258.15 70.4 280.9 90.7">
+      <fill>
+        <SolidColor color="#8D0B3F"/>
+      </fill>
+    </Path>
+    <Path data="M224.35 132.1 258.15 70.4 262.1 96.9 224.35 132.1">
+      <fill>
+        <SolidColor color="#A1164E"/>
+      </fill>
+    </Path>
+    <Path data="M262.45 133.55 224.35 132.1 262.1 96.9 262.45 133.55">
+      <fill>
+        <SolidColor color="#8A0037"/>
+      </fill>
+    </Path>
+    <Path data="M280.9 90.7 264.55 58.35 258.15 70.4 280.9 90.7M258.15 70.4 262.1 96.9 280.9 90.7M229.95 82.7 226.65 63.1 200.1 99.3 229.95 82.7M224.35 132.1 200.1 99.3 185.1 210.2 224.35 132.1 229.95 82.7M262.1 96.9 262.45 133.55 280.9 90.7M262.1 96.9 224.35
+ 132.1 262.45 133.55M224.35 132.1 258.15 70.4 229.95 82.7M226.65 63.1 264.55 58.35M258.15 70.4 226.65 63.1M185.1 210.2 262.45 133.55">
+      <stroke>
+        <SolidColorStroke weight="1" color="#FF66FF" alpha="0"/>
+      </stroke>
+    </Path>
+  </Group>
+  <Private/>
+</Graphic>

@@ -1,0 +1,59 @@
+
+.polymage {
+	position: absolute;
+	left: 50%;
+	top: 50%;
+	transform: translate(-50%, -50%);
+    /*transform: translate3d(-50%, -50%, 0);*/
+    transform-style: preserve-3d;
+}
+/*
+.polymage:after {
+	content: '';
+	position: absolute;
+	width: 100%;
+	height: 100%;
+	left: 0;
+	top: 0;
+
+	background: radial-gradient(rgba(255, 255, 221, 0.38), rgba(255, 255, 221, 0) 70%)
+}*/
+
+.polymage .polygon-holder {
+	position: absolute;
+	width: 100%;
+	height: 100%;
+	margin: 0;
+
+	transition: all 0.3s;
+    transition-timing-function: cubic-bezier(0.06, 0.43, 0.58, 1);
+    /*transition-timing-function: cubic-bezier(0.13, 0.72, 0.67, 0.21);*/
+    /*transition-timing-function: cubic-bezier(0.57, 1, 0.56, 0.04);*/
+}
+
+.polymage .polygon {
+	position: relative;
+	width: 100%;
+	height: 100%;
+	margin: 0;
+
+	transition: inherit;
+}
+
+.polymage .polygon:after {
+	/*-webkit-filter: brightness(1.3);*/
+	/*transition: filter 0s 0s;*/
+	content: '';
+	position: absolute;
+	width: 100%;
+	height: 100%;
+	left: 0;
+	top: 0;
+
+	transition: background-color 0.3s 0.3s;
+}
+
+.polymage .polygon:hover:after {
+	background: rgba(255,255,190,0.3);
+	transition: background-color 0.2s 0s;
+}

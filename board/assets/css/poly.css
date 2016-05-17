@@ -1,0 +1,610 @@
+
+html, body {
+	width: 100%; /*height: 100%;*/
+	margin: 0;
+	padding: 0;
+	/*overflow: hidden;*/
+}
+
+
+::-webkit-scrollbar { 
+    display: none; 
+}
+
+.square {
+	background: blue;
+	-webkit-clip-path: polygon( 40% 40%, 50% 60%, 60% 40%, 50% 40% );
+
+	width: 400px;
+	height: 400px;
+
+	transition: all 1.5s;
+}
+
+.square:hover {
+	background: red;
+	-webkit-clip-path: polygon( 50% 60%, 60% 40%, 40% 20%, 40% 40% );
+}
+
+#game, .polyContainer, .polymage {
+	transition: background-color 2s;
+}
+
+#game {
+	position: relative;
+	width: 100%;
+	height: 100%;
+
+	-webkit-filter: hue-rotate(0);
+	transition: background-color 2s, -webkit-filter 2s, filter 2s;
+	transform: translateZ(0);
+}
+
+/*#game:after {
+	content: '';
+	position: absolute;
+	pointer-events: none;
+	width: 100%; height: 100%;
+
+	transition: background-color 3s;
+}*/
+/*#game.night:after {
+	background: rgba(49, 20, 105, 0.50);
+}*/
+
+/*#game:before {
+	content: '';
+	position: absolute;
+	background: rgba(255,255,255,0.05);
+	width: 100%;
+	height: 100%;
+
+	z-index: 100;
+
+	-webkit-clip-path: polygon(0% 80%, 70% 100%, 70% 100%, 0% 100%);
+}*/
+
+/* CRAFT */
+#game div#craft-container {
+	position: absolute;
+	width: 55%;
+	height: 100%;
+	left: 0;
+	top: 0;
+	background: rgba(0, 0, 0, 0.1);
+
+	outline: 1px solid rgba(255,255,255,1);
+
+    transform: translateX(-100%) translateX(80px);
+    transition: transform 1s 1s;
+}
+
+#game div#craft-container div#inventory {
+	position: absolute;
+	width: 80px;
+	height: 100%;
+	top: 0;
+	right: 0;
+	background: rgba(255, 255, 255, 0.2);
+	/*overflow-y: scroll;*/
+
+	padding: 30px 0;
+}
+
+#game div#craft-container div#inventory > .item {
+	position: relative;
+	display: inline-block;
+	width: 80px;
+	height: 80px;
+	background-size: 100% 100%;
+	background-position: center;
+	text-align: center;
+
+	transition: transform 0.5s;
+}
+/*#game div#craft-container div#inventory > .item span {
+	display: inline-block;
+	margin-top: 110px;
+	color: white;
+	padding: 2px 0;
+
+	font-family: 'Calibri', sans;
+	font-size: 150%;
+	background: rgba(0,0,0,0.2);
+
+	width: 100%;
+    border-bottom: 5px solid rgba(0,0,0,0.1);
+}*/
+#game div#craft-container div#inventory > .item span {
+	position: absolute;
+	display: inline-block;
+	left: 100%;
+	top: 25px;
+	color: purple;
+	padding: 2px 15px 2px 5px;
+
+	font-family: 'Calibri', sans;
+	font-size: 150%;
+	background: white;
+
+	border-radius: 0 100vmin 100vmin 0;
+	/*border-radius: 100vmin;*/
+}
+
+/* POPULATION */
+#game div#population-container {
+	position: absolute;
+	width: 55%;
+	height: 100%;
+    right: 0;
+	top: 0;
+	background: rgba(0, 0, 0, 0.2);
+
+	outline: 1px solid rgba(255,255,255,1);
+
+    transform: translateX(100%) translateX(1px);
+    transition: transform 1s 1s;
+}
+#game div#population-container.reveal {
+	transform: translateX(0);
+}
+
+#game div#population-container .back-button {
+    position: absolute;
+    width: 50px;
+    height: 50px;
+    left: 0;
+    top: 50%;
+    background: white;
+    border-radius: 50%;
+    transform: translate(-50%, -50%);
+
+    cursor: pointer;
+
+    opacity: 0;
+    transition: opacity 0.7s 1s;
+
+    z-index: 2;
+}
+#game div#population-container.reveal .back-button {
+    opacity: 1;
+}
+#game div#population-container .back-button:after {
+	content: '';
+    position: absolute;
+    width: 50%;
+    height: 50%;
+    left: 50%;
+    top: 50%;
+    /* background: black; */
+    border: 6px solid #E0E0E0;
+    border-right: none;
+    border-bottom: none;
+    border-radius: 26% 0;
+    transform: scaleY(0.7) translate(-63%, -67%) rotateZ(135deg);
+}
+
+#game div#population-container .back-button:hover:after {
+	border-color: #8D9FB9;
+}
+
+#game div#population-container .specimen-container {
+	position: absolute;
+	width: 100%;
+	height: 98%;
+	top: 0;
+	left: 0;
+	bottom: 0;
+
+	padding-top: 2%;
+
+	text-align: center;
+	overflow-y: scroll;
+}
+
+#game div#population-container .specimen-container:after {
+	content: '';
+    display: block;
+    margin-top: 25px;
+    width: 100%;
+    height: 40px;
+    background: url('../graphics/ui/scroll_down_20.png');
+    background-size: auto 100%;
+    background-repeat: no-repeat;
+    background-position: center;
+    opacity: 0.6;
+}
+#game div#population-container .specimen-container.full:after {
+	background-image: url('../graphics/ui/no_scroll_down.png');
+}
+
+#game div#population-container .specimen {
+	position: relative;
+	display: inline-block;
+	width: 75px;
+	height: 75px;
+    background-size: 100% 100%;
+
+    opacity: 0;
+    transition: opacity 0.3s 0s;
+}
+#game div#population-container .specimen.reveal {
+	opacity: 1;
+}
+
+#game div#population-container .specimen .fa {
+	position: absolute;
+    font-size: 40px;
+    color: white;
+    bottom: 0;
+    right: 0;
+	opacity: 0;
+	transition: opacity 0.3s 1.5s;
+}
+
+@keyframes gotcha{
+	0% { transform: rotateZ(0deg);}
+	10% { transform: rotateZ(80deg);}
+	20% { transform: rotateZ(180deg);}
+	30% { transform: rotateZ(270deg);}
+	40% { transform: rotateZ(350deg);}
+	50% { transform: rotateZ(420deg);}
+	60% { transform: rotateZ(580deg);}
+	70% { transform: rotateZ(630deg);}
+	80% { transform: rotateZ(670deg);}
+	90% { transform: rotateZ(700deg);}
+	100% { transform: rotateZ(720deg);}
+}
+
+#game div#population-container .specimen.gotcha {
+	animation: gotcha 1.5s linear;
+}
+#game div#population-container .specimen.gotcha .fa, #game div#population-container .specimen.already-gotcha .fa {
+	opacity: 1;
+}
+ #game div#population-container .specimen.already-gotcha .fa {
+ 	color: grey;
+}
+
+.specimen.special {
+	cursor: pointer;
+}
+
+
+
+#game .principoly {
+    transition: left 1s 1s;
+}
+
+#game .principoly.left {
+	left: 25%;
+} #game .principoly.center {
+	left: 50%;
+} #game .principoly.right {
+	left: 75%;
+}
+
+.interface.principal {
+	position: absolute;
+	left: 50%;
+	top: 50%;
+	transform: translate(-50%, -50%);
+    transform-style: preserve-3d;
+
+	pointer-events: none;
+}
+
+.daynight {
+	position: absolute;
+	width: 95%;
+	height: 95%;
+	border: 1vmin rgba(255,255,255,0.1) solid;
+	border-radius: 50%;
+
+	left: 50%;
+	top: 50%;
+	transform: translate(-50%, -50%);
+
+	z-index: -1;
+	pointer-events: none;
+}
+
+@keyframes orbit {
+	0% { transform: rotateZ(0deg);}
+	100% { transform: rotateZ(360deg);}
+}
+
+.daynight:after {
+	content: '';
+	width: 10%;
+	height: 10%;
+	background: white;
+
+	position: absolute;
+	left: 45%;
+	top: -5%;
+
+	transform-origin: 50% 550%;
+	animation: orbit 24s infinite linear;
+
+	transition: -webkit-clip-path 4s, background 4s;
+
+	-webkit-clip-path: polygon(50% 0%, 70% 25%, 100% 38%, 82% 65%, 82% 100%, 50% 88%, 18% 100%, 19% 65%, 0% 38%, 30% 26%);
+	background: #FFD735;
+}
+
+.daynight.day:after {
+}
+.daynight.night:after {
+	-webkit-clip-path: polygon(55% 0%, 83% 13%, 99% 40%, 96% 70%, 75% 93%, 45% 100%, 17% 87%, 1% 60%, 4% 30%, 25% 7%);
+	background: #D8C6D3;
+}
+
+/* Pointers */
+
+.pointer {
+	position: absolute;
+	z-index: 1000;
+
+	opacity: 1;
+	display: block;
+
+	color: white;
+	font-family: 'Calibri', sans;
+}
+
+.pointer:after {
+    content: '';
+    position: relative;
+    display: block;
+    height: 100%;
+    width: 30%;
+    border: 2px dashed rgba(255, 255, 255, 0.7);
+    /*margin-left: 56%;
+    margin-top: -2px;*/
+    transform: skew(-45deg, 0) scale(1.4142,1);
+    transform-style: preserve-3d;
+    transform-origin: bottom left;
+}
+
+.pointer:before {
+	content: '';
+	position: absolute;
+	width: 6px;
+	height: 6px;
+	background: rgba(255, 255, 255, 0.6);
+	transform: translate(-50%, -50%);
+}
+
+.pointer.bltotr:after {
+	border-right: none;
+	border-bottom: none;
+	margin-left: 0;
+	margin-top: -100%;
+}
+.pointer.bltotr .content {
+	margin-left: 0;
+	margin-top: -100%;
+}
+
+.pointer.brtotl {
+	/* use after avec rotation*/
+}
+.pointer.brtotl:after, .pointer.trtobl:after {
+	border-left: none;
+	border-bottom: none;
+	margin-left: 0;
+	margin-top: -100%;
+}
+.pointer.brtotl:after {
+	transform: skew(45deg, 0) scale(1.4142,1) translate(-100%, 0);
+}
+.pointer.brtotl:before, .pointer.brtotl > .target {
+	/*left:0; top: 100%;*/
+}
+
+.pointer.trtobl:after {
+	transform: scale(1,-1) skew(45deg, 0) scale(1.4142,1) translate(-100%, 0);
+}
+
+.pointer.tltobr:after {
+	border-right: none;
+	border-bottom: none;
+	margin-top: -2px;
+	transform: translate(0, -100%) scale(1, -1) skew(-45deg, 0) scale(1.4142,1);
+}
+
+.pointer > .target {
+	position: absolute;
+	width: 40px;
+	height: 40px;
+
+    transform-origin: 0 0 !important;
+}
+
+.pointer > .target:after {
+	content: '';
+	position: absolute;
+	width: 100%;
+	height: 100%;
+	border: 2px solid rgba(255, 255, 255, 0.6);
+	border-radius: 50%;
+
+	transform: translate(-50%, -50%);
+
+}
+
+.pointer .content {
+    position: absolute;
+    min-height: 40px;
+    left: 145%;
+    top: -20px;
+    border: 2px solid white;
+	border-bottom: none;
+	border-top: none;
+    background: rgba(1,1,1,0.1);
+
+    cursor: pointer;
+    pointer-events: all;
+
+    transition: all 2s;
+}
+.pointer .content.text {
+    width: 300px;
+}
+.pointer .content.nowrap {
+	white-space: nowrap;
+}
+
+.pointer .content:hover {
+    background: rgba(1,1,1,0.3);
+}
+
+.pointer.bltotr .content {
+	border-right: none;
+}
+.pointer.brtotl .content {
+	border-left: none;
+	left: auto;
+	right: 245%;
+	margin-top: -100%;
+}
+.pointer.trtobl .content {
+	border-left: none;
+	left: auto;
+	right: 245%;
+	margin-top: 103%;
+}
+.pointer.tltobr .content {
+	border-right: none;
+	margin-top: 100%;
+}
+
+.content.tb-reveal {
+	transition: max-width 2s 0s;
+	max-width: 1000px;
+}
+.content.tb-reveal > :not(.thumbnail){
+	opacity: 1;
+	transition: opacity 1s 1s;
+}
+
+
+.content.tb-reveal .reveal-content {
+	position: relative;
+	width: 100%;
+	overflow: hidden;
+}
+
+.pointer .content.tb-reveal:not(:hover) {
+	border-color: transparent;
+	background-color: transparent;
+	max-width: 0;
+	/*color: transparent;*/
+
+	transition: max-width 2s 0s, border-color 1s 1s, background-color 0s 2s;
+}
+
+.pointer .thumbnail .caption {
+	position: absolute;
+	top: 50%;
+
+	font-size: 150%;
+	line-height: 0;
+
+	margin: 0 15px;
+}
+.pointer.bltotr .thumbnail .caption, .pointer.tltobr .thumbnail .caption {
+	left: 100%;
+}
+.pointer.brtotl .thumbnail .caption, .pointer.trtobl .thumbnail .caption {
+	right: 100%;
+}
+
+.pointer .thumbnail .caption .population .coma {
+	font-size: 75%;
+	color: #7A598E;
+}
+
+.pointer .thumbnail .caption span.info {
+	font-size: 75%;
+    position: absolute;
+    top: 20px;
+}
+.pointer.bltotr .thumbnail .caption span.info, .pointer.tltobr .thumbnail .caption span.info {
+    left: 0;
+}
+.pointer.brtotl .thumbnail .caption span.info, .pointer.trtobl .thumbnail .caption span.info {
+    right: 0;
+}
+
+.pointer h3 {
+    font-variant: small-caps;
+    font-size: 150%;
+    padding: 0;
+    margin: 3px 15px;
+
+}
+
+.pointer .content .thumbnail {
+	position: absolute;
+	width: 80px;
+	height: 80px;
+	border: 2px solid white;
+	border-radius: 50%;
+	background-size: 100% 100%;
+
+	top: -22px;
+}
+.pointer.brtotl .thumbnail, .pointer.trtobl .thumbnail {
+	left: -80px;
+	right: auto;
+}
+.pointer.bltotr .thumbnail, .pointer.tltobr .thumbnail {
+	right: -80px;
+	left: auto;
+}
+
+span.info[data-info='positive'] {
+	color: #4EEF4E;
+}
+span.info[data-info='positive']:before {
+	content: '+';
+}
+
+span.info[data-info='negative'] {
+	color: #FF5335;
+}
+span.info[data-info='negative']:before {
+	content: '-';
+}
+
+span.info[data-info='new'] {
+	color: #35C5FF;
+	transition: color 3s linear;
+}
+.night span.info[data-info='new'] {
+	color: #998CFF;
+}
+span.info[data-info='new'] .fa {
+	font-size: 85%;
+	line-height: 0;
+}
+/*span.info[data-info='new']:before {
+	content: '+';
+}*/
+
+/* faders */
+
+.fadeout.quickfade {
+	visibility: hidden;
+	opacity: 0;
+	transition: opacity 1s 0s, visibility 0s 1s;
+}
+
+.fadein.longfade {
+	visibility: visible;
+	opacity: 1;
+	transition: opacity 1s 1.5s, visibility 0s 0s;
+}
+
