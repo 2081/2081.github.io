@@ -155,8 +155,8 @@
 
 .tile [data-info='prod'] {
 	position: absolute;
-	top: 85%;
-	left: 75%;
+	top: 90%;
+	left: 85%;
 
 	background-color: rgb(101, 66, 34);
 	border: 1px solid white;
@@ -170,8 +170,8 @@
 
 .tile [data-info='pertick'] {
 	position: absolute;
-	top: 85%;
-	left: 25%;
+	top: 25%;
+	left: 90%;
 	background: #8F5A59;
 	border: 1px solid white;
 	border-radius: 500px;
