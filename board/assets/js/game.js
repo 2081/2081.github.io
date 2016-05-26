@@ -9,6 +9,7 @@ MY = 1.5;
 
 tile_count = 0;
 
+
 bank = 0;
 hearts = 5;
 
@@ -17,6 +18,9 @@ banks = [0,0,0,0,0,0,0,0,0];
 n_color = 5;
 
 freeze = false;
+wrong_move = false;
+
+kings = [null, null, null, null];
 
 
 flat_bonus = 0;
@@ -32,6 +36,10 @@ shop = [
 	{ flat: 0, mult: 2, name: 'x2', price: 50000000 }
 ];
 
+var spawn_max_level = 1;
+var spawn_max_level_price = 100;
+var spawn_min_level = 1;
+var spawn_min_level_price = 1000;
 
 board = [];
 for( var i = 0; i < W+2; ++i ) board[i] = [];
@@ -40,8 +48,8 @@ for( var i = 0; i < W+2; ++i ) board[i] = [];
 selected = null;
 
 function updateBank(){
-	//$('#bank').html('<span data-res="0">'+banks[0]+'</span><span data-res="1">'+banks[1]+'</span><span data-res="2">'+banks[2]+'</span><span data-res="3">'+banks[3]+"</span>");
-	$('#bank').text(banks[0]+banks[1]+banks[2]+banks[3]);
+	$('#bank').html(bank+'<br/><span data-res="0">'+banks[0]+'</span><span data-res="1">'+banks[1]+'</span><span data-res="2">'+banks[2]+'</span><span data-res="3">'+banks[3]+"</span>");
+	//$('#bank').text(banks[0]+banks[1]+banks[2]+banks[3]);
 }
 
 function updateHearts(){
@@ -51,14 +59,14 @@ function updateHearts(){
 }
 
 function getTile(x, y){
-	if( x+1 > -1 && y+1 > -1 && x < W+2 && y < H+2 ){
+	if( x == Math.floor(x) && y == Math.floor(y) && x+1 > -1 && y+1 > -1 && x < W+2 && y < H+2 ){
 		return board[x+1][y+1];
 	}
 	return null;
 }
 
 function setTile(x, y, value){
-	if( x+1 > -1 && y+1 > -1 && x < W+2 && y < H+2 ){
+	if( x == Math.floor(x) && y == Math.floor(y) && x+1 > -1 && y+1 > -1 && x < W+2 && y < H+2 ){
 		board[x+1][y+1] = value;
 		if( value instanceof Tile ){
 			value.x = x;
@@ -205,6 +213,19 @@ function moveTile(t1, t2){
 	}
 }
 
+function resetTiles(){
+	for( var i = 0; i < W; ++i){
+		for( var j = 0; j < H; ++j){
+			var t = getTile(i,j);
+			if( t ){
+				t.level = 1;
+				t.pertick = 1;
+				t.update();
+			}
+		}
+	}
+}
+
 // function swapTile(t1, t2){
 // 	var x1 = t1.x, y1 = t1.y;
 // 	var x2 = t2.x, y2 = t2.y;
@@ -292,20 +313,21 @@ Tile.prototype = {
 		var t = getTile(this.x+dx, this.y+dy);
 
 
-		// setTile(this.x, this.y, null);
+		if( this === kings[this.dir] ) setTile(this.x, this.y, null);
 		this.x += dx; this.y += dy;
 		setTile(this.x, this.y, this);
 
 		this.$.css('transform', getTransform(this.x,this.y));
 
-		if( !isInBounds(this.x, this.y) ){
+		if( !isInBounds(this.x, this.y) && this !== kings[this.dir] ){
 			setTimeout((function(){
-				this.onBoardEdge();
-				this.remove();
+				if( !this.onBoardEdge() ){
+					this.remove();
+				}
 			}).bind(this), 750);
 		}
 
-		if( t ){
+		if( t && this !== kings[this.dir] ){
 			if( this.type != 'blank' && this.type === t.type ){
 				setTimeout((function(){
 					this.merge(t);
@@ -345,16 +367,16 @@ function ProdTile(x, y){
 	Tile.call(this, x, y);
 
 	this.type = 'normal';
-	this.level = 1;
+	this.level = spawn_min_level+Math.floor(Math.random()*(1+spawn_max_level-spawn_min_level));
 
 	this.prod = 1;
-	this.pertick = 1;
+	this.pertick = this.level;
 	this.tick = 5000;
 
 	this.time = 0;
 
 	this.$.attr('data-shape','square');
-	this.$prod = $('<span data-info="prod">0</span>');
+	//this.$prod = $('<span data-info="prod">0</span>');
 	this.$pertick = $('<span data-info="pertick">'+this.pertick+'</span>');
 	//this.$tick = $('<span data-info="tick">'+Math.floor(this.tick/1000)+'<small>s</small></span>');
 	this.$.append(this.$prod, this.$tick, this.$pertick);
@@ -376,7 +398,7 @@ ProdTile.prototype = Object.create(Tile.prototype, {
 				}
 			}
 
-			this.$prod.text(this.prod);
+			//this.$prod.text(this.prod);
 			this.$pertick.text(this.pertick);
 			//this.$tick.html(Math.floor(this.tick/1000)+'<small>s</small>');
 		}
@@ -437,20 +459,34 @@ DirProdTile.prototype = Object.create(ProdTile.prototype, {
 				this.y < 0 && this.dir == DirProdTile.UP ||
 				this.y >= H && this.dir == DirProdTile.DOWN ){
 				
-				banks[this.dir] += this.prod || 0;
-				updateBank();
-				this.$.addClass('right');
+				// banks[this.dir] += this.prod || 0;
+				// updateBank();
+				// this.$.addClass('right');
 
-				if( this.level >= 4 && this.dir == DirProdTile.RIGHT ){
-					hearts++;
-					updateHearts();
+				if( !kings[this.dir] || this.level > kings[this.dir].level  ){
+					if(kings[this.dir]) kings[this.dir].remove();
+					// hearts++;
+					// updateHearts();
+					kings[this.dir] = this;
+					var x, y;
+					switch(this.dir){
+						case DirProdTile.RIGHT: x = 5; y = 1.5; break;
+						case DirProdTile.DOWN: x = 1.5; y = 5; break;
+						case DirProdTile.LEFT: x = -2; y = 1.5; break;
+						case DirProdTile.UP: x = 1.5; y = -2; break;
+					}
+					this.move(x-this.x,y-this.y);
+
+					return true;
 				}
 
 			} else {
 				this.$.addClass('wrong');
-				hearts--;
-				updateHearts();
-				if( hearts == 0 ) $('#board').append($('<div id="game-over"></div>'));
+				// wrong_move = true;
+				setTimeout(resetTiles, 500);
+				//hearts--;
+				//updateHearts();
+				//if( hearts == 0 ) $('#board').append($('<div id="game-over"></div>'));
 			}
 		}
 	},
@@ -470,21 +506,8 @@ DirProdTile.LEFT = 2;
 DirProdTile.UP = 3;
 
 
-
 function createTile(x, y){
-	// var r = Math.random();
-	// if( r < 0.3 ){
-	// 	var dirs = [];
-	// 	if( x > 0 ) 	dirs.push(DirProdTile.RIGHT);
-	// 	if( x < W-1 ) 	dirs.push(DirProdTile.LEFT);
-	// 	if( y > 0 )		dirs.push(DirProdTile.DOWN);
-	// 	if( y < H-1 ) 	dirs.push(DirProdTile.UP);
 
-	// 	var dir = dirs[Math.floor(Math.random()*dirs.length)];
-
-	// 	return new DirProdTile(x, y, dir);
-	// }
-	// return new ProdTile(x, y);
 	var dirs = [];
 	if( x > 0 && !(x == 1 && (y == H-1 || y == 0) && getTile(x+1, y) && getTile(x+1, y).dir == DirProdTile.LEFT ) ) 	dirs.push(DirProdTile.RIGHT);
 	if( x < W-1 && !(x ==2 && (y == H-1 || y == 0) && getTile(x-1, y) && getTile(x-1, y).dir == DirProdTile.RIGHT ) ) 	dirs.push(DirProdTile.LEFT);
@@ -494,7 +517,6 @@ function createTile(x, y){
 	var dir = dirs[Math.floor(Math.random()*dirs.length)];
 
 	return new DirProdTile(x, y, dir);
-	//return new DirProdTile(x, y, Math.floor(Math.random()*4));
 }
 
 
@@ -526,6 +548,10 @@ function onSepClick( x, y ){
 			setTile(fx, fy, createTile(fx, fy));
 			setTile(cx, cy, createTile(cx, cy));
 
+			if( wrong_move ) {
+				wrong_move = false;
+				resetTiles();
+			}
 			freeze = false;
 		}, 500);	
 	}
@@ -595,8 +621,45 @@ $(document).ready(function(){
 			}
 		}.bind(div));
 
-		$('#shop').append(div);
+		// $('#shop').append(div);
 	}
+
+
+	var $maxSpawnLevel = $('<div class="shopentry">\
+			<span data-info="price">'+spawn_max_level_price+'</span><br/>\
+			<span data-info="name">+ Max Spawn Level (current: <span>1</span>)</span>\
+		</div>');
+
+	$('#shop').append($maxSpawnLevel);
+
+	$maxSpawnLevel.click(function(){
+		if( bank >= spawn_max_level_price ){
+			bank -= spawn_max_level_price;
+			spawn_max_level++;
+			spawn_max_level_price *= 2;
+			$(this).children('[data-info="price"]').text(spawn_max_level_price);
+			$(this).find('[data-info="name"] span').text(spawn_max_level);
+		}
+	});
+
+	var $minSpawnLevel = $('<div class="shopentry">\
+			<span data-info="price">'+spawn_min_level_price+'</span><br/>\
+			<span data-info="name">+ Min Spawn Level (current: <span>1</span>)</span>\
+		</div>');
+
+	$('#shop').append($minSpawnLevel);
+
+	$minSpawnLevel.click(function(){
+		if( bank >= spawn_min_level_price && spawn_min_level < spawn_max_level ){
+			bank -= spawn_min_level_price;
+			spawn_min_level++;
+			spawn_min_level_price *= 2;
+			$(this).children('[data-info="price"]').text(spawn_min_level_price);
+			$(this).find('[data-info="name"] span').text(spawn_min_level);
+		}
+	});
+
+
 
 	for( var i = 0; i < 2*W-1; ++i ){
 		for( var j = 0; j < 2*H-1; ++j){
@@ -636,6 +699,22 @@ $(document).ready(function(){
 		setTimeout(updateTiles, freq);
 	}
 	//setTimeout(updateTiles, freq);
+
+	function kingsRoutine(){
+		var min = banks[0];
+		for( var i in kings ){
+			var k = kings[i];
+			if( k ) banks[i] += k.pertick;
+			if( banks[i] < min ) min = banks[i];
+		}
+		for( var i in kings ){
+			banks[i] -= min;
+		}
+		bank += min;
+		updateBank();
+		setTimeout(kingsRoutine, 3000);
+	}
+	kingsRoutine();
 
 	updateBank();
 	updateHearts();

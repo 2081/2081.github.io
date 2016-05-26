@@ -1,7 +1,7 @@
 #board {
 	position: relative;
 	width: 100%;
-	height: 700px;
+	height: 90vh;
 	max-height: 100vh;
 	background-color: #e13b38;
 }
@@ -211,11 +211,11 @@
 #bank {
 	position: absolute;
 	top: 5%;
-	left: 50%;
-	transform: translate(-50%, -50%);
+	right: 5%;
 
 	font-size: 300%;
-	color: white;
+	color: #FFD900;
+    text-align: center;
 }
 
 #bank span {
