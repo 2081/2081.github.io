@@ -3,7 +3,7 @@
 	width: 100%;
 	height: 90vh;
 	max-height: 100vh;
-	background-color: #e13b38;
+    background-image: radial-gradient(#09284F,#140E0A);
 }
 
 #top-bg, #bottom-bg, #left-bg, #right-bg {
@@ -41,15 +41,74 @@
 	background: rgba(24, 24, 24, 0.43);
 }
 
-.tile, .separator {
-	position: absolute;
+
+div.dir-info, .tile, .separator {
+    position: absolute;
+    /*background: blue;*/
+
 	top: 50%;
 	left: 50%;
 	width: 100px;
-	max-width: 20vmin;
+	max-width: 12vmin;
 	height: 100px;
-	max-height: 20vmin;
-	/*background-color: #5D5D83;*/
+	max-height: 12vmin;
+}
+
+div.pertick, div.dir-info div.bank {
+	position: absolute;
+	color: grey;
+	font-family: 'Calibri', sans;
+	font-size: 100%;
+
+	top: 33%;
+	transform: translate(0, -50%);
+	width: 500%;
+}
+
+div.dir-info div.bank {
+	top: 67%;
+	font-size: 150%;
+}
+
+#info-right div.pertick, #info-left div.pertick, #info-right div.bank, #info-left div.bank {
+	left: 50%;
+	top: 10%;
+	text-align: center;
+
+	transform: translate(-50%, -50%);
+}
+#info-right div.bank, #info-left div.bank {
+	top: 44%;
+}
+
+div.pertick span[data-final] {
+	font-size: 150%;
+}
+
+#info-up .dir-color {
+	color: #E7C143;
+}
+#info-down .dir-color {
+	color: #C929F8;
+}
+#info-right .dir-color {
+	color: #D12A4D;
+}
+#info-left .dir-color {
+	color: #37EA9D;
+}
+
+span.star-icon {
+	display: inline-block;
+	width: 25px;
+	height: 25px;
+	background: url("../graphics/bottles/bottle_with_stars.png");
+	background-size: 100% auto;
+	transform: translateY(25%);
+}
+
+
+.tile, .separator {
 
 	transition: transform 0.5s, opacity 0.5s;
 
@@ -62,7 +121,9 @@
 }
 
 .tile {
-	background-size: 100% 100%;
+    background-size: 90% auto;
+    background-position: center;
+    background-repeat: no-repeat;
 }
 
 .separator {
@@ -107,19 +168,19 @@
 }
 .tile[data-shape='dir-left'], .tile.type1 {
 	/*background-color: #9BAF61;*/
-	background-image: url("../graphics/rabbits/rabbit-green.png");
+	background-image: url("../graphics/bottles/bottle_with_turquoise_water_1.png");
 }
 .tile[data-shape='dir-up'], .tile.type2 {
 	/*background-color: #E0A532;*/
-	background-image: url("../graphics/rabbits/rabbit-blue.png");
+	background-image: url("../graphics/bottles/bottle_with_orange_water_1.png");
 }
 .tile[data-shape='dir-right'], .tile.type3 {
 	/*background-color: #E03240;*/
-	background-image: url("../graphics/rabbits/rabbit-red.png");
+	background-image: url("../graphics/bottles/bottle_with_red_water_1.png");
 }
 .tile[data-shape='dir-down'], .tile.type4 {
 	/*background-color: #D332E0;*/
-	background-image: url("../graphics/rabbits/rabbit-purple.png");
+	background-image: url("../graphics/bottles/bottle_with_magenta_water_1.png");
 }
 .tile[data-shape='circle'], .tile.type5 {
 	/*background-color: #57CFCD;*/
@@ -169,7 +230,7 @@
 }
 
 .tile [data-info='pertick'] {
-	position: absolute;
+	/*position: absolute;
 	top: 25%;
 	left: 90%;
 	background: #8F5A59;
@@ -177,7 +238,34 @@
 	border-radius: 500px;
 
 	min-width: 20px;
-	height: 20px;
+	height: 20px;*/
+    position: absolute;
+    top: 52%;
+    left: 57%;
+    color: #113F4C;
+    font-weight: bolder;
+    background: rgba(255, 255, 255, 0.35);
+    /* border: 1px solid #350E66; */
+    border-radius: 500px;
+    min-width: 20px;
+    height: 20px;
+    padding: 0 4px;
+}
+.tile[data-shape='dir-up'] [data-info='pertick']{
+	color: #984B0C;
+    background: rgba(255, 200, 150, 0.6);
+}
+.tile[data-shape='dir-down'] [data-info='pertick']{
+	color: #A526AB;
+    background: rgba(242, 174, 213, 0.57);
+}
+.tile[data-shape='dir-right'] [data-info='pertick']{
+	color: #A13C35;
+    background: rgba(255, 200, 191, 0.59);
+}
+.tile[data-shape='dir-left'] [data-info='pertick']{
+	color: #3A7267;
+    background: rgba(151, 212, 176, 0.66);
 }
 
 .tile [data-info='tick'] {
@@ -212,28 +300,29 @@
 	position: absolute;
 	top: 5%;
 	right: 5%;
+	font-family: 'Calibri', sans;
 
 	font-size: 300%;
-	color: #FFD900;
+	color: #FFA000;
     text-align: center;
 }
 
-#bank span {
-	margin: 0 15px;
+#bank:after {
+	content: "";
+	background: url("../graphics/bottles/bottle_with_stars.png");
+	background-size: 100% auto;
+
+	margin-left: 10px;
+
+	width: 100px;
+	height: 100px;
+	max-width: 12vmin;
+	max-height: 12vmin;
+
+	display: inline-block;
+	transform: translateY(30%);
 }
 
-#bank span[data-res='0'] {
-	color: red;
-}
-#bank span[data-res='1'] {
-	color: purple;
-}
-#bank span[data-res='2'] {
-	color: lightgreen;
-}
-#bank span[data-res='3'] {
-	color: lightblue;
-}
 
 #shop {
 	position: relative;

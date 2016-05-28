@@ -15,6 +15,8 @@ hearts = 5;
 
 banks = [0,0,0,0,0,0,0,0,0];
 
+min_tick = 0;
+
 n_color = 5;
 
 freeze = false;
@@ -48,8 +50,29 @@ for( var i = 0; i < W+2; ++i ) board[i] = [];
 selected = null;
 
 function updateBank(){
-	$('#bank').html(bank+'<br/><span data-res="0">'+banks[0]+'</span><span data-res="1">'+banks[1]+'</span><span data-res="2">'+banks[2]+'</span><span data-res="3">'+banks[3]+"</span>");
+	//$('#bank').html(bank+'<br/><span data-res="0">'+banks[0]+'</span><span data-res="1">'+banks[1]+'</span><span data-res="2">'+banks[2]+'</span><span data-res="3">'+banks[3]+"</span>");
 	//$('#bank').text(banks[0]+banks[1]+banks[2]+banks[3]);
+
+	$('#bank').text(bank);
+	$('#info-right .bank').text(banks[0]);
+	$('#info-down .bank').text(banks[1]);
+	$('#info-left .bank').text(banks[2]);
+	$('#info-up .bank').text(banks[3]);
+}
+
+function updateTicks(){
+	$('#info-right .pertick [data-base]').text(kings[0].pertick);
+	$('#info-down .pertick [data-base]').text(kings[1].pertick);
+	$('#info-left .pertick [data-base]').text(kings[2].pertick);
+	$('#info-up .pertick [data-base]').text(kings[3].pertick);
+
+
+	$('#info-right .pertick [data-final]').text(kings[0].pertick - min_tick);
+	$('#info-down .pertick [data-final]').text(kings[1].pertick - min_tick);
+	$('#info-left .pertick [data-final]').text(kings[2].pertick - min_tick);
+	$('#info-up .pertick [data-final]').text(kings[3].pertick - min_tick);
+
+	$('.dir-info .pertick [data-minus]').text(min_tick);
 }
 
 function updateHearts(){
@@ -480,6 +503,15 @@ DirProdTile.prototype = Object.create(ProdTile.prototype, {
 					}
 					this.move(x-this.x,y-this.y);
 
+					var mt = this.pertick;
+					for( var i = 0; i < 4; ++i ){
+						var pt = kings[i].pertick;
+						if( pt  < mt ) mt = pt;
+					}
+					min_tick = mt;
+
+					updateTicks();
+
 					return true;
 				}
 
@@ -496,9 +528,9 @@ DirProdTile.prototype = Object.create(ProdTile.prototype, {
 	merge: {
 		value: function(){
 			ProdTile.prototype.merge.apply(this, arguments);
-			if( this.dir == DirProdTile.RIGHT && this.level > 3 ){
-				this.$.addClass('heart');
-			}
+			// if( this.dir == DirProdTile.RIGHT && this.level > 3 ){
+			// 	this.$.addClass('heart');
+			// }
 		}
 	}
 });
@@ -721,5 +753,24 @@ $(document).ready(function(){
 
 	updateBank();
 	updateHearts();
+
+	kings[DirProdTile.RIGHT] = new DirProdTile(5, 1.5, DirProdTile.RIGHT);
+	kings[DirProdTile.LEFT] = new DirProdTile(-2, 1.5, DirProdTile.LEFT);
+	kings[DirProdTile.UP] = new DirProdTile(1.5, -2, DirProdTile.UP);
+	kings[DirProdTile.DOWN] = new DirProdTile(1.5, 5, DirProdTile.DOWN);
+
+	for( var i = 0; i < 4; ++i ){
+		kings[i].level = kings[i].pertick = 0;
+		kings[i].update();
+	}
+	//new DirProdTile(1.5, -2, 3);
+
+	$('#info-up').css('transform', getTransform(2.5, -2));
+	$('#info-down').css('transform', getTransform(2.5, 5));
+	$('#info-right').css('transform', getTransform(5, 2.5));
+	$('#info-left').css('transform', getTransform(-2, 2.5));
+
+
+	updateTicks();
 
 });
