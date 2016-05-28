@@ -218,10 +218,13 @@ function resetTiles(){
 		for( var j = 0; j < H; ++j){
 			var t = getTile(i,j);
 			if( t ){
-				t.level = 1;
-				t.pertick = 1;
-				t.update();
+				// t.level = 1;
+				// t.pertick = 1;
+				// t.update();
+				t.$.css('z-index','1000');
+				t.remove();
 			}
+			setTile(i, j, createTile(i,j));
 		}
 	}
 }
