@@ -53,7 +53,7 @@ function updateBank(){
 	//$('#bank').html(bank+'<br/><span data-res="0">'+banks[0]+'</span><span data-res="1">'+banks[1]+'</span><span data-res="2">'+banks[2]+'</span><span data-res="3">'+banks[3]+"</span>");
 	//$('#bank').text(banks[0]+banks[1]+banks[2]+banks[3]);
 
-	$('#bank').text(bank);
+	$('#bank span').text(bank);
 	$('#info-right .bank').text(banks[0]);
 	$('#info-down .bank').text(banks[1]);
 	$('#info-left .bank').text(banks[2]);
@@ -660,9 +660,12 @@ $(document).ready(function(){
 	}
 
 
-	var $maxSpawnLevel = $('<div class="shopentry">\
-			<span data-info="price">'+spawn_max_level_price+'</span><br/>\
-			<span data-info="name">+ Max Spawn Level (current: <span>1</span>)</span>\
+	var $maxSpawnLevel = $('<div class="shopentry" data-entry="mushrooms">\
+			<span class="thumbnail"></span>\
+			<span class="name">Deep Woods Mushrooms</span>\
+			<span class="description">Increase the minimum possible strength of new potions.</span>\
+			<span class="tip">Current min. strength: <span data-value>0</span></span>\
+			<span class="buy-button"><span data-price>'+spawn_max_level_price+'</span><span class="star-icon"></span></span>\
 		</div>');
 
 	$('#shop').append($maxSpawnLevel);
@@ -672,14 +675,17 @@ $(document).ready(function(){
 			bank -= spawn_max_level_price;
 			spawn_max_level++;
 			spawn_max_level_price *= 2;
-			$(this).children('[data-info="price"]').text(spawn_max_level_price);
-			$(this).find('[data-info="name"] span').text(spawn_max_level);
+			$(this).children('[data-price]').text(spawn_max_level_price);
+			$(this).find('[data-value]').text(spawn_max_level);
 		}
 	});
 
-	var $minSpawnLevel = $('<div class="shopentry">\
-			<span data-info="price">'+spawn_min_level_price+'</span><br/>\
-			<span data-info="name">+ Min Spawn Level (current: <span>1</span>)</span>\
+	var $minSpawnLevel = $('<div class="shopentry" data-entry="phoenix">\
+			<span class="thumbnail"></span>\
+			<span class="name">Phoenix Feather</span>\
+			<span class="description">Increase the maximum possible strength of new potions.</span>\
+			<span class="tip">Current max. strength: <span data-value>0</span></span>\
+			<span class="buy-button"><span data-price>'+spawn_min_level_price+'</span><span class="star-icon"></span></span>\
 		</div>');
 
 	$('#shop').append($minSpawnLevel);
@@ -689,8 +695,8 @@ $(document).ready(function(){
 			bank -= spawn_min_level_price;
 			spawn_min_level++;
 			spawn_min_level_price *= 2;
-			$(this).children('[data-info="price"]').text(spawn_min_level_price);
-			$(this).find('[data-info="name"] span').text(spawn_min_level);
+			$(this).children('[data-price]').text(spawn_min_level_price);
+			$(this).find('[data-value]').text(spawn_min_level);
 		}
 	});
 

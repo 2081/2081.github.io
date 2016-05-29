@@ -1,9 +1,80 @@
+body {
+	position: absolute;
+	background: #140E0A;
+	height: 100%;
+	width: 100%;
+	top: 0;
+	left: 0;
+
+	font-family: 'Calibri', sans;
+
+	overflow: hidden;
+}
+
+.content {
+	position: relative;
+	margin: 0;
+	padding: 0;
+	height: 100%;
+	width: 100%;
+
+	overflow: scroll;
+}
+
+.section {
+	position: relative;
+	text-align: center;
+	margin: 0;
+	padding: 0;
+}
+
+.section:last-child {
+	margin-bottom: 200px;
+}
+
+h1 {
+    position: relative;
+    color: #FFEA90;
+    font-size: 2.5em;
+    font-weight: lighter;
+}
+
+h1:after {
+    content: '';
+    position: absolute;
+    top: 100%;
+    left: 20%;
+    width: 60%;
+    height: 1px;
+    background: linear-gradient(to right, rgba(9, 81, 117, 0),rgb(236, 224, 166),rgba(9, 81, 117, 0));
+}
+
+h2 {
+    position: relative;
+    color: #A2F2C2;
+    font-size: 2em;
+    font-weight: lighter;
+}
+
+h2:after {
+	content: '';
+	position: absolute;
+	top: 100%;
+	left: 25%;
+
+	width: 50%;
+	height: 1px;
+	background: linear-gradient(to right, rgba(9, 81, 117, 0),rgba(206, 255, 225, 0.3),rgba(9, 81, 117, 0));
+}
+
 #board {
 	position: relative;
 	width: 100%;
-	height: 90vh;
+	height: 100vmin;
 	max-height: 100vh;
-    background-image: radial-gradient(#09284F,#140E0A);
+    background-image: radial-gradient(#09284F,#140E0A 76%);
+
+    transform: translateZ(0);
 }
 
 #top-bg, #bottom-bg, #left-bg, #right-bg {
@@ -302,9 +373,14 @@ span.star-icon {
 	right: 5%;
 	font-family: 'Calibri', sans;
 
-	font-size: 300%;
-	color: #FFA000;
+	font-size: 3em;
+	color: white;
     text-align: center;
+}
+
+#bank span {
+	position: relative;
+	z-index: 2;
 }
 
 #bank:after {
@@ -314,35 +390,116 @@ span.star-icon {
 
 	margin-left: 10px;
 
-	width: 100px;
-	height: 100px;
-	max-width: 12vmin;
-	max-height: 12vmin;
+	width: 2em;
+	height: 2em;
 
 	display: inline-block;
 	transform: translateY(30%);
+}
+
+#bank:before {
+    content: '';
+    position: absolute;
+    display: block;
+
+    width: 120%;
+    height: 1.1em;
+    bottom: 0;
+    right: 50px;
+
+    background: linear-gradient(to right, rgba(255, 178, 43, 0), #411D61 50%);
+
+    z-index: 0;
 }
 
 
 #shop {
 	position: relative;
 	width: 100%;
-	background-color: lightblue;
 
 	text-align: center;
 }
 
 .shopentry {
-	background-color: blue;
-	color: white;
-
-	display: inline-block;
-	width: 250px;
-	height: 50px;
-	margin: 8px 16px;
-
-	cursor: pointer;
+    color: white;
+    display: inline-block;
+    width: 250px;
+    min-height: 250px;
+    margin: 8px 16px;
+    border: 1px #4A464B solid;
+    background: #221914;
+    border-radius: 10px;
+    padding: 10px;
+    text-align: center;
+    cursor: pointer;
 }
+
+.shopentry .thumbnail {
+	display: block;
+	width: 100%;
+	height: 150px;
+
+	background-size: contain;
+	background-position: center;
+	background-repeat: no-repeat;
+}
+
+.shopentry[data-entry="phoenix"] .thumbnail {
+	background-image: url("../graphics/bottles/bottle_with_feather_phoenix.png");
+
+}
+.shopentry[data-entry="mushrooms"] .thumbnail {
+	background-image: url("../graphics/bottles/bottle_with_mushrooms.png");
+	
+}
+
+.shopentry .name {
+	display: inline-block;
+	width: 100%;
+	font-size: 120%;
+	margin-bottom: 0.5em;
+}
+
+.shopentry .description {
+	display: inline-block;
+	width: 100%;
+	font-size: 100%;
+	font-style: italic;
+    color: #FF8D21;
+}
+
+.shopentry .tip {
+	display: inline-block;
+	width: 100%;
+	font-size: 100%;
+	font-style: italic;
+    color: #7C7C7C;
+}
+
+.shopentry .buy-button {
+	display: inline-block;
+
+	margin-top: 0.5em;
+
+    background: linear-gradient(#4D1381,#3D1D5A);
+    border: 1px solid #833595;
+	border-radius: 0.25em;
+	min-width: 50%;
+	min-height: 1.7em;
+
+	white-space: nowrap;
+
+	font-size: 1.5em;
+}
+
+.shopentry .buy-button [data-price] {
+    display: inline-block;
+    color: white;
+    margin-right: 5px;
+    transform: translateY(6%);
+}
+
+
 
 #hearts {
 	position: absolute;
