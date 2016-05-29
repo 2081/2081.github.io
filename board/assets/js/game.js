@@ -663,40 +663,41 @@ $(document).ready(function(){
 	var $maxSpawnLevel = $('<div class="shopentry" data-entry="mushrooms">\
 			<span class="thumbnail"></span>\
 			<span class="name">Deep Woods Mushrooms</span>\
-			<span class="description">Increase the minimum possible strength of new potions.</span>\
-			<span class="tip">Current min. strength: <span data-value>0</span></span>\
+			<span class="description">Increase the maximum possible strength of new potions.</span>\
+			<span class="tip">Current max. strength: <span data-value>1</span></span>\
 			<span class="buy-button"><span data-price>'+spawn_max_level_price+'</span><span class="star-icon"></span></span>\
 		</div>');
 
 	$('#shop').append($maxSpawnLevel);
 
-	$maxSpawnLevel.click(function(){
+	$maxSpawnLevel.find('.buy-button').click(function(){
+		console.log('ok');
 		if( bank >= spawn_max_level_price ){
 			bank -= spawn_max_level_price;
 			spawn_max_level++;
 			spawn_max_level_price *= 2;
-			$(this).children('[data-price]').text(spawn_max_level_price);
-			$(this).find('[data-value]').text(spawn_max_level);
+			$(this).find('[data-price]').text(spawn_max_level_price);
+			$(this).parent().find('[data-value]').text(spawn_max_level);
 		}
 	});
 
 	var $minSpawnLevel = $('<div class="shopentry" data-entry="phoenix">\
 			<span class="thumbnail"></span>\
 			<span class="name">Phoenix Feather</span>\
-			<span class="description">Increase the maximum possible strength of new potions.</span>\
-			<span class="tip">Current max. strength: <span data-value>0</span></span>\
+			<span class="description">Increase the minimum possible strength of new potions.</span>\
+			<span class="tip">Current min. strength: <span data-value>1</span></span>\
 			<span class="buy-button"><span data-price>'+spawn_min_level_price+'</span><span class="star-icon"></span></span>\
 		</div>');
 
 	$('#shop').append($minSpawnLevel);
 
-	$minSpawnLevel.click(function(){
+	$minSpawnLevel.find('.buy-button').click(function(){
 		if( bank >= spawn_min_level_price && spawn_min_level < spawn_max_level ){
 			bank -= spawn_min_level_price;
 			spawn_min_level++;
 			spawn_min_level_price *= 2;
-			$(this).children('[data-price]').text(spawn_min_level_price);
-			$(this).find('[data-value]').text(spawn_min_level);
+			$(this).find('[data-price]').text(spawn_min_level_price);
+			$(this).parent().find('[data-value]').text(spawn_min_level);
 		}
 	});
 
