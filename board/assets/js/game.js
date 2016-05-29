@@ -779,4 +779,26 @@ $(document).ready(function(){
 
 	updateTicks();
 
+
+	function onScreenSize(){
+		var wind = $(window), board = $('#board');
+
+		var ww = wind.width(), wh = wind.height(),
+			bw = board.width(), bh = board.height();
+
+		if( ww - bw > 200/0.75 ){
+			console.log('yay', ww,  ww - bw);
+			$('#shop').addClass('side').css('width', (0.75*(ww-bw))+'px');
+		} else {
+			$('#shop').removeClass('side').css('width', '');
+		}
+
+
+		//console.log();
+	}
+
+	$(window).resize(onScreenSize);
+
+	onScreenSize();
+
 });

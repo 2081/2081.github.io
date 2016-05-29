@@ -18,21 +18,24 @@ body {
 	height: 100%;
 	width: 100%;
 
+	text-align: center;
+
 	overflow: scroll;
 }
 
 .section {
 	position: relative;
+	display: inline-block;
+
+	vertical-align: top;
 	text-align: center;
 	margin: 0;
 	padding: 0;
 }
 
-.section:last-child {
-	margin-bottom: 200px;
-}
-
 h1 {
+	display: inline-block;
+	width: 100%;
     position: relative;
     color: #FFEA90;
     font-size: 2.5em;
@@ -67,11 +70,17 @@ h2:after {
 	background: linear-gradient(to right, rgba(9, 81, 117, 0),rgba(206, 255, 225, 0.3),rgba(9, 81, 117, 0));
 }
 
+.container {
+	position: relative;
+	display: inline-block;
+}
+
 #board {
 	position: relative;
-	width: 100%;
+	width: 100vmin;
 	height: 100vmin;
-	max-height: 100vh;
+	max-width: 900px;
+	max-height: 800px;
     background-image: radial-gradient(#09284F,#140E0A 76%);
 
     transform: translateZ(0);
@@ -141,10 +150,13 @@ div.dir-info div.bank {
 	font-size: 150%;
 }
 
+#info-up, #info-down {
+	text-align: left;
+}
+
 #info-right div.pertick, #info-left div.pertick, #info-right div.bank, #info-left div.bank {
 	left: 50%;
 	top: 10%;
-	text-align: center;
 
 	transform: translate(-50%, -50%);
 }
@@ -370,7 +382,7 @@ span.star-icon {
 #bank {
 	position: absolute;
 	top: 5%;
-	right: 5%;
+	left: 2%;
 	font-family: 'Calibri', sans;
 
 	font-size: 3em;
@@ -383,21 +395,24 @@ span.star-icon {
 	z-index: 2;
 }
 
-#bank:after {
+#bank:before {
 	content: "";
+    position: relative;
 	background: url("../graphics/bottles/bottle_with_stars.png");
 	background-size: 100% auto;
 
-	margin-left: 10px;
+	margin-right: 10px;
 
 	width: 2em;
 	height: 2em;
+
+	z-index: 2;
 
 	display: inline-block;
 	transform: translateY(30%);
 }
 
-#bank:before {
+#bank:after {
     content: '';
     position: absolute;
     display: block;
@@ -405,25 +420,18 @@ span.star-icon {
     width: 120%;
     height: 1.1em;
     bottom: 0;
-    right: 50px;
+    left: 50px;
 
-    background: linear-gradient(to right, rgba(255, 178, 43, 0), #411D61 50%);
+    background: linear-gradient(to right, #411D61 50%, rgba(255, 178, 43, 0));
 
     z-index: 0;
 }
 
-
-#shop {
-	position: relative;
-	width: 100%;
-
-	text-align: center;
-}
-
 .shopentry {
     color: white;
+    vertical-align: top;
     display: inline-block;
-    width: 250px;
+    width: 200px;
     min-height: 250px;
     margin: 8px 16px;
     border: 1px #4A464B solid;
@@ -437,7 +445,7 @@ span.star-icon {
 .shopentry .thumbnail {
 	display: block;
 	width: 100%;
-	height: 150px;
+	height: 100px;
 
 	background-size: contain;
 	background-position: center;
@@ -544,4 +552,14 @@ span.star-icon {
 	white-space: nowrap;
 
 	transform: translate(-50%, -50%);
+}
+
+#credits {
+	margin: 100px 0 25px;
+	width: 100%;
+	color: #8A6E4F;
+}
+
+#credits span {
+	vertical-align: bottom;
 }
