@@ -1,0 +1,574 @@
+html {
+	/*background-color: #dff5dc;*/
+	background-color: #2c2035;
+
+	transition: background-color 0.5s;
+}
+
+html.manual {
+	/*background-color: #dcf5f4;*/
+}
+
+body {
+	position: relative;
+	text-align: center;
+
+	font-family: Arial;
+	font-size: 14px;
+
+	padding-top: 100px;
+
+	/*vertical-align: text-top;*/
+}
+
+div#canvasframe {
+	position: relative;
+
+	width: 520px;
+	height: 520px;
+
+	background: blue;
+
+	display: inline-block;
+
+	z-index: 1;
+}
+
+div#canvasframe:after {
+	content: '';
+
+	position: absolute;
+	width: 100%;
+	height: 100%;
+
+	left: 0;
+	top: 0;
+
+	background: url('img/gameareaframe.png');
+	pointer-events: none;
+}
+
+canvas#canvas {
+
+	/*width: 480px;*/
+	/*height: 480px;*/
+	width: 92.3%;
+	height: 92.3%;
+
+	position: absolute;
+	top: 3.85%;
+	left: 3.85%;
+
+	/*max-width: 90vmin;*/
+	/*max-height: 90vmin;*/
+
+	background: url('img/gameareabackground.jpg');
+	/*background: url('SpaceShooterRedux/Backgrounds/darkPurple.png');*/
+
+	/*border: 5px solid;*/
+	border-radius: 50%;
+
+	/*margin: 10px;*/
+
+	/*border-color: white;*/
+	/*border-color: #71c937;*/
+
+	/*transition: border-color 0.375s;*/
+
+}
+
+canvas#canvas:hover {
+	/*border-color: #de532c;*/
+	border-color: #36bbf5;
+}
+
+#upgrade-shop, #upgrade-owned {
+	height: 420px;
+	vertical-align: bottom;
+}
+
+#upgrade-shop {
+	width: 175px;
+	text-align: center;
+}
+#upgrade-owned {
+	width: 150px;
+}
+
+.section-container {
+	position: relative;
+	display: table;
+	width: 100%;
+
+}
+
+.section {
+	vertical-align: top;
+
+	display: inline-block;
+
+	position: relative;
+
+	text-align: left;
+
+	/*padding: 10px;*/
+	/*padding-top: 20px;*/
+	margin: 10px;
+
+	/*border: 1px solid;*/
+	border: 20px solid;
+	border-image: url('img/border_main.png') 20 repeat;
+
+	/*background-color: #5b3e72;*/
+	background-color: #22162b;
+	background-image: url('img/section_bg.png');
+
+	width: auto;
+	min-width: 100px;
+	max-width: 800px;
+
+	transition: background-color 0.375s, border-image 0.375s;
+
+	/*border-color: #619a3b;*/
+	/*border-color: #7e3f65;*/
+
+	z-index: 10;
+}
+
+.section:hover {
+	/*border-image: url('img/border_main_hover.png') 20 repeat;*/
+	border-image-source: url('img/border_main_hover.png');
+	background-color: #22162b;
+}
+
+/*html.manual .section {
+	border-color: #b5568f;
+}*/
+
+.section-title {
+	position: absolute;
+
+	left: 50%;
+	/*top: -10px;*/
+	top: -40px;
+
+	line-height: normal;
+
+	padding: 0 5px;
+	white-space: nowrap;
+
+	transform: translate(-50%);
+
+	/*background-color: #2c2035;*/
+	/*color: #619a3b;*/
+	/*color: #8a385c;*/
+	color: #98428e;
+	opacity: 0;
+	/*color: #55b75a;*/
+	transition: color 0.375s, opacity 0.375s;
+}
+
+.section:hover .section-title {
+	color: #16c88c;
+	opacity: 1;
+}
+
+html.manual .section-title {
+	/*background-color: #dcf5f4;*/
+	/*color: #1884b4;*/
+	/*color: #09b5ff;*/
+}
+
+.button {
+	display: inline-block;
+
+	position: relative;
+
+	padding: 5px;
+	margin: 0px;
+
+	border: 1px solid #b8a592;
+	color: #877f76;
+
+	cursor: pointer;
+}
+
+.button:hover {
+    border-color: #de532c;
+    color: #de532c;
+}
+
+.button.disabled {
+	cursor: not-allowed;
+
+	border-color: #d5c4b4;
+	color: #bab2aa;
+}
+
+.button.active {
+    border-color: #b04324;
+    color: #f2f2f2;
+    background-color: #de532c;
+}
+
+.noselect {
+  -webkit-touch-callout: none; /* iOS Safari */
+  -webkit-user-select: none;   /* Chrome/Safari/Opera */
+  -khtml-user-select: none;    /* Konqueror */
+  -moz-user-select: none;      /* Firefox */
+  -ms-user-select: none;       /* Internet Explorer/Edge */
+  user-select: none;           /* Non-prefixed version, currently
+                                  not supported by any browser */
+}
+
+#currency-section, #manual-currency-section {
+	text-align: center;
+	/*line-height: 0;*/
+}
+
+#currency-section {
+	color: #71c937;
+}
+
+#manual-currency-section {
+	color: #36bbf5;
+}
+
+.shop-entry {
+    position: relative;
+    display: inline-block;
+    text-align: left;
+    /* padding-left: 50px;*/
+    /* padding-right: 10px; */
+    margin: 2px;
+    border: 1px solid; 
+    border-radius: 5px;
+    cursor: pointer;
+    background-color: rgba(0, 0, 0, 0.51);
+    /* border-color: #cbcbcb; */
+    height: 44px;
+    width: 160px;
+}
+
+#upgrade-owned .shop-entry  {
+	width: 44px;
+	border-color: #78072d;
+}
+
+#upgrade-shop .shop-entry {
+    /*margin-left: -8px;*/
+    border-color: #0c3204;
+} #upgrade-shop .shop-entry.overpriced {
+    /*margin-left: -8px;*/
+    border-color: #320404;
+}
+
+.shop-entry:hover {
+	border-color: #009462 !important;
+	background-color: rgba(15, 86, 76, 0.21);
+}
+
+.shop-entry.overpriced {
+	cursor: default;
+}
+.shop-entry.overpriced > [data-icon] {
+	/*opacity: 0.5;*/
+}
+
+.shop-entry.overpriced-idle .idle-group {
+	/*opacity: 0.5;*/
+	/*background-color: #c2eaa7;*/
+}.shop-entry.overpriced-idle .idle-group .shop-entry-price {
+	/*color: #ff4343;*/
+}
+
+.shop-entry.overpriced-manual .manual-group {
+	/*opacity: 0.5;*/
+	/*background-color: #86daff;*/
+}.shop-entry.overpriced-manual .manual-group .shop-entry-price {
+	/*color: #ff4343;*/
+}
+
+
+
+.shop-entry .idle-group, .shop-entry .manual-group {
+	display: block;
+	height: 50%;
+	/*transform: translate(0, -2px);*/
+	/*border: inherit;*/
+
+	padding-left: 5px;
+	padding-right: 5px;
+
+	margin-left: 40px;
+
+	min-width: 30px;
+}
+
+.shop-entry .idle-group {
+	border-left: none;
+
+	/*color: #71c937;*/
+	/*background-color: #71c937;*/
+	/*border-color: #619a3b;*/
+
+	/*border-top-right-radius: 5px;*/
+	/*border-bottom-right-radius: 3px;*/
+	/*margin-right: -2px;*/
+}
+
+.shop-entry .manual-group {
+	/*border-left: none;*/
+	/*border-right: none;*/
+
+	/*border-top-right-radius: 3px;*/
+
+	/*color: #36bbf5;*/
+	/*background-color: #36bbf5;*/
+	/*border-color: #1884b4;*/
+}
+
+.shop-entry-icon-holder {
+	position: absolute;
+	width: 40px;
+	height: 40px;
+
+	left: 0;
+	top: 0;
+
+	margin: 1px;
+
+    border: 1px solid #3da807;
+
+	overflow: hidden;
+
+	border-top-left-radius: 5px;
+	border-bottom-left-radius: 5px;
+
+	background: black;
+}
+
+.overpriced .shop-entry-icon-holder {
+	border-color: #9f0404;
+}
+
+#upgrade-owned .shop-entry-icon-holder  {
+	border-top-right-radius: 5px;
+	border-bottom-right-radius: 5px;
+	border-color: transparent;
+}
+
+.shop-entry-price {
+	position: relative;
+	top: 50%;
+
+	transform: translateY(-50%);
+}
+.shop-entry-price.zero {
+	/*opacity: 0.5;*/
+	/*visibility: hidden;*/
+}/*.shop-entry-price.zero:after {
+	content: '-';
+	visibility: visible;
+}*/
+
+.shop-entry[style='manual'] {
+	/*background-color: #36bbf5;*/
+	/*border-color: #1884b4;*/
+
+}
+
+.shop-entry > span[data-icon] {
+	position: absolute;
+	left: 18px;
+	top: 50%;
+
+	transform: translate(-50%, -50%);
+}
+
+.shop-entry-price {
+	display: inline-block;
+
+	color: white;
+	font-size: 12px;
+}
+
+.manual-group .shop-entry-price {
+	color: #36bbf5;
+}.overpriced-manual .manual-group .shop-entry-price {
+	color: #0a6d99;
+}
+
+.idle-group .shop-entry-price {
+	color: #71c937;
+}.overpriced-idle .idle-group .shop-entry-price {
+	color: #307a00;
+}
+
+.shop-entry > .tooltip {
+	display: none;
+	position: absolute;
+
+	width: 300px;
+	min-height: 50px;
+
+	left: 50%;
+	bottom: 68px;
+
+	transform: translate(-50%, 0);
+}
+
+.shop-entry .tooltip.left {
+	bottom: auto;
+	right: auto;
+	top: 50%;
+	left: -340px;
+	transform: translate(0, -50%);
+
+	/*border-top-right-radius: 0;*/
+	/*border-bottom-right-radius: 0;*/
+}
+.shop-entry .tooltip.right {
+	bottom: auto;
+	left: auto;
+	top: 50%;
+	right: -340px;
+	transform: translate(0, -50%);
+
+	/*border-top-right-radius: 0;*/
+	/*border-bottom-right-radius: 0;*/
+}
+
+.shop-entry:hover > .tooltip {
+	display: block;
+}
+
+.tooltip {
+	border-radius: 5px;
+	pointer-events: none;
+
+	padding: 5px 10px 10px;
+
+	border: 1px solid;
+
+	text-align: left;
+
+	z-index: 100;
+
+	/*background: #f2f2f2;
+	border-color: #cbcbcb;*/
+    /*background: #3a2e3f;
+    border-color: #836049;*/
+    /*background: rgba(0, 0, 0, 0.85);*/
+    background-image: url('img/section_bg.png');
+    border-color: #009462;
+}
+
+/*.tooltip.down-arrow:after {
+	content: '';
+
+	position: absolute;
+
+	left: 50%;
+	top: 100%;
+
+	width: 20px;
+	height: 20px;
+
+	background: inherit;
+	border: inherit;
+	border-left: none;
+	border-top: none;
+
+	z-index: -1;
+
+	transform: translate(-50%, -50%) scaleY(0.75)  rotateZ(45deg);
+}*/
+
+.tooltip-item.name {
+	/*color: #71c937;
+	color: #e7c120;*/
+	/*color: #ff9f00;*/
+	color: #16c88c;
+    /*font-weight: bold;*/
+    /*text-shadow: -1px 0 white, 0 1px white, 1px 0 white, 0 -1px white;*/
+
+	line-height: 25px;
+}
+
+.tooltip-item.desc {
+	/*color: #b4b4b4;*/
+	color: #a69b90;
+}
+
+.credits {
+	margin-top: 20px;
+	color: #4f3c58;
+}
+
+strong.green {
+	font-weight: inherit;
+	color: #71c937;
+}
+strong.blue {
+	font-weight: inherit;
+	color: #36bbf5;
+}
+strong.tech {
+	font-weight: inherit;
+	color: #d99d07;
+}
+strong.value {
+	font-weight: inherit;
+	color: #ff2383;
+}
+
+
+span[data-icon] {
+	display: inline-block;
+	width: 40px;
+	height: 40px;
+
+	/*margin-left: 5px;*/
+	/*margin-right: 5px;*/
+
+	/*cursor: help;*/
+}
+
+span[data-icon='currency'], span[data-icon='idle-currency'] { width: 22px; height: 21px; background-image: url('SpaceShooterRedux/PNG/Power-ups/pill_green.png'); }
+span[data-icon='manual-currency'] { width: 22px; height: 21px; background-image: url('SpaceShooterRedux/PNG/Power-ups/pill_blue.png'); }
+
+span[data-icon='blueship'] { width: 37px; height: 26px; background-image: url('SpaceShooterRedux/PNG/UI/playerLife2_blue.png'); }
+span[data-icon='greenship'] { width: 37px; height: 26px; background-image: url('SpaceShooterRedux/PNG/UI/playerLife2_green.png'); }
+span[data-icon='orangeship'] { width: 37px; height: 26px; background-image: url('SpaceShooterRedux/PNG/UI/playerLife2_orange.png'); }
+span[data-icon='redship'] { width: 37px; height: 26px; background-image: url('SpaceShooterRedux/PNG/UI/playerLife2_red.png'); }
+
+span[data-icon='bluemeteor'] { width: 18px; height: 18px; background-image: url('SpaceShooterRedux/PNG/Meteors/meteorBlue_tiny1.png'); }
+
+
+span[data-icon='0000'] { background-image: url('img/icons/icon0000.png'); }
+span[data-icon='0001'] { background-image: url('img/icons/icon0001.png'); }
+span[data-icon='0002'] { background-image: url('img/icons/icon0002.png'); }
+span[data-icon='0003'] { background-image: url('img/icons/icon0003.png'); }
+span[data-icon='0004'] { background-image: url('img/icons/icon0004.png'); }
+span[data-icon='0005'] { background-image: url('img/icons/icon0005.png'); }
+span[data-icon='0006'] { background-image: url('img/icons/icon0006.png'); }
+span[data-icon='0007'] { background-image: url('img/icons/icon0007.png'); }
+span[data-icon='0008'] { background-image: url('img/icons/icon0008.png'); }
+
+span[data-icon] .rank {
+    position: absolute;
+    display: inline-block;
+    text-align: center;
+    min-width: 10px;
+    right: 0;
+    bottom: 0;
+    padding: 0 1px;
+    /* transform: translate(-50%, -50%); */
+    color: #fdec53;
+    color: #ff0070;
+    background: rgba(0, 0, 0, 0.73);
+    /* font-weight: bold; */
+    font-size: 12px;
+    border-top-left-radius: 3px;
+}
