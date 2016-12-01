@@ -1,16 +1,47 @@
-<!DOCTYPE html>
+<!DOCTYPE HTML>
 <html>
-
 	<head>
-		<title>Evoolution - concept</title>
-
+		<title>Evolution Game</title>
+		<link rel="stylesheet" href="css/materialize.min.css" />
+		<link rel="stylesheet" href="css/style.css" />
 	</head>
-
 	<body>
 
+		<div id='main-ctn'>
+
+			<div id='about' class='text-ctn'>
+				<p>What you can find below is an <strong>evolution</strong> simulation. Each generation, 30 individuals are breeded from the 20 individuals who scored the best.</p>
+				<p>The goal for each creature is to propulse itself to the targets, in the order they're presented.</p>
+				<p>For that, a creature can propulse itself once per target. Each propulsion has an angle, a force, a time it sets off (from the last target) and a duration. These four variables make up the alleles of one gene. The number of genes increases with the number of targets passed.</p>
+				<p>At the 10th target, the wall are set on fire and creatures cannot bounce on them anymore. This usually hardens the task A LOT.</p>
+			</div>
+			<br> 
+
+			<canvas id="sim-canvas" class='card' style="border: none;" width="900" height="200"></canvas>
+			<br>
+			<div class='text-ctn'>
+				<p>Individuals leaderboard:</p>
+			</div>
+
+			<div id='genes-leader-board'></div>
+
+			<p class='credits'>Robin NICOLET - 2016</p>
+
+			<img id='ball-sprite' src='flyer-mini.png' width='66px' height='66px' style="display: none;"/>
+			<div id='ball-sprites' style="display: none;">
+				<img src='flyer-mini-1.png' width='66px' height='66px'/>
+				<img src='flyer-mini-2.png' width='66px' height='66px'/>
+				<img src='flyer-mini-3.png' width='66px' height='66px'/>
+				<img src='flyer-mini-4.png' width='66px' height='66px'/>
+				<img src='flyer-mini-5.png' width='66px' height='66px'/>
+				<img src='flyer-mini-6.png' width='66px' height='66px'/>
+				<img src='flyer-mini-7.png' width='66px' height='66px'/>
+			</div>
+		</div>
 	</body>
 
-	<script src="js/matter.min.js"></script>
-	<script src="js/script.js"></script>
-
+	<script src="gpu.js"></script>
+	<script src="rng.js"></script>
+	<script src="jquery-3.1.0.js"></script>
+	<script src="script.js"></script>
 </html>
